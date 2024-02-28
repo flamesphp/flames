@@ -1,10 +1,10 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://i.postimg.cc/4yDHVvC7/flames.png" width="400" alt="Laravel Logo"></a></p>
+<p align="center"><a href="https://flamesphp.com" target="_blank"><img src="https://i.postimg.cc/4yDHVvC7/flames.png" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+<a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-*Flames was developed from scratch, with the aim of replacing the legacy KrupaBOX private framework, used in several banks, large streaming platforms and government agencies. Now in an open-source way, created by **[kazzkzpk](https://github.com/kazzkzpk)**.*
+*Flames was developed from scratch, with the goal of replacing the legacy KrupaBOX private framework, used in several banks, large streaming platforms and government agencies. Now in an open-source way, created by **[kazzkzpk](https://github.com/kazzkzpk)**.*
 
 ## About Flames
 
@@ -14,7 +14,7 @@ of **PHP components**.
 ## Why should I migrate to the Flames?
 
 * Flames framework created for high performance and large number of accesses.
-* You don't need to learn JS to develop your frontend, just run PHP natively on Flames.
+* You don't need to learn JS to develop your frontend, just run PHP natively in Flames.
 
 ## Release
 
