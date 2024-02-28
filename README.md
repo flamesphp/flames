@@ -4,7 +4,7 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-*Flames was developed from scratch, with the aim of replacing the legacy KrupaBOX private framework, used in several banks, large streaming platforms and government agencies. Now in an open-source way.*
+*Flames was developed from scratch, with the aim of replacing the legacy KrupaBOX private framework, used in several banks, large streaming platforms and government agencies. Now in an open-source way, created by **[kazzkzpk](https://github.com/kazzkzpk)**.*
 
 ## About Flames
 
