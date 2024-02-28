@@ -1,2 +1,2 @@
-# flames
-Flames Framework
+# Frames Framework
+Created by @kazzkzpk
