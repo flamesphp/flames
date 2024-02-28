@@ -14,3 +14,6 @@ Why should I migrate to the Flames?
 
 * Framework created for high performance and large number of accesses.
 * You don't need to learn JS to develop your frontend, just run PHP natively on it.
+
+----
+*Flames was developed from scratch, with the aim of replacing the legacy KrupaBOX private framework, used in several banks, large streaming platforms and government agencies. Now in an open-source way.*
