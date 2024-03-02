@@ -32,7 +32,7 @@ final class AutoLoad
                 $path = (ROOT_PATH . $fileName . '.php');
                 require $path;
 
-                if (method_exists($name,'__constructStatic') === true) {
+                if (method_exists($name, '__constructStatic') === true) {
                     ($name . '::__constructStatic')();
                 }
                 return;
