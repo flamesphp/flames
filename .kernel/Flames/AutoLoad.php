@@ -27,7 +27,7 @@ final class AutoLoad
             }
 
             // Case Fork
-            elseif (str_starts_with($name, 'Flames\\')) {
+            elseif (str_starts_with($name, '_Flames\\')) {
                 $name = str_replace('\\', '/', $name);
                 $path = (KERNEL_PATH . '.fork/' . $name . '.php');
                 require $path;
