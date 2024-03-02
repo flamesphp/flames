@@ -1,0 +1,62 @@
+version: "3"
+services:
+    # PHP: Server
+    php:
+        container_name: flames-php
+        build: ./.tools/docker/.internal/php
+        restart: always
+        volumes:
+            - ./:/var/www/html:delegated
+        ports:
+            - 80:80
+        environment:
+            APACHE_RUN_USER: "#1000"
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+
+    # MySQL: Server
+    mysql:
+        container_name: flames-mysql
+        image: mysql:5.7
+        volumes:
+            - ./.tools/docker/data/mysql:/var/lib/mysql:delegated
+            - ./.tools/docker/.internal/mysql:/docker-entrypoint-initdb.d
+            - ./.tools/docker/.internal/mysql:/etc/mysql/conf.d
+        environment:
+            - MYSQL_ROOT_PASSWORD=root
+        ports:
+            - 3306:3306
+        command: mysqld --sql_mode="" --lower_case_table_names=1
+
+    # MySQL: PhpMyAdmin
+    pma:
+        container_name: flames-pma
+        image: phpmyadmin/phpmyadmin
+        environment:
+            PMA_HOSTS: "db"
+        ports:
+            - 8080:80
+
+    # Redis: Server
+    redis:
+        container_name: flames-redis
+        image: redis:latest
+        command: --loglevel verbose
+        ports:
+            - 6380:6380
+
+    # Redis: PhpRedisAdmin
+    phpredisadmin:
+        container_name: flames-pra
+        image: erikdubbelboer/phpredisadmin
+        environment:
+            - ADMIN_USER=root
+            - ADMIN_PASS=root
+            - REDIS_1_HOST=redis
+            - REDIS_1_PORT=6380
+        depends_on:
+            - redis
+        links:
+            - redis
+        ports:
+            - 8081:80
