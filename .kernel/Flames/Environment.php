@@ -105,7 +105,7 @@ final class Environment
     protected function load(mixed $path) : void
     {
         $basePath  = (ROOT_PATH . '.cache/environment/');
-        $cachePath = ($basePath . sha1($path) . '.blob');
+        $cachePath = ($basePath . sha1($path));
         $currentTime = filemtime($path);
 
         if (file_exists($cachePath) === true && filemtime($cachePath) === $currentTime) {

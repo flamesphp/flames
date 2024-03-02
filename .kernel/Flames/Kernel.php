@@ -12,7 +12,7 @@ use Flames\Route\Client;
  */
 final class Kernel
 {
-    public const VERSION = '1.28.20240237';
+    public const VERSION = '1.0.18';
     public const MODULE  = 'SERVER';
 
     public static function run() : void
