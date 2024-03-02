@@ -7,8 +7,16 @@ namespace Flames;
  */
 final class AutoLoad
 {
+    public static $event = false;
+
     public static function run()
     {
+        // Verify if event load exists and register
+        $path = (ROOT_PATH . 'App/Server/Event/Load.php');
+        if (file_exists($path) === true) {
+            self::$event = true;
+        }
+
         \spl_autoload_register(function ($name) {
             // Case Flames Internal
             if (str_starts_with($name, 'Flames\\')) {
@@ -20,9 +28,13 @@ final class AutoLoad
 
             // Case App
             elseif (str_starts_with($name, 'App\\')) {
-                $name = str_replace('\\', '/', $name);
-                $path = (ROOT_PATH . $name . '.php');
+                $fileName = str_replace('\\', '/', $name);
+                $path = (ROOT_PATH . $fileName . '.php');
                 require $path;
+
+                if (method_exists($name,'__constructStatic') === true) {
+                    ($name . '::__constructStatic')();
+                }
                 return;
             }
 
@@ -34,7 +46,9 @@ final class AutoLoad
                 return;
             }
 
-            // TODO: failed page
+            elseif (self::$event === true) {
+                Event::dispatch('Load', 'onLoad', $name);
+            }
         });
     }
 }
