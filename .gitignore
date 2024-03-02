@@ -1,5 +1,7 @@
 syntax: glob
-App/
-.*/
+#App/
+#.*/
 vendor/
 .cache/
+.tools/docker/data
+.idea/
