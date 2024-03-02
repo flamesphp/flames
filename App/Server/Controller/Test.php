@@ -16,8 +16,6 @@ class Test extends Controller
         $user = new User();
         dump($user);
 
-//        new Iansoins();
-
         exit;
 
         $data = Arr();

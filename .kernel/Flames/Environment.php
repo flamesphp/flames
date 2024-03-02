@@ -23,7 +23,7 @@ final class Environment
         $path = (string)$path;
 
         if (empty($path) === true) {
-            $path = (ROOT_PATH . 'env/php.env');
+            $path = (ROOT_PATH . '.env');
         }
 
         $this->load($path);
