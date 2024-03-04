@@ -13,7 +13,14 @@ class Test extends Controller
     {
         dump($requestData);
 
-        $user = new User();
+        $user = new User(['name' => 'John B.']);
+        dump($user->name);
+        dump($user->id);
+        $user->test = 123;
+        $user->name = 'Kazz';
+        dump($user->test);
+        dump($user->name);
+
         dump($user);
 
         exit;
