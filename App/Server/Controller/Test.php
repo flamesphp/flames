@@ -4,6 +4,7 @@ namespace App\Server\Controller;
 
 use Flames\Controller;
 use Flames\Controller\Response;
+use Flames\Cryptography\Password;
 use Flames\RequestData;
 use App\Server\Model\User;
 
@@ -13,12 +14,17 @@ class Test extends Controller
     {
         dump($requestData);
 
+
+        $hash = Password::toHash('test');
+        dump($hash);
+
+        dump(Password::isValidHash($hash, 'test'));
+        exit;
+
+
         $user = new User(['name' => 'John B.']);
         dump($user->name);
-        dump($user->id);
-        $user->test = 123;
         $user->name = 'Kazz';
-        dump($user->test);
         dump($user->name);
 
         dump($user);

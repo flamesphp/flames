@@ -9,7 +9,7 @@ use JetBrains\PhpStorm\NoReturn;
 
 /**
  * Description for the class
- * @property id $id
+ * @property int $id
  * @property string|null $name
  * @property string|null $dummy
  */
