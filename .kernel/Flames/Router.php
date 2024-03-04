@@ -77,12 +77,24 @@ class Router
 
     public function getMatch()
     {
+        if (CLI::isCLI() === false) {
+            return self::getMatchWeb();
+        }
+
+        return $this->getMatchCLI();
+    }
+
+    protected function getMatchWeb()
+    {
         // Mount router
         $router = new \_Flames\AltoRouter();
 
         $paramItems = Arr();
         for ($i = 0; $i < $this->routes->count; $i++) {
             $route = ($this->routes[$i]);
+            if ($route->methods === 'CLI') {
+                continue;
+            }
             $routeParsed = $route->routeFormatted;
 
             foreach ($route->parameters as $param) {
@@ -148,9 +160,39 @@ class Router
 
         return Arr([
             'url'        => $currentUrl,
+            'command'    => null,
             'controller' => $route->controller,
             'parameters' => $caseSensitiveParameters,
             'delegate'   => $route->delegate
         ]);
+    }
+
+    protected function getMatchCLI()
+    {
+        $args = $_SERVER['argv'];
+        if (count($args) === 1) {
+            return null;
+        }
+
+        $command = $args[1];
+
+        // Match
+        foreach ($this->routes as $route) {
+            if ($route->methods !== 'CLI') {
+                continue;
+            }
+
+            if ($route->routeFormatted === $command) {
+                return Arr([
+                    'url'        => null,
+                    'command'    => $command,
+                    'controller' => $route->controller,
+                    'parameters' => $route->parameters,
+                    'delegate'   => $route->delegate
+                ]);
+            }
+        }
+
+        return null;
     }
 }

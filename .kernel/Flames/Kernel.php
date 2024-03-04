@@ -70,7 +70,7 @@ final class Kernel
             return false;
         }
 
-        if (str_starts_with($_SERVER['REQUEST_URI'], '/.flames')) {
+        if (CLI::isCLI() === false && str_starts_with($_SERVER['REQUEST_URI'], '/.flames')) {
             if (Client::run($_SERVER['REQUEST_URI']) !== false) {
                 return true;
             }

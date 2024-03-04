@@ -14,6 +14,8 @@ class Route extends \Flames\Event\Route
         $router->add('GET', '/', HelloWorld::class, 'onRequest');
         $router->add('GET', '/test', Test::class, 'onRequest');
 
+        $router->add('CLI', 'command:test', Test::class, 'onRequest');
+
         return $router;
     }
 

@@ -7,7 +7,7 @@ use Flames\Collection\Arr;
 /**
  * Description for the class
  * @property string $method
- * @property string $url
+ * @property string|null $url
  * @property string $controller
  * @property Arr $request
  * @property Arr $uries
@@ -15,27 +15,29 @@ use Flames\Collection\Arr;
  * @property Arr $multipart
  * @property Arr $urlEncoded
  * @property Arr|null $json
- * @property string $host
- * @property int $port
- * @property string $ip
+ * @property string|null $host
+ * @property int|null $port
+ * @property string|null $ip
+ * @property string|null $command
  * @property Arr $headers
  */
 class RequestData
 {
     protected string $method;
-    protected string $url;
+    protected string|null $url;
+    protected string|null $command;
     protected Arr $request;
     protected Arr $uries;
     protected Arr $queries;
     protected Arr $multipart;
     protected Arr $urlEncoded;
     protected Arr|null $json;
-    protected string $host;
-    protected int $port;
-    protected string $ip;
+    protected string|null $host;
+    protected int|null $port;
+    protected string|null $ip;
     protected Arr $headers;
 
-    public function __construct(string $method, string $url, Arr $queries, Arr $uries, Arr $multipart, Arr $urlEncoded, Arr|null $json, Arr $request, Arr $headers, string $host, string $port, string|null $ip)
+    public function __construct(string $method, string|null $url, Arr $queries, Arr $uries, Arr $multipart, Arr $urlEncoded, Arr|null $json, Arr $request, Arr $headers, string|null $host, string|null $port, string|null $ip, string|null $command)
     {
         $this->method     = $method;
         $this->url        = $url;
@@ -48,7 +50,8 @@ class RequestData
         $this->multipart  = $multipart;
         $this->urlEncoded = $urlEncoded;
         $this->json       = $json;
-        $this->request     = $request;
+        $this->request    = $request;
+        $this->command    = $command;
 
         return null;
     }
@@ -83,6 +86,8 @@ class RequestData
             return $this->json;
         } elseif ($key === 'request') {
             return $this->request;
+        } elseif ($key === 'command') {
+            return $this->command;
         }
     }
 }
