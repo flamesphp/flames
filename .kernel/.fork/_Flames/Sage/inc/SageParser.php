@@ -401,7 +401,9 @@ class SageParser
                 $access = 'public';
 
                 if ($variableData->type !== 'stdClass' && ! isset($publicProperties[$className][$key])) {
-                    $access .= ' (dynamically added)';
+                    if ($className !== 'Flames\Collection\Arr') {
+                        $access .= ' (dynamically added)';
+                    }
                 }
             }
 

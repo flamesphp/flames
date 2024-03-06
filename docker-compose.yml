@@ -21,9 +21,11 @@ services:
         volumes:
             - ./.tools/docker/data/mysql:/var/lib/mysql:delegated
             - ./.tools/docker/.internal/mysql:/docker-entrypoint-initdb.d
-            - ./.tools/docker/.internal/mysql:/etc/mysql/conf.d
         environment:
-            - MYSQL_ROOT_PASSWORD=root
+            MYSQL_DATABASE: ${DATABASE_MYSQL_NAME}
+            MYSQL_USER: ${DATABASE_MYSQL_USER}
+            MYSQL_PASSWORD: ${DATABASE_MYSQL_PASSWORD}
+            MYSQL_ROOT_PASSWORD: ${DATABASE_MYSQL_PASSWORD}
         ports:
             - 3306:3306
         command: mysqld --sql_mode="" --lower_case_table_names=1
@@ -33,7 +35,7 @@ services:
         container_name: flames-pma
         image: phpmyadmin/phpmyadmin
         environment:
-            PMA_HOSTS: "db"
+            PMA_HOSTS: "mysql"
         ports:
             - 8080:80
 

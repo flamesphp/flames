@@ -31,7 +31,7 @@ final class Arr extends \ArrayObject
         elseif ($key === 'last' && !parent::offsetExists($key))
             return $this->getLast();
 
-        return parent::offsetGet($key);
+        return @parent::offsetGet($key);
     }
 
     public function offsetSet(mixed $key, mixed $value) : void

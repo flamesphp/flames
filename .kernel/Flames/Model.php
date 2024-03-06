@@ -4,205 +4,105 @@ namespace Flames;
 
 use Flames\Collection\Arr;
 use Flames\ORM\Database;
+use Flames\ORM\Model\Data;
 use Flames\ORM\Table;
 use JetBrains\PhpStorm\NoReturn;
+use PDO;
 
 abstract class Model
 {
-    private const __VERSION__ = 5;
-
     private static bool $__setup = false;
+    private static Database\Driver|null $driver;
     private static string $database;
     private static string $table;
     private static Arr $column;
 
-    public static function getTable() : string
+    public function save()
     {
-        return self::$table;
-    }
-
-    public static function setTable(string $table) : bool
-    {
-        if (empty($table) === true)
-            return false;
-
-        self::$table = $table;
-        return true;
-    }
-
-    public static function getDatabase() : string
-    {
-        return self::$database;
-    }
-
-    public static function setDatabase(string $database) : bool
-    {
-        if (empty($database) === true)
-            return false;
-
-        self::$database = $database;
-        return true;
-    }
-
-    public static function __constructStatic()
-    {
-        if (self::$__setup === true) {
-            return;
-        }
-
-        $class = static::class;
-        $path = (ROOT_PATH . str_replace('\\', '/', $class) . '.php');
-
-        $basePath  = (ROOT_PATH . '.cache/model/');
-        $cachePath = ($basePath . sha1($class) . '.blob');
-        $currentTime = filemtime($path);
-
-        if (file_exists($cachePath) === true && filemtime($cachePath) === $currentTime) {
-            $data = unserialize(file_get_contents($cachePath));
-            if ($data->version === self::__VERSION__) {
-                self::__setup($data);
-                return;
+        $primaryColumn = null;
+        foreach (self::$column as $column) {
+            if ($column->primary === true || $column->autoIncrement === true) {
+                $primaryColumn = $column;
+                break;
             }
         }
 
-        $data = self::__getReflection($class);
-        $success = @file_put_contents($cachePath, serialize($data));
-        if ($success === false) {
-            if (is_dir($basePath) === false) {
-                mkdir($basePath, 0777, true);
-                @file_put_contents($cachePath, serialize($data));
-            }
+        if ($primaryColumn === null) {
+            throw new \Exception('Missing primary column in table ' . self::$table . ' using class ' . static::class . '.');
         }
-        @touch($cachePath, $currentTime);
 
-        self::__setup($data);
-        self::$__setup = true;
+        $data = $this->toArray();
+
+        if ($data[$primaryColumn->property] === null) {
+            unset($data[$primaryColumn->property]);
+            return self::$driver->insert($data);
+        }
+
+        $id = $data[$primaryColumn->property];
+        unset($data[$primaryColumn->property]);
+        return self::$driver->update($id, $data);
     }
 
-    private static function __getReflection(string $class) : Arr
+    public function toArr() : Arr
     {
-        $data = Arr([
-            'version'  => self::__VERSION__,
-            'database' => null,
-            'table'    => null,
-            'column'   => Arr()
-        ]);
+        return Arr($this->toArray());
+    }
 
-        $reflection = new \ReflectionClass($class);
+    public function toArray() : array
+    {
+        $data = [];
 
-        // Get database/table
-        $attributes = $reflection->getAttributes();
-        foreach($attributes as $attribute) {
-            $attributeName = $attribute->getName();
-
-            if ($attributeName === \Flames\ORM\Database::class) {
-                $arguments = $attribute->getArguments();
-                if (isset($arguments['name']))
-                    $data->database = $arguments['name'];
+        foreach (self::$column as $column) {
+            try {
+                $data[$column->property] = $this->{$column->property};
+            } catch (\Error $_) {
+                $data[$column->property] = null;
             }
-
-            elseif ($attributeName === \Flames\ORM\Table::class) {
-                $arguments = $attribute->getArguments();
-                if (isset($arguments['name']))
-                    $data->table = $arguments['name'];
-            }
-        }
-        if ($data->table === null) {
-            $data->table = str_replace('\\', '_', strtolower(substr($class, 17)));
-        }
-
-        // Get columns
-        $properties = $reflection->getProperties();
-        foreach($properties as $property) {
-            $columnProperty = $property->getName();
-            if (str_starts_with($columnProperty, '_') === true) {
-                continue;
-            }
-
-            $column = Arr([
-                'property'      => $columnProperty,
-                'name'          => null,
-                'type'          => null,
-                'size'          => null,
-                'nullable'      => false,
-                'default'       => $property->getDefaultValue(),
-                'primary'       => false,
-                'index'         => false,
-                'unique'        => false,
-                'autoIncrement' => false,
-            ]);
-
-            $type = $property->getType();
-
-            if ($type instanceof \ReflectionUnionType) {
-                $types = $type->getTypes();
-
-                $foundType = false;
-                foreach ($types as $type) {
-                    $typeName = $type->getName();
-
-                    if ($typeName === 'null') {
-                        $column->nullable = true;
-                    } elseif ($foundType === false) {
-                        $column->type = $typeName;
-                        $foundType = true;
-                    }
-                }
-            } else {
-                $column->nullable = $type->allowsNull();
-                $column->type     = $type->getName();
-            }
-
-            $attributes = $property->getAttributes();
-            foreach($attributes as $attribute) {
-                if ($attribute->getName() === ORM\Column::class) {
-
-                    $arguments = $attribute->getArguments();
-
-                    if (isset($arguments['nullable']) === true) {
-                        $column->nullable = $arguments['nullable'];
-                    }
-                    if (isset($arguments['type']) === true) {
-                        $column->type = $arguments['type'];
-                    }
-                    if (isset($arguments['length']) === true) {
-                        $column->size = $arguments['length'];
-                    }
-                    if (isset($arguments['default']) === true) {
-                        $column->default = $arguments['default'];
-                    }
-                    if (isset($arguments['name']) === true) {
-                        $column->name = $arguments['name'];
-                    }
-                    if (isset($arguments['index']) === true) {
-                        $column->index = $arguments['index'];
-                    }
-                    if (isset($arguments['primary']) === true) {
-                        $column->primary = $arguments['primary'];
-                    }
-                    if (isset($arguments['index']) === true) {
-                        $column->index = $arguments['index'];
-                    }
-                    if (isset($arguments['autoIncrement']) === true) {
-                        $column->autoIncrement = $arguments['autoIncrement'];
-                    }
-                    if (isset($arguments['unique']) === true) {
-                        $column->unique = $arguments['unique'];
-                    }
-                }
-            }
-
-            if ($column->name === null) {
-                $column->name = $column->property;
-            }
-
-            $data->column[$column->property] = $column;
         }
 
         return $data;
     }
 
-    private static function __setup(Arr $data)
+    // TODO: dynamic check migration on change table/database
+//    public static function getTable() : string
+//    {
+//        return self::$table;
+//    }
+//
+//    public static function setTable(string $table) : bool
+//    {
+//        if (empty($table) === true)
+//            return false;
+//
+//        self::$table = $table;
+//        return true;
+//    }
+//
+//    public static function getDatabase() : string
+//    {
+//        return self::$database;
+//    }
+//
+//    public static function setDatabase(string $database) : bool
+//    {
+//        if (empty($database) === true)
+//            return false;
+//
+//        self::$database = $database;
+//        return true;
+//    }
+
+    public static function __constructStatic(): void
+    {
+        if (self::$__setup === true) {
+            return;
+        }
+
+        self::__setup(Data::mountData(static::class));
+        self::$__setup = true;
+    }
+
+    private static function __setup(Arr $data): void
     {
         self::$database = $data->database;
         self::$table    = $data->table;
@@ -212,6 +112,7 @@ abstract class Model
         }
 
         self::$column = $data->column;
+        self::$driver = (new Database\RawConnection(self::$database))->getDriver($data);
     }
 
     #[NoReturn]
@@ -237,8 +138,9 @@ abstract class Model
 
     public function __get(string $key)
     {
-        if (isset($this->{$key}) === true)
+        if (isset($this->{$key}) === true) {
             return $this->{$key};
+        }
 
         return null;
     }
