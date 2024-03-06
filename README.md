@@ -30,6 +30,7 @@ Working in progress...
 * Want to be a contributor? Just do and create a pull request.
 
 # TODO
+* Performance goal: 10.000 database rows rendered in template engine at 10ms.
 * Support NGINX.
 * ORM with Models and Repositories.
 * HTTP Client based on GuzzleHttp.
@@ -39,7 +40,9 @@ Working in progress...
 * ORM support: PostgreSQL, Oracle Database, SQL Server, ElasticSearch, MongoDB, Redis Stack, Apache Cassandra, Amazon DynamoDB and SQLite.
 * Caching ORM models, with support: KeyDB Flash (KeyDB with RocksDB), KeyDB, Redis, Redis Stack, MemCached and FileStorage.
 * Profiler injection with requests, benchmarks, memory, etc.
-* Automatic build CSS and refreshs pages like Angular.
+* Automatic build SCSS/SASS and refreshs pages like Angular.
+* Command for build JS/CSS minified bundles.
+* Command for build obfuscated PHP/JS files.
 * Caching generic, with support: KeyDB Flash (KeyDB with RocksDB), KeyDB, Redis, Redis Stack, MemCached and FileStorage.
 * Custom tags template like Polymer.
 * WebSocket support with parallels (websocket + socket) together.
