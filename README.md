@@ -30,6 +30,7 @@ Working in progress...
 * Want to be a contributor? Just do and create a pull request.
 
 # TODO
+* Support NGINX.
 * ORM with Models and Repositories.
 * HTTP Client based on GuzzleHttp.
 * Frontend PHP engine with Routes, Controllers and Elements wrapper.
