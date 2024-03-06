@@ -382,7 +382,7 @@ SQL;
                 $column->size = 256;
             }
         }
-        elseif ($column->type === 'in') {
+        elseif ($column->type === 'int') {
             if ($column->size === null) {
                 $column->size = 11;
             }

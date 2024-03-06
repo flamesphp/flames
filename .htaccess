@@ -4,21 +4,27 @@ ServerSignature Off
 # Default charset UTF-8
 AddDefaultCharset UTF-8
 
-# Secure the application folder
+# Flames security and redirects
 <IfModule mod_rewrite.c>
 	RewriteEngine On
-	RewriteRule ^application/(.*)$ /$1 [R=301,NC,L]
+    RewriteRule ^docker-compose.yml(.*)$ /$1 [NC,L]
+    RewriteRule ^.env(.*)$ /$1 [NC,L]
+    RewriteRule ^.gitignore(.*)$ /$1 [NC,L]
+    RewriteRule ^license(.*)$ /$1 [NC,L]
+    RewriteRule ^readme.md(.*)$ /$1 [NC,L]
+    RewriteRule ^.htaccess(.*)$ /$1 [NC,L]
+    RewriteRule ^cli(.*)$ /$1 [NC,L]
+    RewriteRule ^.tools/(.*)$ /$1 [NC,L]
+    RewriteRule ^.kernel/(.*)$ /$1 [NC,L]
+    RewriteRule ^.cache/(.*)$ /$1 [NC,L]
+    RewriteRule ^app/(.*)$ /$1 [NC,L]
+
+    RewriteCond %{REQUEST_URI}::$1 ^(.*?/)(.*)::\2
+    RewriteCond %{DOCUMENT_ROOT}%1App/Client/Public/%2 -f
+    RewriteRule ^(.*)$ App/Client/Public/$1 [END]
+    RewriteRule . index.php [END,QSA]
 </IfModule>
 
-# Redirect requests to index kernel
-<IfModule mod_rewrite.c>
-	RewriteEngine On
-	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteRule ^(.*)$ index.php?/$1 [L]
-</IfModule>
-
-# Send error if mod_rewrite is disabled
 <IfModule !mod_rewrite.c>
-    ErrorDocument 404 /system/htaccess.php
+    ErrorDocument 404 'Flames can\'t run in Apache without mod rewrite activated.'
 </IfModule>
