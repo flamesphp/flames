@@ -3,7 +3,4 @@
 namespace Flames\ORM;
 
 #[\Attribute]
-class Table
-{
-
-}
+class Table {}

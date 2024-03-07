@@ -5,42 +5,85 @@ namespace Flames;
 use Flames\Collection\Arr;
 use Flames\ORM\Database;
 use Flames\ORM\Model\Data;
-use Flames\ORM\Table;
-use JetBrains\PhpStorm\NoReturn;
-use PDO;
 
 abstract class Model
 {
     private static bool $__setup = false;
-    private static Database\Driver|null $driver;
+    private static Database\Driver|null $driver = null;
     private static string $database;
     private static string $table;
     private static Arr $column;
 
-    public function save()
+    private array|null $__changed = null;
+
+    public function save() : void
     {
-        $primaryColumn = null;
+        $indexColumn = null;
         foreach (self::$column as $column) {
             if ($column->primary === true || $column->autoIncrement === true) {
-                $primaryColumn = $column;
+                $indexColumn = $column;
                 break;
             }
         }
+        if ($indexColumn === null) {
+            foreach (self::$column as $column) {
+                if ($column->unique === true) {
+                    $indexColumn = $column;
+                    break;
+                }
+            }
+        }
 
-        if ($primaryColumn === null) {
-            throw new \Exception('Missing primary column in table ' . self::$table . ' using class ' . static::class . '.');
+        if ($indexColumn === null) {
+            throw new \Exception('Missing primary or unique column in table ' . self::$table . ' using class ' . static::class . '.');
         }
 
         $data = $this->toArray();
 
-        if ($data[$primaryColumn->property] === null) {
-            unset($data[$primaryColumn->property]);
-            return self::$driver->insert($data);
+        if ($data[$indexColumn->property] === null) {
+            $insert = self::$driver->insert($data);
+            if ($insert !== true) {
+                foreach ($insert as $key => $value) {
+                    $this->{$key} = $value;
+                }
+            }
+
+            $this->__changed = null;
+            return;
         }
 
-        $id = $data[$primaryColumn->property];
-        unset($data[$primaryColumn->property]);
-        return self::$driver->update($id, $data);
+        // Nothing to update
+        if ($this->__changed === null || count($this->__changed) === 0) {
+            return;
+        }
+
+        foreach ($data as $key => $_) {
+            if (in_array($key, $this->__changed) === false) {
+                unset($data[$key]);
+            }
+        }
+
+        $data[$indexColumn->property] = $this->{$indexColumn->property};
+
+        self::$driver->update($indexColumn->property, $data);
+        $this->__changed = null;
+    }
+
+    public function getChanged(bool $onlyKeys = true) : Arr|null
+    {
+        if ($this->__changed === null) {
+            return null;
+        }
+
+        if ($onlyKeys === true) {
+            return Arr($this->__changed);
+        }
+
+        $data = Arr();
+        foreach ($this->__changed as $key) {
+            $data[$key] = $this->{$key};
+        }
+        return $data;
     }
 
     public function toArr() : Arr
@@ -63,12 +106,17 @@ abstract class Model
         return $data;
     }
 
+    public static function getTable() : string
+    {
+        return self::$table;
+    }
+
+    public static function getDatabase() : string
+    {
+        return self::$database;
+    }
+
     // TODO: dynamic check migration on change table/database
-//    public static function getTable() : string
-//    {
-//        return self::$table;
-//    }
-//
 //    public static function setTable(string $table) : bool
 //    {
 //        if (empty($table) === true)
@@ -76,11 +124,6 @@ abstract class Model
 //
 //        self::$table = $table;
 //        return true;
-//    }
-//
-//    public static function getDatabase() : string
-//    {
-//        return self::$database;
 //    }
 //
 //    public static function setDatabase(string $database) : bool
@@ -108,15 +151,14 @@ abstract class Model
         self::$table    = $data->table;
 
         if ($data->column->length === 0) {
-            throw new \Exception('Model need at least one column.');
+            throw new \Exception('Model ' . static::class . 'need at least one column.');
         }
 
         self::$column = $data->column;
         self::$driver = (new Database\RawConnection(self::$database))->getDriver($data);
     }
 
-    #[NoReturn]
-    public function __construct(Arr|array|null $data = null)
+    public function __construct(Arr|array|null $data = null, bool $ignoreChanged = false)
     {
         if ($data instanceof Arr) {
             $data = (array)$data;
@@ -127,12 +169,24 @@ abstract class Model
                 $this->__set($key, $value);
             }
         }
+
+        if ($ignoreChanged === true) {
+            $this->__changed = null;
+        }
     }
 
     public function __set(string $key, mixed $value)
     {
         if (isset(self::$column[$key]) === true) {
-            $this->{$key} = self::__parse(self::$column[$key], $value);
+            $this->{$key} = self::cast($key, $value);
+
+            if ($this->__changed === null) {
+                $this->__changed = [];
+            }
+
+            if (in_array($key, $this->__changed) === false) {
+                $this->__changed[] = $key;
+            }
         }
     }
 
@@ -145,9 +199,16 @@ abstract class Model
         return null;
     }
 
-    private static function __parse(Arr $column, mixed $value = null) : mixed
+    public static function cast(string $key, mixed $value = null) : mixed
     {
-        // TODO: parse data
-        return $value;
+        return self::$driver->cast($key, $value);
+    }
+
+    public static function getDriver(): Database\Driver|null
+    {
+        if (self::$driver === null) {
+            new static();
+        }
+        return self::$driver;
     }
 }

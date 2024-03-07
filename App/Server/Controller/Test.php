@@ -7,6 +7,7 @@ use Flames\Controller\Response;
 use Flames\Cryptography\Password;
 use Flames\RequestData;
 use App\Server\Model\User;
+use App\Server\Repository\User as UserRepository;
 
 class Test extends Controller
 {
@@ -14,14 +15,28 @@ class Test extends Controller
     {
 //        dump($requestData);
 
-        $user = new User(['name' => 'John B.']);
-//        $user->id = 1;
-//        dump($user->name);
-//        $user->name = 'Kazz';
-//        dump($user->name);
+         $user = UserRepository::get(1);
         dump($user);
-//        $user->save();
 
+        exit;
+
+//        $user = new User();///['name' => 'John B.asdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsadasdsad']);
+//        $user->save();
+//
+//        $user->name = 'Kazz';
+//        $user->email = 'kazzxd1@gmail.com';
+//        dump($user);
+//        $user->save();
+//
+//        dump($user->getChanged());
+//        $user->save(); // nothing to update
+//
+//        $user->email = 'kazzkzpk@gmail.com';
+//        $user->password = Password::toHash('test', $user->id);
+//        dump($user->getChanged(false));
+//        $user->save();
+//
+//        dump($user);
 
 
 
