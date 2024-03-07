@@ -2,10 +2,8 @@
 
 namespace App\Server\Model;
 
-use Flames\Collection\Arr;
 use Flames\Model;
 use Flames\ORM;
-use JetBrains\PhpStorm\NoReturn;
 
 /**
  * Description for the class

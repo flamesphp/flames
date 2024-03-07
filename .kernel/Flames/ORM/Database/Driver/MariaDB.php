@@ -3,29 +3,142 @@
 namespace Flames\ORM\Database\Driver;
 
 use Flames\Collection\Arr;
+use Flames\Model;
 use Flames\ORM\Database\Driver;
 
 class MariaDB extends Driver
 {
-    public function find(int $id)
+    public function getByIndex(mixed $index) : Model|null
     {
+        $indexColumn = null;
+        foreach ($this->data->column as $column) {
+            if ($column->primary === true || $column->autoIncrement === true) {
+                $indexColumn = $column;
+                break;
+            }
+        }
+        if ($indexColumn === null) {
+            foreach ($this->data->column as $column) {
+                if ($column->unique === true) {
+                    $indexColumn = $column;
+                    break;
+                }
+            }
+        }
+
+        if ($indexColumn === null) {
+            throw new \Exception('Missing primary or unique column in model ' . $this->data->class . '.');
+        }
+
+        $inserts = $this->getWithFilters([$indexColumn->property => $index]);
+        dump($inserts);
+        exit;
 
 
+        return null;
     }
 
-    public function getWithFilters(Arr|array $filters)
+    public function getWithFilters(Arr|array $filters) : Arr|null
     {
+        // TODO: verify memory
 
+        dump('with filter');
+        exit;
+
+        return null;
     }
 
-    public function insert(int $id, Arr|array $data)
+    public function insert(Arr|array $data) : mixed
     {
+        $castData = [];
+        foreach ($data as $key => $value) {
+            $castData[$key] = self::cast($key, $value);
+        }
+        $data = $castData;
 
+        if (count($data) === 0) {
+            throw new \Exception('Data insert payload ($model->save() or driver::insert()) in class ' . $this->data->class . ' can\'t be empty.');
+        }
+
+        $query = ('INSERT INTO `' . $this->data->table . '` ' . "\n\t(");
+        foreach ($data as $key => $_) {
+            if (isset($this->data->column->{$key}) === false) {
+                throw new \Exception('Column ' . $key . ' ($model->save() or driver::insert()) in class ' . $this->data->class . ' does not exists.');
+            }
+            $query .= ('`' . $key . '`, ');
+        }
+        $query = (substr($query, 0, -2) . ")\nVALUES (");
+        foreach ($data as $key => $_) {
+            $query .= (':' . $key . ', ');
+        }
+        $query = (substr($query, 0, -2) . ');');
+
+        $statement = $this->connection->prepare($query);
+        $statement->execute($data);
+
+        $autoIncrementColumn = false;
+        foreach ($this->data->column as $column) {
+            if ($column->autoIncrement === true) {
+                $autoIncrementColumn = $column;
+                break;
+            }
+        }
+
+        if ($autoIncrementColumn !== null) {
+            return Arr([
+                $autoIncrementColumn->property => self::cast($autoIncrementColumn->property, $this->connection->lastInsertId())
+            ]);
+        }
+
+        return true;
     }
 
-    public function update(int $id, Arr|array $data)
+    public function update(mixed $index, Arr|array $data) : mixed
     {
+        if (isset($this->data->column->{$index}) === false) {
+            throw new \Exception('Column ' . $index . ' ($model->save() or driver::update()) in class ' . $this->data->class . ' does not exists.');
+        }
 
+        if (count($data) === 0) {
+            throw new \Exception('Data update payload ($model->save() or driver::update()) in class ' . $this->data->class . ' can\'t be empty.');
+        }
+
+        if (isset($data[$index]) === false) {
+            throw new \Exception('Data update payload ($model->save() or driver::update()) in class ' . $this->data->class . ' missing where index ' . $index .'.');
+        }
+
+        $query = ('UPDATE `' . $this->data->table . '` SET ');
+        foreach ($data as $key => $value) {
+            if ($key === $index) {
+                continue;
+            }
+
+            if (isset($this->data->column->{$key}) === false) {
+                throw new \Exception('Column ' . $key . ' ($model->save() or driver::update()) in class ' . $this->data->class . ' does not exists.');
+            }
+
+            $query .= ("\n\t`" . $key . '` = :' . $key . ',');
+        }
+        $query = substr($query, 0, -1);
+        $query .= ("\nWHERE `" . $this->data->table . '`.`' . $index . '` = :' . $index . ';');
+
+        $statement = $this->connection->prepare($query);
+        $statement->execute($data);
+        return true;
+    }
+
+    public function cast(string $key, mixed $value = null) : mixed
+    {
+        if (isset($this->data->column->{$key}) === false) {
+            return null;
+        }
+
+        $column = $this->data->column->{$key};
+        if ($column->type === 'varchar' || $column->type === 'string' || $column->type === 'bigint' || $column->type === 'int' || $column->type === 'float' || $column->type === 'bool' || $column->type === 'boolean') {
+            return parent::cast($key, $value);
+        }
+
+        return null;
     }
 
     protected const __VERSION__ = 1;

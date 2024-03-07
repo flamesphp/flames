@@ -3,4 +3,4 @@
 namespace Flames\ORM;
 
 #[\Attribute]
-class Column {}
+class Model {}
