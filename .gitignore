@@ -3,6 +3,6 @@ App/
 #.*/
 vendor/
 .cache/
-.docker/data
+.docker/.data
 .idea/
 .env
