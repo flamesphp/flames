@@ -1,11 +1,9 @@
 <?php
 
-namespace _Flames\Bgaze\Dotenv;
+namespace Flames\ThirdParty\Dotenv;
 
 /**
- * A helper class to quickly parse Dotenv.
- *
- * @author Bgaze <benjamin@bgaze.fr>
+ * @internal
  */
 class Helpers {
 
@@ -20,7 +18,7 @@ class Helpers {
      */
     public static function fromString($string, array $defaults = []) {
         // Instanciate Dotenv parser.
-        $parser = new \_Flames\Bgaze\Dotenv\Parser();
+        $parser = new \Flames\ThirdParty\Dotenv\Parser();
 
         // Parse the string and throw an exception on failure.
         if (!$parser->parseString($string)) {

@@ -4,7 +4,6 @@ namespace Flames;
 
 use Flames\Collection\Arr;
 use Flames\Controller\Response;
-use Flames\RequestData;
 
 abstract class Controller
 {

@@ -2,8 +2,6 @@
 
 namespace Flames\Collection;
 
-use Flames\Collection\Arr;
-
 final class Strings
 {
     public static function parse(mixed $value)

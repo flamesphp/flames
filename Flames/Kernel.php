@@ -30,15 +30,14 @@ final class Kernel
     {
         ob_start();
         define('START_TIME', microtime(true));
-        define('ROOT_PATH', realpath(__DIR__ . '/../../') . '/');
-        define('KERNEL_PATH', ROOT_PATH . '.kernel/');
+        define('ROOT_PATH', realpath(__DIR__ . '/../') . '/');
         define('APP_PATH', ROOT_PATH . 'App/');
 
-        require(KERNEL_PATH . 'Flames/AutoLoad.php');
+        require(ROOT_PATH . 'Flames/AutoLoad.php');
         AutoLoad::run();
 
         mb_internal_encoding('UTF-8');
-        Required::file(KERNEL_PATH . '.wrapper/raw.php');
+        Required::file(ROOT_PATH . 'Flames/Kernel/Wrapper/Raw.php');
 
         self::setEnvironment();
         self::setDumpper();
@@ -54,13 +53,13 @@ final class Kernel
     {
         $environment = Environment::default();
         if ($environment->DUMP_ENABLED === true) {
-            Required::file(KERNEL_PATH . '.fork/_Flames/Sage/Sage.php');
+            Required::file(ROOT_PATH . '.fork/_Flames/Sage/Sage.php');
             \Sage::$theme = \Sage::THEME_SOLARIZED_DARK;
             \Sage::$editor = $environment->DUMP_IDE;
-            Required::file(KERNEL_PATH . '.fork/_Flames/Sage/register.php');
+            Required::file(ROOT_PATH . '.fork/_Flames/Sage/register.php');
         }
         else {
-            Required::file(KERNEL_PATH . '.fork/_Flames/Sage/plain.php');
+            Required::file(ROOT_PATH . '.fork/_Flames/Sage/plain.php');
         }
     }
 

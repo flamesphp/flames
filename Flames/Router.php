@@ -87,7 +87,7 @@ class Router
     protected function getMatchWeb()
     {
         // Mount router
-        $router = new \_Flames\AltoRouter();
+        $router = new ThirdParty\AltoRouter();
 
         $paramItems = Arr();
         for ($i = 0; $i < $this->routes->count; $i++) {

@@ -3,5 +3,5 @@ syntax: glob
 #.*/
 vendor/
 .cache/
-.tools/docker/data
+.docker/data
 .idea/

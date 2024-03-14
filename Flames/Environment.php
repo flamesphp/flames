@@ -2,8 +2,8 @@
 
 namespace Flames;
 
-use _Flames\Bgaze\Dotenv\Helpers;
 use Flames\Collection\Arr;
+use Flames\ThirdParty\Dotenv\Helpers;
 
 /**
  * Description for the class

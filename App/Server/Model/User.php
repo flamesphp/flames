@@ -10,6 +10,7 @@ use Flames\ORM;
  * @property int $id
  * @property string|null $name
  * @property string|null $dummy
+ * @property string|null $password
  */
 
 #[ORM\Database(name: 'mysql')]
@@ -19,7 +20,7 @@ class User extends Model
     #[ORM\Column(name: 'id', type: 'bigint', primary: true, autoIncrement: true)]
     protected int $id;
 
-    #[ORM\Column(name: 'name', type: 'varchar', length: 256, nullable: true)]
+    #[ORM\Column(name: 'name_custom', type: 'varchar', length: 256, nullable: true)]
     protected string|null $name = null;
 
     #[ORM\Column(name: 'email', type: 'varchar', length: 128, nullable: true)]
