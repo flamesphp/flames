@@ -68,7 +68,6 @@ class Response
             return $this->output;
         }
 
-        $this->output = '';
         return $this->output;
     }
 }
