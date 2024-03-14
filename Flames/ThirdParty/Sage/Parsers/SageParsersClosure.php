@@ -1,5 +1,13 @@
 <?php
 
+namespace Flames\ThirdParty\Sage\Parsers;
+
+use Closure;
+use Flames\ThirdParty\Sage\inc\SageHelper;
+use Flames\ThirdParty\Sage\inc\SageParser;
+use Flames\ThirdParty\Sage\parsers\SageParserInterface;
+use ReflectionFunction;
+
 /**
  * @internal
  * @noinspection AutoloadingIssuesInspection
@@ -13,18 +21,18 @@ class SageParsersClosure implements SageParserInterface
 
     public function parse(&$variable, $varData)
     {
-        if (! $variable instanceof Closure) {
+        if (!$variable instanceof Closure) {
             return false;
         }
 
         $varData->type = 'Closure';
-        $reflection    = new ReflectionFunction($variable);
+        $reflection = new ReflectionFunction($variable);
 
         $parameters = array();
         foreach ($reflection->getParameters() as $parameter) {
             $parameters = $parameter->name;
         }
-        if (! empty($parameters)) {
+        if (!empty($parameters)) {
             $varData->addTabToView($variable, 'Closure Parameters', $parameters);
         }
 
@@ -35,7 +43,7 @@ class SageParsersClosure implements SageParserInterface
         if (method_exists($reflection, 'getClousureThis') && $val = $reflection->getClosureThis()) {
             $uses[] = SageParser::process($val, 'Closure $this');
         }
-        if (! empty($uses)) {
+        if (!empty($uses)) {
             $varData->addTabToView($variable, 'Closure Parameters', $uses);
         }
 

@@ -1,5 +1,15 @@
 <?php
 
+namespace Flames\ThirdParty\Sage\Parsers;
+
+use Exception;
+use FilesystemIterator;
+use Flames\ThirdParty\Sage\inc\SageHelper;
+use Flames\ThirdParty\Sage\inc\SageVariableData;
+use Flames\ThirdParty\Sage\parsers\SageParserInterface;
+use SplFileInfo;
+use SplFileObject;
+
 /**
  * @internal
  */
@@ -12,8 +22,8 @@ class SageParsersSplFileInfo implements SageParserInterface
 
     public function parse(&$variable, $varData)
     {
-        if (! SageHelper::php53orLater()
-            || ! $variable instanceof SplFileInfo
+        if (!SageHelper::php53orLater()
+            || !$variable instanceof SplFileInfo
             || $variable instanceof SplFileObject
         ) {
             return false;
@@ -23,18 +33,18 @@ class SageParsersSplFileInfo implements SageParserInterface
     }
 
     /**
-     * @param mixed            $variable
+     * @param mixed $variable
      * @param SageVariableData $varData
-     * @param SplFileInfo      $fileInfo
+     * @param SplFileInfo $fileInfo
      *
      * @return bool
      */
     protected function run(&$variable, $varData, $fileInfo)
     {
         $varData->value = '"' . SageHelper::esc($fileInfo->getPathname()) . '"';
-        $varData->type  = get_class($fileInfo);
+        $varData->type = get_class($fileInfo);
 
-        if (! $fileInfo->getPathname() || ! $fileInfo->getRealPath()) {
+        if (!$fileInfo->getPathname() || !$fileInfo->getRealPath()) {
             $varData->size = 'invalid path';
 
             return true;
@@ -45,28 +55,28 @@ class SageParsersSplFileInfo implements SageParserInterface
             $perms = $fileInfo->getPerms();
 
             if (($perms & 0xC000) === 0xC000) {
-                $type    = 'File socket';
+                $type = 'File socket';
                 $flags[] = 's';
             } elseif (($perms & 0xA000) === 0xA000) {
-                $type    = 'File symlink';
+                $type = 'File symlink';
                 $flags[] = 'l';
             } elseif (($perms & 0x8000) === 0x8000) {
-                $type    = 'File';
+                $type = 'File';
                 $flags[] = '-';
             } elseif (($perms & 0x6000) === 0x6000) {
-                $type    = 'Block special file';
+                $type = 'Block special file';
                 $flags[] = 'b';
             } elseif (($perms & 0x4000) === 0x4000) {
-                $type    = 'Directory';
+                $type = 'Directory';
                 $flags[] = 'd';
             } elseif (($perms & 0x2000) === 0x2000) {
-                $type    = 'Character special file';
+                $type = 'Character special file';
                 $flags[] = 'c';
             } elseif (($perms & 0x1000) === 0x1000) {
-                $type    = 'FIFO pipe file';
+                $type = 'FIFO pipe file';
                 $flags[] = 'p';
             } else {
-                $type    = 'Unknown file';
+                $type = 'Unknown file';
                 $flags[] = 'u';
             }
 
@@ -110,12 +120,12 @@ class SageParsersSplFileInfo implements SageParserInterface
                     $extra['group&owner'] = $fileInfo->getGroup() . ':' . $fileInfo->getOwner();
                 }
 
-                $extra['created']  = date('Y-m-d H:i:s', $fileInfo->getCTime());
+                $extra['created'] = date('Y-m-d H:i:s', $fileInfo->getCTime());
                 $extra['modified'] = date('Y-m-d H:i:s', $fileInfo->getMTime());
                 $extra['accessed'] = date('Y-m-d H:i:s', $fileInfo->getATime());
 
                 if ($fileInfo->isLink()) {
-                    $extra['link']       = 'true';
+                    $extra['link'] = 'true';
                     $extra['linkTarget'] = $fileInfo->getLinkTarget();
                 }
 
@@ -143,7 +153,7 @@ class SageParsersSplFileInfo implements SageParserInterface
             return "{$bytes} bytes";
         }
 
-        $units           = array('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
+        $units = array('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
         $precisionByUnit = array(0, 1, 1, 2, 2, 3, 3, 4, 4);
         for ($order = 0; ($bytes / 1024) >= 0.9 && $order < count($units); $order++) {
             $bytes /= 1024;

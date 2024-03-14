@@ -1,5 +1,11 @@
 <?php
 
+namespace Flames\ThirdParty\Sage\Parsers;
+
+use Flames\ThirdParty\Sage\inc\SageParser;
+use Flames\ThirdParty\Sage\parsers\SageParserInterface;
+use Flames\ThirdParty\Sage\Sage;
+
 /**
  * @internal
  */
@@ -17,12 +23,12 @@ class SageParsersBlacklist implements SageParserInterface
             return false;
         }
 
-        if (! is_object($variable)) {
+        if (!is_object($variable)) {
             return false;
         }
 
         $className = get_class($variable);
-        $match     = false;
+        $match = false;
         foreach (Sage::$classNameBlacklist as $item) {
             if (preg_match($item, $className)) {
                 $match = true;
@@ -30,7 +36,7 @@ class SageParsersBlacklist implements SageParserInterface
             }
         }
 
-        if (! $match) {
+        if (!$match) {
             return false;
         }
 

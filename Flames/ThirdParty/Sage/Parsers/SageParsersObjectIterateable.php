@@ -1,5 +1,11 @@
 <?php
 
+namespace Flames\ThirdParty\Sage\Parsers;
+
+use Flames\ThirdParty\Sage\inc\SageHelper;
+use Flames\ThirdParty\Sage\parsers\SageParserInterface;
+use Traversable;
+
 /**
  * @internal
  */
@@ -12,10 +18,10 @@ class SageParsersObjectIterateable implements SageParserInterface
 
     public function parse(&$variable, $varData)
     {
-        if (! SageHelper::isRichMode()
-            || ! SageHelper::php53orLater()
-            || ! is_object($variable)
-            || ! $variable instanceof Traversable
+        if (!SageHelper::isRichMode()
+            || !SageHelper::php53orLater()
+            || !is_object($variable)
+            || !$variable instanceof Traversable
             || stripos($class = get_class($variable), 'zend') !== false // zf2 PDO wrapper does not play nice
             || strpos($class, 'DOMN') !== 0 // DOMNamedNodeMap, DOMNamedNodeMap
         ) {

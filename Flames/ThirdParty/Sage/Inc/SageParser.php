@@ -1,5 +1,17 @@
 <?php
 
+namespace Flames\ThirdParty\Sage\Inc;
+
+use __PHP_Incomplete_Class;
+use ArrayObject;
+use Flames\ThirdParty\Sage\decorators\SageDecoratorsRich;
+use Flames\ThirdParty\Sage\inc\SageHelper;
+use Flames\ThirdParty\Sage\inc\SageVariableData;
+use Flames\ThirdParty\Sage\Sage;
+use ReflectionClass;
+use ReflectionObject;
+use ReflectionProperty;
+
 /**
  * @internal
  */
@@ -17,7 +29,7 @@ class SageParser
 
     public static function reset()
     {
-        self::$_level   = 0;
+        self::$_level = 0;
         self::$_objects = self::$_marker = null;
     }
 
@@ -25,7 +37,7 @@ class SageParser
     {
         // save internal data to revert after dumping to properly handle recursions etc
         $revert = array(
-            'level'   => self::$_level,
+            'level' => self::$_level,
             'objects' => self::$_objects,
         );
 
@@ -46,17 +58,18 @@ class SageParser
 
         // first go through alternative parsers (eg.: json detection)
         foreach (Sage::$enabledParsers as $parserClass => $enabled) {
-            if (! $enabled || array_key_exists($parserClass, self::$parsingAlternative)) {
+            if (!$enabled || array_key_exists($parserClass, self::$parsingAlternative)) {
                 continue;
             }
             self::$parsingAlternative[$parserClass] = true;
-            $parser                                 = new $parserClass();
-            $parseResult                            = $parser->parse($variable, $varData);
+
+            $parser = new ('Flames\ThirdParty\Sage\Parsers\\' . $parserClass)();
+            $parseResult = $parser->parse($variable, $varData);
 
             // if var was parsed by "can only be one"-parser - return here
             if ($parseResult !== false && $parser->replacesAllOtherParsers()) {
                 unset(self::$parsingAlternative[$parserClass]);
-                self::$_level   = $revert['level'];
+                self::$_level = $revert['level'];
                 self::$_objects = $revert['objects'];
 
                 return $varData;
@@ -68,7 +81,7 @@ class SageParser
         $varType = gettype($variable);
         $varType === 'unknown type' and $varType = 'unknown'; // PHP 5.4 inconsistency
         $methodName = '_parse_' . $varType;
-        if (! method_exists(__CLASS__, $methodName)) {
+        if (!method_exists(__CLASS__, $methodName)) {
             $varData->type = $varType; // resource (closed) for example
 
             return $varData;
@@ -80,7 +93,7 @@ class SageParser
             return $varData;
         }
 
-        self::$_level   = $revert['level'];
+        self::$_level = $revert['level'];
         self::$_objects = $revert['objects'];
 
         return $varData;
@@ -100,25 +113,25 @@ class SageParser
             return false;
         }
 
-        $arrayKeys   = array();
-        $keys        = null;
+        $arrayKeys = array();
+        $keys = null;
         $closeEnough = false;
         foreach ($variable as $k => $row) {
             if (isset(self::$_marker) && $k === self::$_marker) {
                 continue;
             }
 
-            if (! is_array($row) || empty($row)) {
+            if (!is_array($row) || empty($row)) {
                 return false;
             }
 
             foreach ($row as $col) {
-                if (! empty($col) && ! is_scalar($col)) {
+                if (!empty($col) && !is_scalar($col)) {
                     return false;
                 } // todo add tabular "tolerance"
             }
 
-            if (isset($keys) && ! $closeEnough) {
+            if (isset($keys) && !$closeEnough) {
                 // let's just see if the first two rows have same keys, that's faster and has the
                 // positive side effect of easily spotting missing keys in later rows
                 if ($keys !== array_keys($row)) {
@@ -214,12 +227,12 @@ class SageParser
             return false;
         }
 
-        $isSequential             = SageHelper::isArraySequential($variable);
+        $isSequential = SageHelper::isArraySequential($variable);
         $variable[self::$_marker] = true;
 
         if ($variableData->size > 1 && ($arrayKeys = self::_isArrayTabular($variable)) !== false) {
             // tabular array parse
-            $firstRow      = true;
+            $firstRow = true;
             $extendedValue = '<table class="_sage-report"><thead>';
 
             foreach ($variable as $rowIndex => & $row) {
@@ -258,7 +271,7 @@ class SageParser
                         continue;
                     }
 
-                    if (! array_key_exists($key, $row)) {
+                    if (!array_key_exists($key, $row)) {
                         $output .= '<td class="_sage-empty"></td>';
                         continue;
                     }
@@ -279,7 +292,7 @@ class SageParser
 
                 if ($firstRow) {
                     $extendedValue .= '</tr></thead><tr>';
-                    $firstRow      = false;
+                    $firstRow = false;
                 }
 
                 $extendedValue .= $output . '</tr>';
@@ -310,7 +323,7 @@ class SageParser
                     $output->name = null;
                 } else {
                     $output->operator = '=>';
-                    $output->name     = is_int($key)
+                    $output->name = is_int($key)
                         ? $key
                         : "'" . $key . "'";
                 }
@@ -330,8 +343,8 @@ class SageParser
     {
         $hash = self::getObjectHash($variable);
 
-        $castedArray        = (array)$variable;
-        $className          = get_class($variable);
+        $castedArray = (array)$variable;
+        $className = get_class($variable);
         $variableData->type = $className;
         $variableData->size = count($castedArray);
 
@@ -360,7 +373,7 @@ class SageParser
         }
 
         self::$_objects[$hash] = true;
-        $reflector             = new ReflectionObject($variable);
+        $reflector = new ReflectionObject($variable);
 
         // add link to definition of userland objects
         if (SageHelper::isHtmlMode() && $reflector->isUserDefined()) {
@@ -374,7 +387,7 @@ class SageParser
 
         $extendedValue = array();
         static $publicProperties = array();
-        if (! isset($publicProperties[$className])) {
+        if (!isset($publicProperties[$className])) {
             $reflectionClass = new ReflectionClass($className);
             foreach ($reflectionClass->getProperties(ReflectionProperty::IS_PUBLIC) as $prop) {
                 $publicProperties[$className][$prop->name] = true;
@@ -400,15 +413,15 @@ class SageParser
             } else {
                 $access = 'public';
 
-                if ($variableData->type !== 'stdClass' && ! isset($publicProperties[$className][$key])) {
+                if ($variableData->type !== 'stdClass' && !isset($publicProperties[$className][$key])) {
                     if ($className !== 'Flames\Collection\Arr') {
                         $access .= ' (dynamically added)';
                     }
                 }
             }
 
-            $output->name     = SageHelper::esc($key);
-            $output->access   = $access;
+            $output->name = SageHelper::esc($key);
+            $output->access = $access;
             $output->operator = '->';
 
             $extendedValue[$key] = $output;
@@ -447,8 +460,8 @@ class SageParser
             }
 
             if (method_exists($property, 'isInitialized')
-                && ! $property->isInitialized($variable)) {
-                $value  = null;
+                && !$property->isInitialized($variable)) {
+                $value = null;
                 $access .= ' [uninitialized]';
             } else {
                 $value = $property->getValue($variable);
@@ -456,9 +469,9 @@ class SageParser
 
             $output = self::process($value, SageHelper::esc($name));
 
-            $output->access   = $access;
+            $output->access = $access;
             $output->operator = '->';
-            $extendedValue[]  = $output;
+            $extendedValue[] = $output;
             $variableData->size++;
         }
 
@@ -467,7 +480,7 @@ class SageParser
         }
 
         if (method_exists($reflector, 'isEnum') && $reflector->isEnum()) {
-            $variableData->size  = 'enum';
+            $variableData->size = 'enum';
             $variableData->value = '"' . $variable->name . '"';
         }
 
@@ -478,19 +491,19 @@ class SageParser
 
     private static function _parse_boolean(&$variable, SageVariableData $variableData)
     {
-        $variableData->type  = 'bool';
+        $variableData->type = 'bool';
         $variableData->value = $variable ? 'TRUE' : 'FALSE';
     }
 
     private static function _parse_double(&$variable, SageVariableData $variableData)
     {
-        $variableData->type  = 'float';
+        $variableData->type = 'float';
         $variableData->value = $variable;
     }
 
     private static function _parse_integer(&$variable, SageVariableData $variableData)
     {
-        $variableData->type  = 'integer';
+        $variableData->type = 'integer';
         $variableData->value = $variable;
     }
 
@@ -501,7 +514,7 @@ class SageParser
 
     private static function _parse_resource(&$variable, SageVariableData $variableData)
     {
-        $resourceType       = get_resource_type($variable);
+        $resourceType = get_resource_type($variable);
         $variableData->type = "resource ({$resourceType})";
 
         if ($resourceType === 'stream' && $meta = stream_get_meta_data($variable)) {
@@ -537,7 +550,7 @@ class SageParser
 
         if (self::$_placeFullStringInValue) { // in tabular view
             $variableData->value = SageHelper::esc($variable);
-        } elseif (! SageHelper::isRichMode()) {
+        } elseif (!SageHelper::isRichMode()) {
             $variableData->value = '"' . SageHelper::esc($variable) . '"';
         } else {
             $decoded = SageHelper::esc($variable);
@@ -572,8 +585,8 @@ class SageParser
 
     private static function _parse_unknown(&$variable, SageVariableData $variableData)
     {
-        $type                = gettype($variable);
-        $variableData->type  = 'UNKNOWN' . (! empty($type) ? " ({$type})" : '');
+        $type = gettype($variable);
+        $variableData->type = 'UNKNOWN' . (!empty($type) ? " ({$type})" : '');
         $variableData->value = var_export($variable, true);
     }
 

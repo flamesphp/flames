@@ -1,5 +1,10 @@
 <?php
 
+namespace Flames\ThirdParty\Sage\Inc;
+
+use Flames;
+use Flames\ThirdParty\Sage\Sage;
+
 /**
  * @internal
  */
@@ -10,22 +15,22 @@ class SageHelper
     const MAX_STR_LENGTH = 80;
 
     public static $editors = array(
-        'sublime'                => 'subl://open?url=file://%file&line=%line',
-        'textmate'               => 'txmt://open?url=file://%file&line=%line',
-        'emacs'                  => 'emacs://open?url=file://%file&line=%line',
-        'macvim'                 => 'mvim://open/?url=file://%file&line=%line',
-        'phpstorm'               => 'phpstorm://open?file=%file&line=%line',
-        'phpstorm-remote'        => 'http://localhost:63342/api/file/%file:%line',
-        'idea'                   => 'idea://open?file=%file&line=%line',
-        'vscode'                 => 'vscode://file/%file:%line',
-        'vscode-insiders'        => 'vscode-insiders://file/%file:%line',
-        'vscode-remote'          => 'vscode://vscode-remote/%file:%line',
+        'sublime' => 'subl://open?url=file://%file&line=%line',
+        'textmate' => 'txmt://open?url=file://%file&line=%line',
+        'emacs' => 'emacs://open?url=file://%file&line=%line',
+        'macvim' => 'mvim://open/?url=file://%file&line=%line',
+        'phpstorm' => 'phpstorm://open?file=%file&line=%line',
+        'phpstorm-remote' => 'http://localhost:63342/api/file/%file:%line',
+        'idea' => 'idea://open?file=%file&line=%line',
+        'vscode' => 'vscode://file/%file:%line',
+        'vscode-insiders' => 'vscode-insiders://file/%file:%line',
+        'vscode-remote' => 'vscode://vscode-remote/%file:%line',
         'vscode-insiders-remote' => 'vscode-insiders://vscode-remote/%file:%line',
-        'vscodium'               => 'vscodium://file/%file:%line',
-        'atom'                   => 'atom://core/open/file?filename=%file&line=%line',
-        'nova'                   => 'nova://core/open/file?filename=%file&line=%line',
-        'netbeans'               => 'netbeans://open/?f=%file:%line',
-        'xdebug'                 => 'xdebug://%file@%line'
+        'vscodium' => 'vscodium://file/%file:%line',
+        'atom' => 'atom://core/open/file?filename=%file&line=%line',
+        'nova' => 'nova://core/open/file?filename=%file&line=%line',
+        'netbeans' => 'netbeans://open/?f=%file:%line',
+        'xdebug' => 'xdebug://%file@%line'
     );
 
     private static $aliasesRaw;
@@ -33,7 +38,7 @@ class SageHelper
 
     public static function php53orLater()
     {
-        if (! isset(self::$_php53)) {
+        if (!isset(self::$_php53)) {
             self::$_php53 = version_compare(PHP_VERSION, '5.3.0') > 0;
         }
 
@@ -65,13 +70,13 @@ class SageHelper
         $file = str_replace('\\', '/', $file);
 
         // Find common path with Sage dir
-        if (! isset(self::$projectRootDir)) {
+        if (!isset(self::$projectRootDir)) {
             self::$projectRootDir = '';
 
             $sagePathParts = explode('/', str_replace('\\', '/', SAGE_DIR));
             $filePathParts = explode('/', $file);
             foreach ($filePathParts as $i => $filePart) {
-                if (! isset($sagePathParts[$i]) || $sagePathParts[$i] !== $filePart) {
+                if (!isset($sagePathParts[$i]) || $sagePathParts[$i] !== $filePart) {
                     break;
                 }
 
@@ -89,7 +94,7 @@ class SageHelper
     public static function buildAliases()
     {
         self::$aliasesRaw = array(
-            'methods'   => array(
+            'methods' => array(
                 array('sage', 'dump'),
                 array('sage', 'doDump'),
                 array('sage', 'trace')
@@ -132,7 +137,7 @@ class SageHelper
 
     public static function substr($string, $start, $end, $encoding = null)
     {
-        if (! isset($string)) {
+        if (!isset($string)) {
             return '';
         }
 
@@ -170,8 +175,8 @@ class SageHelper
             }
         }
 
-        if (! function_exists('iconv')) {
-            return ! empty($mbDetected) ? $mbDetected : 'UTF-8';
+        if (!function_exists('iconv')) {
+            return !empty($mbDetected) ? $mbDetected : 'UTF-8';
         }
 
         $md5 = md5($value);
@@ -199,7 +204,7 @@ class SageHelper
     public static function ideLink($file, $line, $linkText = null)
     {
         $enabledMode = Sage::enabled();
-        $file        = self::shortenPath($file);
+        $file = self::shortenPath($file);
 
         $fileLine = $file;
         // in some cases (like called from inside template) we don't know the $line
@@ -211,7 +216,7 @@ class SageHelper
             $line = 0;
         }
 
-        if (! self::isHtmlMode()) {
+        if (!self::isHtmlMode()) {
             return $fileLine;
         }
 
@@ -220,7 +225,7 @@ class SageHelper
             : $fileLine;
         $linkText = self::esc($linkText);
 
-        if (! Sage::$editor) {
+        if (!Sage::$editor) {
             return $linkText;
         }
 
@@ -303,29 +308,29 @@ HTML;
             }
 
             $controlCharsMap = array(
-                "\v"   => '<u>\v</u>',
-                "\f"   => '<u>\f</u>',
+                "\v" => '<u>\v</u>',
+                "\f" => '<u>\f</u>',
                 "\033" => '<u>\e</u>',
-                "\t"   => "\t<u>\\t</u>",
+                "\t" => "\t<u>\\t</u>",
                 "\r\n" => "<u>\\r\\n</u>\n",
-                "\n"   => "<u>\\n</u>\n",
-                "\r"   => "<u>\\r</u>"
+                "\n" => "<u>\\n</u>\n",
+                "\r" => "<u>\\r</u>"
             );
             $replaceTemplate = '<u>‹0x%d›</u>';
         } else {
             $controlCharsMap = array(
-                "\v"   => '\v',
-                "\f"   => '\f',
+                "\v" => '\v',
+                "\f" => '\f',
                 "\033" => '\e',
             );
             $replaceTemplate = '\x%02X';
         }
 
         $out = '';
-        $i   = 0;
+        $i = 0;
         do {
             $character = $value[$i];
-            $ord       = ord($character);
+            $ord = ord($character);
             // escape all invisible characters except \t, \n and \r - ORD 9, 10 and 13 respectively
             if ($ord < 32 && $ord !== 9 && $ord !== 10 && $ord !== 13) {
                 if (isset($controlCharsMap[$character])) {

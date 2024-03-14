@@ -1,5 +1,11 @@
 <?php
 
+namespace Flames\ThirdParty\Sage\Parsers;
+
+use Flames\ThirdParty\Sage\inc\SageHelper;
+use Flames\ThirdParty\Sage\parsers\SageParserInterface;
+use SplObjectStorage;
+
 /**
  * @internal
  */
@@ -12,7 +18,7 @@ class SageParsersSplObjectStorage implements SageParserInterface
 
     public function parse(&$variable, $varData)
     {
-        if (! SageHelper::isRichMode() || ! is_object($variable) || ! $variable instanceof SplObjectStorage) {
+        if (!SageHelper::isRichMode() || !is_object($variable) || !$variable instanceof SplObjectStorage) {
             return false;
         }
 

@@ -1,5 +1,7 @@
 <?php
 
+use Flames\ThirdParty\Sage\Sage;
+
 function dump() : void
 {
     ob_start();
@@ -10,7 +12,7 @@ function dump() : void
     Sage::$aliases[] = __FUNCTION__;
 
     $params = func_get_args();
-    call_user_func_array(array('Sage', 'dump'), $params);
+    call_user_func_array(array('Flames\ThirdParty\Sage\Sage', 'dump'), $params);
 
     $buffer = ob_get_contents();
     ob_end_clean();

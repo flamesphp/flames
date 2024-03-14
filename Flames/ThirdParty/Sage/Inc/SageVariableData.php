@@ -1,10 +1,13 @@
 <?php
 
+namespace Flames\ThirdParty\Sage\Inc;
+
+use Flames\ThirdParty\Sage\inc\SageParser;
+
 /**
  * @internal
  * @noinspection AutoloadingIssuesInspection
  */
-
 class SageVariableData
 {
     /** @var string */
@@ -26,7 +29,7 @@ class SageVariableData
     private $alternativeRepresentations = array();
 
     /**
-     * @param string       $name
+     * @param string $name
      * @param string|array $value
      *
      * @return void
@@ -34,7 +37,7 @@ class SageVariableData
     public function addTabToView($originalVariable, $tabName, $value)
     {
         if (is_array($value)) {
-            if (! (reset($value) instanceof self)) {
+            if (!(reset($value) instanceof self)) {
                 // convert to SageVariableData[]
                 $value = SageParser::alternativesParse($originalVariable, $value);
             }
@@ -52,10 +55,10 @@ class SageVariableData
         # if alternative displays exist, push extendedValue to their front and display it as one of alternatives
         $prepared = array();
 
-        if (! empty($this->extendedValue)) {
+        if (!empty($this->extendedValue)) {
             $prepared['Contents'] = $this->extendedValue;
         }
-        if (! empty($this->alternativeRepresentations)) {
+        if (!empty($this->alternativeRepresentations)) {
             $prepared = array_merge($prepared, $this->alternativeRepresentations);
         }
 

@@ -1,5 +1,14 @@
 <?php
 
+namespace Flames\ThirdParty\Sage\Decorators;
+
+use Flames\ThirdParty\Sage\Decorators\SageDecoratorsInterface;
+use Flames\ThirdParty\Sage\Inc\SageHelper;
+use Flames\ThirdParty\Sage\Inc\SageParser;
+use Flames\ThirdParty\Sage\Inc\SageTraceStep;
+use Flames\ThirdParty\Sage\Inc\SageVariableData;
+use Flames\ThirdParty\Sage\Sage;
+
 /**
  * @internal
  */
@@ -22,7 +31,7 @@ class SageDecoratorsRich implements SageDecoratorsInterface
         $output = '<dl>';
 
         $allRepresentations = $varData->getAllRepresentations();
-        $extendedPresent    = ! empty($allRepresentations);
+        $extendedPresent = !empty($allRepresentations);
 
         if ($extendedPresent) {
             $class = '_sage-parent';
@@ -44,17 +53,17 @@ class SageDecoratorsRich implements SageDecoratorsInterface
             $output .= '<dd>';
         }
 
-        if (count($allRepresentations) === 1 && ! empty($varData->extendedValue)) {
+        if (count($allRepresentations) === 1 && !empty($varData->extendedValue)) {
             $extendedValue = reset($allRepresentations);
-            $output        .= $this->decorateAlternativeView($extendedValue);
+            $output .= $this->decorateAlternativeView($extendedValue);
         } elseif ($extendedPresent) {
             $output .= "<ul class=\"_sage-tabs\">";
 
             $isFirst = true;
             foreach ($allRepresentations as $tabName => $_) {
-                $active  = $isFirst ? ' class="_sage-active-tab"' : '';
+                $active = $isFirst ? ' class="_sage-active-tab"' : '';
                 $isFirst = false;
-                $output  .= "<li{$active}>" . SageHelper::esc($tabName) . '</li>';
+                $output .= "<li{$active}>" . SageHelper::esc($tabName) . '</li>';
             }
 
             $output .= '</ul><ul>';
@@ -114,7 +123,7 @@ class SageDecoratorsRich implements SageDecoratorsInterface
 
     private function drawTraceStep($i, $step, $pathsOnly)
     {
-        $isChildless = ! $step->sourceSnippet && ! $step->arguments && ! $step->object;
+        $isChildless = !$step->sourceSnippet && !$step->arguments && !$step->object;
 
         $class = '';
 
@@ -132,7 +141,7 @@ class SageDecoratorsRich implements SageDecoratorsInterface
 
         $output = '<dt class="' . $class . '">';
         $output .= '<b>' . ($i + 1) . '</b>';
-        if (! $isChildless) {
+        if (!$isChildless) {
             $output .= '<nav></nav>';
         }
         $output .= '<var>' . $step->fileLine . '</var> ';
@@ -143,20 +152,20 @@ class SageDecoratorsRich implements SageDecoratorsInterface
             return $output;
         }
 
-        $output        .= '<dd><ul class="_sage-tabs">';
+        $output .= '<dd><ul class="_sage-tabs">';
         $firstTabClass = ' class="_sage-active-tab"';
 
         if ($step->sourceSnippet) {
-            $output        .= "<li{$firstTabClass}>Source</li>";
+            $output .= "<li{$firstTabClass}>Source</li>";
             $firstTabClass = '';
         }
 
-        if (! $pathsOnly && $step->arguments) {
-            $output        .= "<li{$firstTabClass}>Arguments</li>";
+        if (!$pathsOnly && $step->arguments) {
+            $output .= "<li{$firstTabClass}>Arguments</li>";
             $firstTabClass = '';
         }
 
-        if (! $pathsOnly && $step->object) {
+        if (!$pathsOnly && $step->object) {
             $output .= "<li{$firstTabClass}>Callee object [{$step->object->type}]</li>";
         }
 
@@ -166,7 +175,7 @@ class SageDecoratorsRich implements SageDecoratorsInterface
             $output .= "<li><pre class=\"_sage-source\">{$step->sourceSnippet}</pre></li>";
         }
 
-        if (! $pathsOnly && $step->arguments) {
+        if (!$pathsOnly && $step->arguments) {
             $output .= '<li>';
             foreach ($step->arguments as $argument) {
                 $output .= $this->decorate($argument);
@@ -174,7 +183,7 @@ class SageDecoratorsRich implements SageDecoratorsInterface
             $output .= '</li>';
         }
 
-        if (! $pathsOnly && $step->object) {
+        if (!$pathsOnly && $step->object) {
             $output .= '<li>' . $this->decorate($step->object) . '</li>';
         }
 
@@ -196,21 +205,21 @@ class SageDecoratorsRich implements SageDecoratorsInterface
     /**
      * closes Sage::_wrapStart() started html tags and displays callee information
      *
-     * @param array $callee     caller information taken from debug backtrace
-     * @param array $miniTrace  full path to Sage call
+     * @param array $callee caller information taken from debug backtrace
+     * @param array $miniTrace full path to Sage call
      * @param array $prevCaller previous caller information taken from debug backtrace
      *
      * @return string
      */
     public function wrapEnd($callee, $miniTrace, $prevCaller)
     {
-        if (! Sage::$displayCalledFrom) {
+        if (!Sage::$displayCalledFrom) {
             return '</div>';
         }
 
         $callingFunction = '';
-        $calleeInfo      = '';
-        $traceDisplay    = '';
+        $calleeInfo = '';
+        $traceDisplay = '';
         if (isset($prevCaller['class'])) {
             $callingFunction = $prevCaller['class'];
         }
@@ -218,7 +227,7 @@ class SageDecoratorsRich implements SageDecoratorsInterface
             $callingFunction .= $prevCaller['type'];
         }
         if (isset($prevCaller['function'])
-            && ! in_array($prevCaller['function'], array('include', 'include_once', 'require', 'require_once'))
+            && !in_array($prevCaller['function'], array('include', 'include_once', 'require', 'require_once'))
         ) {
             $callingFunction .= $prevCaller['function'] . '()';
         }
@@ -228,12 +237,12 @@ class SageDecoratorsRich implements SageDecoratorsInterface
             $calleeInfo .= 'Called from ' . SageHelper::ideLink($callee['file'], $callee['line']);
         }
 
-        if (! empty($miniTrace)) {
+        if (!empty($miniTrace)) {
             $traceDisplay = '<ol>';
             foreach ($miniTrace as $step) {
                 $traceDisplay .= '<li>' . SageHelper::ideLink($step['file'], $step['line']); // closing tag not required
                 if (isset($step['function'])
-                    && ! in_array($step['function'], array('include', 'include_once', 'require', 'require_once'))
+                    && !in_array($step['function'], array('include', 'include_once', 'require', 'require_once'))
                 ) {
                     $classString = ' [';
                     if (isset($step['class'])) {
@@ -242,7 +251,7 @@ class SageDecoratorsRich implements SageDecoratorsInterface
                     if (isset($step['type'])) {
                         $classString .= $step['type'];
                     }
-                    $classString  .= $step['function'] . '()]';
+                    $classString .= $step['function'] . '()]';
                     $traceDisplay .= $classString;
                 }
             }
@@ -296,7 +305,7 @@ class SageDecoratorsRich implements SageDecoratorsInterface
     {
         $baseDir = SAGE_DIR . 'resources/compiled/';
 
-        if (! is_readable($cssFile = $baseDir . Sage::$theme . '.css')) {
+        if (!is_readable($cssFile = $baseDir . Sage::$theme . '.css')) {
             $cssFile = $baseDir . 'original.css';
         }
 

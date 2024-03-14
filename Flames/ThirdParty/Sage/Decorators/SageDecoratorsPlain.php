@@ -1,8 +1,16 @@
 <?php
+
+namespace Flames\ThirdParty\Sage\Decorators;
+
+use Flames\ThirdParty\Sage\decorators\SageDecoratorsInterface;
+use Flames\ThirdParty\Sage\inc\SageHelper;
+use Flames\ThirdParty\Sage\inc\SageTraceStep;
+use Flames\ThirdParty\Sage\inc\SageVariableData;
+use Flames\ThirdParty\Sage\Sage;
+
 /**
  * @internal
  */
-
 class SageDecoratorsPlain implements SageDecoratorsInterface
 {
     protected static $needsAssets = true;
@@ -25,7 +33,7 @@ class SageDecoratorsPlain implements SageDecoratorsInterface
     {
         $output = '';
         if ($level === 0) {
-            $name          = $varData->name ? $varData->name : '';
+            $name = $varData->name ? $varData->name : '';
             $varData->name = null;
 
             $output .= $this->title($name);
@@ -33,11 +41,11 @@ class SageDecoratorsPlain implements SageDecoratorsInterface
 
         // make each level different-color
         self::$levelColors = array_slice(self::$levelColors, 0, $level);
-        $s                 = '    ';
-        $space             = '';
+        $s = '    ';
+        $space = '';
         if (Sage::enabled() === Sage::MODE_CLI) {
             for ($i = 0; $i < $level; $i++) {
-                if (! array_key_exists($i, self::$levelColors)) {
+                if (!array_key_exists($i, self::$levelColors)) {
                     self::$levelColors[$i] = rand(1, 231);
                 }
                 $color = self::$levelColors[$i];
@@ -80,8 +88,8 @@ class SageDecoratorsPlain implements SageDecoratorsInterface
     public function decorateTrace(array $traceData, $pathsOnly = false)
     {
         $lastStepNumber = count($traceData);
-        $stepNumber     = 1;
-        $output         = $this->title($pathsOnly ? 'QUICK TRACE' : 'TRACE');
+        $stepNumber = 1;
+        $output = $this->title($pathsOnly ? 'QUICK TRACE' : 'TRACE');
 
         // ASCII art 🎨
         $_________________ = '────────────────────────────────────────────────────────────────────────────────';
@@ -102,7 +110,7 @@ class SageDecoratorsPlain implements SageDecoratorsInterface
                 $output .= PHP_EOL;
             }
 
-            if (! $pathsOnly && $step->arguments) {
+            if (!$pathsOnly && $step->arguments) {
                 $output .= $____Arguments____;
 
                 foreach ($step->arguments as $argument) {
@@ -112,7 +120,7 @@ class SageDecoratorsPlain implements SageDecoratorsInterface
                 $output .= $L________________;
             }
 
-            if (! $pathsOnly && $step->object) {
+            if (!$pathsOnly && $step->object) {
                 $output .= $__Callee_Object__;
 
                 $output .= $this->decorate($step->object, 2);
@@ -134,7 +142,7 @@ class SageDecoratorsPlain implements SageDecoratorsInterface
 
         switch (Sage::enabled()) {
             case Sage::MODE_PLAIN:
-                if (! self::$_enableColors) {
+                if (!self::$_enableColors) {
                     return $text . $nl;
                 }
 
@@ -158,7 +166,7 @@ class SageDecoratorsPlain implements SageDecoratorsInterface
 
                 return $text . $nl;
             case Sage::MODE_CLI:
-                if (! self::$_enableColors) {
+                if (!self::$_enableColors) {
                     return $text . $nl;
                 }
 
@@ -182,11 +190,11 @@ class SageDecoratorsPlain implements SageDecoratorsInterface
                  */
 
                 $optionsMap = array(
-                    'key'    => "\x1b[32m",
+                    'key' => "\x1b[32m",
                     'access' => "\x1b[3m",
                     'header' => "\x1b[38;5;75m",
-                    'type'   => "\x1b[1m",
-                    'value'  => "\x1b[31m",
+                    'type' => "\x1b[1m",
+                    'value' => "\x1b[31m",
                 );
 
                 return $optionsMap[$type] . $text . "\x1b[0m" . $nl;
@@ -198,7 +206,7 @@ class SageDecoratorsPlain implements SageDecoratorsInterface
 
     private function title($text)
     {
-        $escaped          = SageHelper::esc($text);
+        $escaped = SageHelper::esc($text);
         $lengthDifference = strlen($escaped) - strlen($text);
 
         $ret = '┌──────────────────────────────────────────────────────────────────────────────┐' . PHP_EOL;
@@ -221,17 +229,17 @@ class SageDecoratorsPlain implements SageDecoratorsInterface
 
     public function wrapEnd($callee, $miniTrace, $prevCaller)
     {
-        $lastLine     = '════════════════════════════════════════════════════════════════════════════════';
-        $lastChar     = Sage::enabled() === Sage::MODE_PLAIN ? '</pre>' : '';
+        $lastLine = '════════════════════════════════════════════════════════════════════════════════';
+        $lastChar = Sage::enabled() === Sage::MODE_PLAIN ? '</pre>' : '';
         $traceDisplay = '';
 
-        if (! Sage::$displayCalledFrom) {
+        if (!Sage::$displayCalledFrom) {
             return $this->colorize($lastLine . $lastChar, 'header');
         }
 
-        if (! empty($miniTrace)) {
+        if (!empty($miniTrace)) {
             $traceDisplay = PHP_EOL;
-            $i            = 0;
+            $i = 0;
             foreach ($miniTrace as $step) {
                 $traceDisplay .= '        ' . $i + 2 . '. ';
                 $traceDisplay .= SageHelper::ideLink($step['file'], $step['line']);
@@ -284,7 +292,7 @@ class SageDecoratorsPlain implements SageDecoratorsInterface
 
     public function init()
     {
-        if (! Sage::$cliColors) {
+        if (!Sage::$cliColors) {
             self::$_enableColors = false;
         } elseif (isset($_SERVER['NO_COLOR']) || getenv('NO_COLOR') !== false) {
             self::$_enableColors = false;
