@@ -17,7 +17,9 @@ use Flames\ThirdParty\Twig\Node\Expression\Test\DefinedTest;
 use Flames\ThirdParty\Twig\Node\Expression\Test\NullTest;
 use Flames\ThirdParty\Twig\Node\Expression\Unary\NotUnary;
 use Flames\ThirdParty\Twig\Node\Node;
-
+/**
+ * @internal
+ */
 class NullCoalesceExpression extends ConditionalExpression
 {
     public function __construct(Node $left, Node $right, int $lineno)

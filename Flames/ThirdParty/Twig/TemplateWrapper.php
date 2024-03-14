@@ -12,9 +12,7 @@
 namespace Flames\ThirdParty\Twig;
 
 /**
- * Exposes a template to userland.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 final class TemplateWrapper
 {

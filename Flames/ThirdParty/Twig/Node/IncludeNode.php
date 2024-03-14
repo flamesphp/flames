@@ -17,9 +17,7 @@ use Flames\ThirdParty\Twig\Compiler;
 use Flames\ThirdParty\Twig\Node\Expression\AbstractExpression;
 
 /**
- * Represents an include node.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 #[YieldReady]
 class IncludeNode extends Node implements NodeOutputInterface

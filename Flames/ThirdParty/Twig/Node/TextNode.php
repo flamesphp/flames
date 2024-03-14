@@ -16,9 +16,7 @@ use Flames\ThirdParty\Twig\Attribute\YieldReady;
 use Flames\ThirdParty\Twig\Compiler;
 
 /**
- * Represents a text node.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 #[YieldReady]
 class TextNode extends Node implements NodeOutputInterface

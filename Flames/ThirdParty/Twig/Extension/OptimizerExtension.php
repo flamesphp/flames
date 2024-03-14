@@ -12,7 +12,9 @@
 namespace Flames\ThirdParty\Twig\Extension;
 
 use Flames\ThirdParty\Twig\NodeVisitor\OptimizerNodeVisitor;
-
+/**
+ * @internal
+ */
 final class OptimizerExtension extends AbstractExtension
 {
     private $optimizers;

@@ -21,11 +21,7 @@ use Flames\ThirdParty\Twig\Node\Expression\Test\DefinedTest;
 use Flames\ThirdParty\Twig\Node\Node;
 
 /**
- * Returns the value or the default value when it is undefined or empty.
- *
- *  {{ var.foo|default('foo item on var is not defined') }}
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 class DefaultFilter extends FilterExpression
 {

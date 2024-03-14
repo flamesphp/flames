@@ -12,9 +12,7 @@
 namespace Flames\ThirdParty\Twig\Sandbox;
 
 /**
- * Exception thrown when a not allowed filter is used in a template.
- *
- * @author Martin Hasoň <martin.hason@gmail.com>
+ * @internal
  */
 final class SecurityNotAllowedFilterError extends SecurityError
 {

@@ -12,9 +12,7 @@
 namespace Flames\ThirdParty\Twig;
 
 /**
- * Marks a content as safe.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 class Markup implements \Countable, \JsonSerializable
 {

@@ -15,13 +15,7 @@ use Flames\ThirdParty\Twig\Compiler;
 use Flames\ThirdParty\Twig\Node\Expression\TestExpression;
 
 /**
- * Checks if a variable is the exact same value as a constant.
- *
- *    {% if post.status is constant('Post::PUBLISHED') %}
- *      the status attribute is exactly the same as Post::PUBLISHED
- *    {% endif %}
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 class ConstantTest extends TestExpression
 {

@@ -15,9 +15,7 @@ namespace Flames\ThirdParty\Twig;
 use Flames\ThirdParty\Twig\Error\SyntaxError;
 
 /**
- * Represents a token stream.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 final class TokenStream
 {

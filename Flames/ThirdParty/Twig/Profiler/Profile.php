@@ -12,7 +12,7 @@
 namespace Flames\ThirdParty\Twig\Profiler;
 
 /**
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 final class Profile implements \IteratorAggregate, \Serializable
 {

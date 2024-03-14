@@ -14,7 +14,9 @@ namespace Flames\ThirdParty\Twig\Extension;
 use Flames\ThirdParty\Twig\Environment;
 use Flames\ThirdParty\Twig\TemplateWrapper;
 use Flames\ThirdParty\Twig\TwigFunction;
-
+/**
+ * @internal
+ */
 final class StringLoaderExtension extends AbstractExtension
 {
     public function getFunctions(): array

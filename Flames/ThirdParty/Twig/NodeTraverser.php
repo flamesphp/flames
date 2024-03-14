@@ -15,11 +15,7 @@ use Flames\ThirdParty\Twig\Node\Node;
 use Flames\ThirdParty\Twig\NodeVisitor\NodeVisitorInterface;
 
 /**
- * A node traverser.
- *
- * It visits all nodes and their children and calls the given visitor for each.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 final class NodeTraverser
 {

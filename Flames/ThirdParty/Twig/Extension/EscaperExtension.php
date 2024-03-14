@@ -20,7 +20,9 @@ use Flames\ThirdParty\Twig\Node\Node;
 use Flames\ThirdParty\Twig\NodeVisitor\EscaperNodeVisitor;
 use Flames\ThirdParty\Twig\TokenParser\AutoEscapeTokenParser;
 use Flames\ThirdParty\Twig\TwigFilter;
-
+/**
+ * @internal
+ */
 final class EscaperExtension extends AbstractExtension
 {
     private $defaultStrategy;

@@ -17,9 +17,7 @@ use Flames\ThirdParty\Twig\Compiler;
 use Flames\ThirdParty\Twig\Source;
 
 /**
- * Represents a node in the AST.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 #[YieldReady]
 class Node implements \Countable, \IteratorAggregate

@@ -13,7 +13,9 @@
 namespace Flames\ThirdParty\Twig\Node\Expression;
 
 use Flames\ThirdParty\Twig\Compiler;
-
+/**
+ * @internal
+ */
 class ConstantExpression extends AbstractExpression
 {
     public function __construct($value, int $lineno)

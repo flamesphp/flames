@@ -13,9 +13,7 @@
 namespace Flames\ThirdParty\Twig\Error;
 
 /**
- * Exception thrown when an error occurs at runtime.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 class RuntimeError extends Error
 {

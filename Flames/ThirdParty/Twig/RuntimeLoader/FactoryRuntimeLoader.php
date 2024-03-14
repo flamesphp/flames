@@ -12,9 +12,7 @@
 namespace Flames\ThirdParty\Twig\RuntimeLoader;
 
 /**
- * Lazy loads the runtime implementations for a Twig element.
- *
- * @author Robin Chalas <robin.chalas@gmail.com>
+ * @internal
  */
 class FactoryRuntimeLoader implements RuntimeLoaderInterface
 {

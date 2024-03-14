@@ -16,14 +16,7 @@ use Flames\ThirdParty\Twig\Compiler;
 use Flames\ThirdParty\Twig\Node\Expression\AbstractExpression;
 
 /**
- * Checks if casting an expression to __toString() is allowed by the sandbox.
- *
- * For instance, when there is a simple Print statement, like {{ article }},
- * and if the sandbox is enabled, we need to check that the __toString()
- * method is allowed if 'article' is an object. The same goes for {{ article|upper }}
- * or {{ random(article) }}
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 #[YieldReady]
 class CheckToStringNode extends AbstractExpression

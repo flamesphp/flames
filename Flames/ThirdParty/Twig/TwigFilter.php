@@ -15,11 +15,7 @@ use Flames\ThirdParty\Twig\Node\Expression\FilterExpression;
 use Flames\ThirdParty\Twig\Node\Node;
 
 /**
- * Represents a template filter.
- *
- * @author Fabien Potencier <fabien@symfony.com>
- *
- * @see https://twig.symfony.com/doc/templates.html#filters
+ * @internal
  */
 final class TwigFilter
 {

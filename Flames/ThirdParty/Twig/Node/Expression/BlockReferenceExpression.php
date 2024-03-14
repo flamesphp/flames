@@ -16,9 +16,7 @@ use Flames\ThirdParty\Twig\Compiler;
 use Flames\ThirdParty\Twig\Node\Node;
 
 /**
- * Represents a block call node.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 class BlockReferenceExpression extends AbstractExpression
 {

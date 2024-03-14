@@ -15,9 +15,7 @@ use Flames\ThirdParty\Twig\Environment;
 use Flames\ThirdParty\Twig\Node\Node;
 
 /**
- * Interface for node visitor classes.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 interface NodeVisitorInterface
 {

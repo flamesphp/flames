@@ -22,10 +22,7 @@ use Flames\ThirdParty\Twig\TwigTest;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Integration test helper.
- *
- * @author Fabien Potencier <fabien@symfony.com>
- * @author Karma Dordrak <drak@zikula.org>
+ * @internal
  */
 abstract class IntegrationTestCase extends TestCase
 {

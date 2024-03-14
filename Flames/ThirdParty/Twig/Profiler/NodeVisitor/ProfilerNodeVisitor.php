@@ -23,7 +23,7 @@ use Flames\ThirdParty\Twig\Profiler\Node\LeaveProfileNode;
 use Flames\ThirdParty\Twig\Profiler\Profile;
 
 /**
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 final class ProfilerNodeVisitor implements NodeVisitorInterface
 {

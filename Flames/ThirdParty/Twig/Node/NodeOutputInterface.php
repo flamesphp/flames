@@ -12,9 +12,7 @@
 namespace Flames\ThirdParty\Twig\Node;
 
 /**
- * Represents a displayable node in the AST.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 interface NodeOutputInterface
 {

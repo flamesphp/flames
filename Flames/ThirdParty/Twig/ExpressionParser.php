@@ -34,14 +34,7 @@ use Flames\ThirdParty\Twig\Node\Expression\Unary\PosUnary;
 use Flames\ThirdParty\Twig\Node\Node;
 
 /**
- * Parses expressions.
- *
- * This parser implements a "Precedence climbing" algorithm.
- *
- * @see https://www.engr.mun.ca/~theo/Misc/exp_parsing.htm
- * @see https://en.wikipedia.org/wiki/Operator-precedence_parser
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 class ExpressionParser
 {

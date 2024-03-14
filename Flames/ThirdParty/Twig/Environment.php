@@ -35,9 +35,7 @@ use Flames\ThirdParty\Twig\RuntimeLoader\RuntimeLoaderInterface;
 use Flames\ThirdParty\Twig\TokenParser\TokenParserInterface;
 
 /**
- * Stores the Twig configuration and renders templates.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 class Environment
 {

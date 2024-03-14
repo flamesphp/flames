@@ -13,7 +13,7 @@
 namespace Flames\ThirdParty\Twig;
 
 /**
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 final class Token
 {

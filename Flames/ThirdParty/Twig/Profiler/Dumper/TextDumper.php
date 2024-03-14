@@ -14,7 +14,7 @@ namespace Flames\ThirdParty\Twig\Profiler\Dumper;
 use Flames\ThirdParty\Twig\Profiler\Profile;
 
 /**
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 final class TextDumper extends BaseDumper
 {

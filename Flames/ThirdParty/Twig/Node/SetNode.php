@@ -16,9 +16,7 @@ use Flames\ThirdParty\Twig\Compiler;
 use Flames\ThirdParty\Twig\Node\Expression\ConstantExpression;
 
 /**
- * Represents a set node.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 #[YieldReady]
 class SetNode extends Node implements NodeCaptureInterface

@@ -15,7 +15,9 @@ namespace Flames\ThirdParty\Twig\Node\Expression;
 use Flames\ThirdParty\Twig\Compiler;
 use Flames\ThirdParty\Twig\Extension\SandboxExtension;
 use Flames\ThirdParty\Twig\Template;
-
+/**
+ * @internal
+ */
 class GetAttrExpression extends AbstractExpression
 {
     public function __construct(AbstractExpression $node, AbstractExpression $attribute, ?AbstractExpression $arguments, string $type, int $lineno)

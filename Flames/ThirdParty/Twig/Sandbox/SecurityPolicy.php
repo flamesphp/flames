@@ -15,9 +15,7 @@ use Flames\ThirdParty\Twig\Markup;
 use Flames\ThirdParty\Twig\Template;
 
 /**
- * Represents a security policy which need to be enforced when sandbox mode is enabled.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 final class SecurityPolicy implements SecurityPolicyInterface
 {

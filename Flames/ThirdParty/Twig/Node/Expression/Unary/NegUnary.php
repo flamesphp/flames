@@ -13,7 +13,9 @@
 namespace Flames\ThirdParty\Twig\Node\Expression\Unary;
 
 use Flames\ThirdParty\Twig\Compiler;
-
+/**
+ * @internal
+ */
 class NegUnary extends AbstractUnary
 {
     public function operator(Compiler $compiler): Compiler

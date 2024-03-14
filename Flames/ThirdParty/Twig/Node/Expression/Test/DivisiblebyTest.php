@@ -15,11 +15,7 @@ use Flames\ThirdParty\Twig\Compiler;
 use Flames\ThirdParty\Twig\Node\Expression\TestExpression;
 
 /**
- * Checks if a variable is divisible by a number.
- *
- *  {% if loop.index is divisible by(3) %}
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 class DivisiblebyTest extends TestExpression
 {

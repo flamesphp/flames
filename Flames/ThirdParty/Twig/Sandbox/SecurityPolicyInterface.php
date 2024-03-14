@@ -12,9 +12,7 @@
 namespace Flames\ThirdParty\Twig\Sandbox;
 
 /**
- * Interface that all security policy classes must implements.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 interface SecurityPolicyInterface
 {

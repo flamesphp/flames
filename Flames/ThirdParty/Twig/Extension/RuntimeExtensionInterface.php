@@ -12,7 +12,7 @@
 namespace Flames\ThirdParty\Twig\Extension;
 
 /**
- * @author Grégoire Pineau <lyrixx@lyrixx.info>
+ * @internal
  */
 interface RuntimeExtensionInterface
 {

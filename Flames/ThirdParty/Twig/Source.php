@@ -12,9 +12,7 @@
 namespace Flames\ThirdParty\Twig;
 
 /**
- * Holds information about a non-compiled Twig template.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 final class Source
 {

@@ -12,9 +12,7 @@
 namespace Flames\ThirdParty\Twig\Cache;
 
 /**
- * Implements a cache on the filesystem.
- *
- * @author Andrew Tch <andrew@noop.lv>
+ * @internal
  */
 class FilesystemCache implements CacheInterface
 {

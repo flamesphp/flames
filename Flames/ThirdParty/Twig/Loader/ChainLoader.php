@@ -15,9 +15,7 @@ use Flames\ThirdParty\Twig\Error\LoaderError;
 use Flames\ThirdParty\Twig\Source;
 
 /**
- * Loads templates from other loaders.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 final class ChainLoader implements LoaderInterface
 {

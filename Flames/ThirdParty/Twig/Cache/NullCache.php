@@ -12,9 +12,7 @@
 namespace Flames\ThirdParty\Twig\Cache;
 
 /**
- * Implements a no-cache strategy.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 final class NullCache implements CacheInterface
 {

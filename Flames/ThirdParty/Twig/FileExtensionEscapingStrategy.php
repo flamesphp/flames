@@ -12,15 +12,7 @@
 namespace Flames\ThirdParty\Twig;
 
 /**
- * Default autoescaping strategy based on file names.
- *
- * This strategy sets the HTML as the default autoescaping strategy,
- * but changes it based on the template name.
- *
- * Note that there is no runtime performance impact as the
- * default autoescaping strategy is set at compilation time.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 class FileExtensionEscapingStrategy
 {

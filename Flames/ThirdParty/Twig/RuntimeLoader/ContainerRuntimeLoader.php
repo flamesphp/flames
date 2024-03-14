@@ -14,12 +14,7 @@ namespace Flames\ThirdParty\Twig\RuntimeLoader;
 use Psr\Container\ContainerInterface;
 
 /**
- * Lazily loads Twig runtime implementations from a PSR-11 container.
- *
- * Note that the runtime services MUST use their class names as identifiers.
- *
- * @author Fabien Potencier <fabien@symfony.com>
- * @author Robin Chalas <robin.chalas@gmail.com>
+ * @internal
  */
 class ContainerRuntimeLoader implements RuntimeLoaderInterface
 {

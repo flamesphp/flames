@@ -17,9 +17,7 @@ use Flames\ThirdParty\Twig\Node\Expression\AbstractExpression;
 use Flames\ThirdParty\Twig\Node\Expression\ConstantExpression;
 
 /**
- * Represents a deprecated node.
- *
- * @author Yonel Ceruto <yonelceruto@gmail.com>
+ * @internal
  */
 #[YieldReady]
 class DeprecatedNode extends Node

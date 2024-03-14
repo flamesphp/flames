@@ -15,11 +15,7 @@ use Flames\ThirdParty\Twig\Compiler;
 use Flames\ThirdParty\Twig\Node\Expression\TestExpression;
 
 /**
- * Checks that a variable is null.
- *
- *  {{ var is none }}
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 class NullTest extends TestExpression
 {

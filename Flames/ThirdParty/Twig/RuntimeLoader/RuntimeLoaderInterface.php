@@ -12,9 +12,7 @@
 namespace Flames\ThirdParty\Twig\RuntimeLoader;
 
 /**
- * Creates runtime implementations for Twig elements (filters/functions/tests).
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 interface RuntimeLoaderInterface
 {

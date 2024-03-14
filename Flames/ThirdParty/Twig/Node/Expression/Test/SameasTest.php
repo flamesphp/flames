@@ -15,9 +15,7 @@ use Flames\ThirdParty\Twig\Compiler;
 use Flames\ThirdParty\Twig\Node\Expression\TestExpression;
 
 /**
- * Checks if a variable is the same as another one (=== in PHP).
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 class SameasTest extends TestExpression
 {

@@ -16,7 +16,7 @@ use Flames\ThirdParty\Twig\Error\SyntaxError;
 use Flames\ThirdParty\Twig\Source;
 
 /**
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 final class DeprecationCollector
 {
