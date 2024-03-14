@@ -1,6 +1,6 @@
 <?php
 
-namespace Flames\Event;
+namespace Flames\Event\Server;
 
 abstract class Initialize
 {

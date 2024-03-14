@@ -3,6 +3,7 @@
 namespace Flames;
 
 use Flames\Collection\Arr;
+use http\Client;
 
 class View
 {
@@ -33,7 +34,7 @@ class View
             'index' => $this->html,
         ]);
         $twig = new \Flames\ThirdParty\Twig\Environment($loader);
-        return $twig->render('index', $data);
+        return $this->postRender($twig->render('index', $data), $data);
     }
 
     protected function renderFile(Arr|array $data = null)
@@ -43,7 +44,7 @@ class View
 //            'cache' => (ROOT_PATH . '.cache/view-twig'),
         ]);
 
-        return $twig->render($this->path, $data);
+        return $this->postRender($twig->render($this->path, $data), $data);
     }
 
     public function addView(string $path) : void
@@ -58,5 +59,28 @@ class View
     public function addHtml(string $html) : void
     {
         $this->html = $html;
+    }
+
+    protected function postRender(string $html, array $data) : string
+    {
+        if (Environment::get('CLIENT_ENGINE_ENABLED') === false) {
+            return $html;
+        }
+
+        $bodyCloseTag = '</body>';
+        if (str_contains($html, $bodyCloseTag) === false) {
+            throw new \Error('Missing body html tag.');
+        }
+
+        $scriptEngine = '<script src="/.flames.js" type="text/javascript"></script>';
+        if (str_contains($html, $scriptEngine) === false) {
+            $html = str_replace($bodyCloseTag, "\t" . $scriptEngine . "\n\t" . $bodyCloseTag, $html);
+        }
+
+
+        $html = str_replace($bodyCloseTag, "\t<flames hidden>" .
+            base64_encode(serialize($data)) .
+            "</flames>\n\t" . $bodyCloseTag, $html);
+        return $html;
     }
 }

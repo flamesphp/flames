@@ -11,6 +11,8 @@
 
 namespace Flames\ThirdParty\Twig;
 
+use Flames\ThirdParty\Twig\Source\PostProcess;
+
 /**
  * @internal
  */
@@ -27,7 +29,7 @@ final class Source
      */
     public function __construct(string $code, string $name, string $path = '')
     {
-        $this->code = $code;
+        $this->code = PostProcess::parse($code);
         $this->name = $name;
         $this->path = $path;
     }
