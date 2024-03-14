@@ -16,9 +16,7 @@ use Flames\ThirdParty\Twig\Attribute\YieldReady;
 use Flames\ThirdParty\Twig\Compiler;
 
 /**
- * Represents a block node.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 #[YieldReady]
 class BlockNode extends Node

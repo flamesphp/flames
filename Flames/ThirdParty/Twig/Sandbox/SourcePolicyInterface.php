@@ -14,9 +14,7 @@ namespace Flames\ThirdParty\Twig\Sandbox;
 use Flames\ThirdParty\Twig\Source;
 
 /**
- * Interface for a class that can optionally enable the sandbox mode based on a template's Twig\Source.
- *
- * @author Yaakov Saxon
+ * @internal
  */
 interface SourcePolicyInterface
 {

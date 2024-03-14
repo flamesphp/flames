@@ -21,9 +21,7 @@ use Flames\ThirdParty\Twig\TwigFunction;
 use Flames\ThirdParty\Twig\TwigTest;
 
 /**
- * Interface implemented by extension classes.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 interface ExtensionInterface
 {

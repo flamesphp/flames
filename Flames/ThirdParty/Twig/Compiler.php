@@ -15,7 +15,7 @@ namespace Flames\ThirdParty\Twig;
 use Flames\ThirdParty\Twig\Node\Node;
 
 /**
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 class Compiler
 {

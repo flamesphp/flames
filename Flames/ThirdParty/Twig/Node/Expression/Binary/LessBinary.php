@@ -12,7 +12,9 @@
 namespace Flames\ThirdParty\Twig\Node\Expression\Binary;
 
 use Flames\ThirdParty\Twig\Compiler;
-
+/**
+ * @internal
+ */
 class LessBinary extends AbstractBinary
 {
     public function compile(Compiler $compiler): void

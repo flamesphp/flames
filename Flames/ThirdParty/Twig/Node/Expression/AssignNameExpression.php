@@ -13,7 +13,9 @@
 namespace Flames\ThirdParty\Twig\Node\Expression;
 
 use Flames\ThirdParty\Twig\Compiler;
-
+/**
+ * @internal
+ */
 class AssignNameExpression extends NameExpression
 {
     public function compile(Compiler $compiler): void

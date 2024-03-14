@@ -14,6 +14,9 @@ namespace Flames\ThirdParty\Twig\Node\Expression;
 use Flames\ThirdParty\Twig\Compiler;
 use Flames\ThirdParty\Twig\Node\Node;
 
+/**
+ * @internal
+ */
 class TestExpression extends CallExpression
 {
     public function __construct(Node $node, string $name, ?Node $arguments, int $lineno)

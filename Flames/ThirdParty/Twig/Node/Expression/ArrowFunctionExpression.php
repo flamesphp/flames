@@ -15,9 +15,7 @@ use Flames\ThirdParty\Twig\Compiler;
 use Flames\ThirdParty\Twig\Node\Node;
 
 /**
- * Represents an arrow function.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 class ArrowFunctionExpression extends AbstractExpression
 {

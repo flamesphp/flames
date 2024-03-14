@@ -15,9 +15,7 @@ use Flames\ThirdParty\Twig\Attribute\YieldReady;
 use Flames\ThirdParty\Twig\Compiler;
 
 /**
- * Represents a node for which we need to capture the output.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 #[YieldReady]
 class CaptureNode extends Node

@@ -15,9 +15,7 @@ use Flames\ThirdParty\Twig\Error\LoaderError;
 use Flames\ThirdParty\Twig\Source;
 
 /**
- * Loads template from the filesystem.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 class FilesystemLoader implements LoaderInterface
 {

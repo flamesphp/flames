@@ -15,9 +15,7 @@ namespace Flames\ThirdParty\Twig\Node\Expression;
 use Flames\ThirdParty\Twig\Compiler;
 
 /**
- * Represents a parent node.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 class ParentExpression extends AbstractExpression
 {

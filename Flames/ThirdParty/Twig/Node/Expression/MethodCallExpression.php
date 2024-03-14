@@ -12,7 +12,9 @@
 namespace Flames\ThirdParty\Twig\Node\Expression;
 
 use Flames\ThirdParty\Twig\Compiler;
-
+/**
+ * @internal
+ */
 class MethodCallExpression extends AbstractExpression
 {
     public function __construct(AbstractExpression $node, string $method, ArrayExpression $arguments, int $lineno)

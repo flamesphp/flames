@@ -16,9 +16,7 @@ use Flames\ThirdParty\Twig\Compiler;
 use Flames\ThirdParty\Twig\Error\SyntaxError;
 
 /**
- * Represents a macro node.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 #[YieldReady]
 class MacroNode extends Node

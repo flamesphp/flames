@@ -15,11 +15,7 @@ use Flames\ThirdParty\Twig\Environment;
 use Flames\ThirdParty\Twig\Node\Node;
 
 /**
- * Used to make node visitors compatible with Twig 1.x and 2.x.
- *
- * To be removed in Twig 3.1.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 abstract class AbstractNodeVisitor implements NodeVisitorInterface
 {

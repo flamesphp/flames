@@ -10,7 +10,9 @@
  */
 
 namespace Flames\ThirdParty\Twig\Extension;
-
+/**
+ * @internal
+ */
 abstract class AbstractExtension implements ExtensionInterface
 {
     public function getTokenParsers()

@@ -13,7 +13,9 @@
 namespace Flames\ThirdParty\Twig\Node\Expression\Binary;
 
 use Flames\ThirdParty\Twig\Compiler;
-
+/**
+ * @internal
+ */
 class AndBinary extends AbstractBinary
 {
     public function operator(Compiler $compiler): Compiler

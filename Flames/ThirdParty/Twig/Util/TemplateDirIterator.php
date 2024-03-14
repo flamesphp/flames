@@ -12,7 +12,7 @@
 namespace Flames\ThirdParty\Twig\Util;
 
 /**
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 class TemplateDirIterator extends \IteratorIterator
 {

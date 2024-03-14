@@ -24,14 +24,7 @@ use Flames\ThirdParty\Twig\Node\Expression\TestExpression;
 use Flames\ThirdParty\Twig\Node\Node;
 
 /**
- * Checks if a variable is defined in the current context.
- *
- *    {# defined works with variable names and variable attributes #}
- *    {% if foo is defined %}
- *        {# ... #}
- *    {% endif %}
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 class DefinedTest extends TestExpression
 {

@@ -14,7 +14,9 @@ namespace Flames\ThirdParty\Twig\Node\Expression;
 
 use Flames\ThirdParty\Twig\Compiler;
 use Flames\ThirdParty\Twig\Node\Node;
-
+/**
+ * @internal
+ */
 class FilterExpression extends CallExpression
 {
     public function __construct(Node $node, ConstantExpression $filterName, Node $arguments, int $lineno, ?string $tag = null)

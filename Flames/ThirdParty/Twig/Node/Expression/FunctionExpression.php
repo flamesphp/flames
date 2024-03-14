@@ -14,7 +14,9 @@ namespace Flames\ThirdParty\Twig\Node\Expression;
 use Flames\ThirdParty\Twig\Compiler;
 use Flames\ThirdParty\Twig\Extension\CoreExtension;
 use Flames\ThirdParty\Twig\Node\Node;
-
+/**
+ * @internal
+ */
 class FunctionExpression extends CallExpression
 {
     public function __construct(string $name, Node $arguments, int $lineno)

@@ -18,7 +18,9 @@ use Flames\ThirdParty\Twig\Sandbox\SecurityPolicyInterface;
 use Flames\ThirdParty\Twig\Sandbox\SourcePolicyInterface;
 use Flames\ThirdParty\Twig\Source;
 use Flames\ThirdParty\Twig\TokenParser\SandboxTokenParser;
-
+/**
+ * @internal
+ */
 final class SandboxExtension extends AbstractExtension
 {
     private $sandboxedGlobally;

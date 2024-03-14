@@ -15,7 +15,9 @@ use Flames\ThirdParty\Twig\Compiler;
 use Flames\ThirdParty\Twig\Error\SyntaxError;
 use Flames\ThirdParty\Twig\Extension\ExtensionInterface;
 use Flames\ThirdParty\Twig\Node\Node;
-
+/**
+ * @internal
+ */
 abstract class CallExpression extends AbstractExpression
 {
     private $reflector;

@@ -17,9 +17,7 @@ use Flames\ThirdParty\Twig\Node\Expression\AbstractExpression;
 use Flames\ThirdParty\Twig\Node\Expression\NameExpression;
 
 /**
- * Represents an import node.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 #[YieldReady]
 class ImportNode extends Node

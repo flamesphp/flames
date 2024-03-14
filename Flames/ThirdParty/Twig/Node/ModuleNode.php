@@ -19,13 +19,7 @@ use Flames\ThirdParty\Twig\Node\Expression\ConstantExpression;
 use Flames\ThirdParty\Twig\Source;
 
 /**
- * Represents a module node.
- *
- * Consider this class as being final. If you need to customize the behavior of
- * the generated class, consider adding nodes to the following nodes: display_start,
- * display_end, constructor_start, constructor_end, and class_end.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 #[YieldReady]
 final class ModuleNode extends Node

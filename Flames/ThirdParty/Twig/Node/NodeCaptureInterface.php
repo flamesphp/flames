@@ -12,9 +12,7 @@
 namespace Flames\ThirdParty\Twig\Node;
 
 /**
- * Represents a node that captures any nested displayable nodes.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 interface NodeCaptureInterface
 {

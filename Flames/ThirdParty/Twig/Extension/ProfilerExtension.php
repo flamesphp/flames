@@ -13,7 +13,9 @@ namespace Flames\ThirdParty\Twig\Extension;
 
 use Flames\ThirdParty\Twig\Profiler\NodeVisitor\ProfilerNodeVisitor;
 use Flames\ThirdParty\Twig\Profiler\Profile;
-
+/**
+ * @internal
+ */
 class ProfilerExtension extends AbstractExtension
 {
     private $actives = [];

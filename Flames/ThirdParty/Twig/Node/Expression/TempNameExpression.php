@@ -13,6 +13,9 @@ namespace Flames\ThirdParty\Twig\Node\Expression;
 
 use Flames\ThirdParty\Twig\Compiler;
 
+/**
+ * @internal
+ */
 class TempNameExpression extends AbstractExpression
 {
     public function __construct(string $name, int $lineno)

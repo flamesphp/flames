@@ -14,9 +14,7 @@ namespace Flames\ThirdParty\Twig\Sandbox;
 use Flames\ThirdParty\Twig\Error\Error;
 
 /**
- * Exception thrown when a security error occurs at runtime.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 class SecurityError extends Error
 {

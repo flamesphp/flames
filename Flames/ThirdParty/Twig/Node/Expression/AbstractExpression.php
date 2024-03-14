@@ -15,9 +15,7 @@ namespace Flames\ThirdParty\Twig\Node\Expression;
 use Flames\ThirdParty\Twig\Node\Node;
 
 /**
- * Abstract class for all nodes that represents an expression.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 abstract class AbstractExpression extends Node
 {

@@ -15,7 +15,9 @@ namespace Flames\ThirdParty\Twig\Node\Expression\Unary;
 use Flames\ThirdParty\Twig\Compiler;
 use Flames\ThirdParty\Twig\Node\Expression\AbstractExpression;
 use Flames\ThirdParty\Twig\Node\Node;
-
+/**
+ * @internal
+ */
 abstract class AbstractUnary extends AbstractExpression
 {
     public function __construct(Node $node, int $lineno)

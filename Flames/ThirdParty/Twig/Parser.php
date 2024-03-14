@@ -27,7 +27,7 @@ use Flames\ThirdParty\Twig\Node\TextNode;
 use Flames\ThirdParty\Twig\TokenParser\TokenParserInterface;
 
 /**
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 class Parser
 {

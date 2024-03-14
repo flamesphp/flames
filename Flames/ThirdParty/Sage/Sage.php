@@ -51,6 +51,9 @@ define('SAGE_DIR', dirname(__FILE__) . '/');
 //require SAGE_DIR . 'decorators/SageDecoratorsPlain.php';
 //require SAGE_DIR . 'parsers/SageParserInterface.php';
 
+/**
+ * @internal
+ */
 class Sage
 {
     private static $_initialized = false;

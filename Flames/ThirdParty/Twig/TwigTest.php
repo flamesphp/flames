@@ -14,11 +14,7 @@ namespace Flames\ThirdParty\Twig;
 use Flames\ThirdParty\Twig\Node\Expression\TestExpression;
 
 /**
- * Represents a template test.
- *
- * @author Fabien Potencier <fabien@symfony.com>
- *
- * @see https://twig.symfony.com/doc/templates.html#test-operator
+ * @internal
  */
 final class TwigTest
 {

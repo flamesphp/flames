@@ -15,11 +15,7 @@ use Flames\ThirdParty\Twig\Compiler;
 use Flames\ThirdParty\Twig\Node\Expression\TestExpression;
 
 /**
- * Checks if a number is even.
- *
- *  {{ var is even }}
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 class EvenTest extends TestExpression
 {

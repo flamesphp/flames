@@ -15,11 +15,7 @@ use Flames\ThirdParty\Twig\Node\Expression\FunctionExpression;
 use Flames\ThirdParty\Twig\Node\Node;
 
 /**
- * Represents a template function.
- *
- * @author Fabien Potencier <fabien@symfony.com>
- *
- * @see https://twig.symfony.com/doc/templates.html#functions
+ * @internal
  */
 final class TwigFunction
 {

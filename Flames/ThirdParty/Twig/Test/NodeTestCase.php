@@ -17,6 +17,9 @@ use Flames\ThirdParty\Twig\Loader\ArrayLoader;
 use Flames\ThirdParty\Twig\Node\Node;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ */
 abstract class NodeTestCase extends TestCase
 {
     /**

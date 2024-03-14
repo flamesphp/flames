@@ -15,7 +15,7 @@ use Flames\ThirdParty\Twig\Attribute\YieldReady;
 use Flames\ThirdParty\Twig\Compiler;
 
 /**
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 #[YieldReady]
 class CheckSecurityCallNode extends Node

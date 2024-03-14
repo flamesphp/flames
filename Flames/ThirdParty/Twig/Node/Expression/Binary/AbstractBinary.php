@@ -15,7 +15,9 @@ namespace Flames\ThirdParty\Twig\Node\Expression\Binary;
 use Flames\ThirdParty\Twig\Compiler;
 use Flames\ThirdParty\Twig\Node\Expression\AbstractExpression;
 use Flames\ThirdParty\Twig\Node\Node;
-
+/**
+ * @internal
+ */
 abstract class AbstractBinary extends AbstractExpression
 {
     public function __construct(Node $left, Node $right, int $lineno)

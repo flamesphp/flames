@@ -79,7 +79,9 @@ use Flames\ThirdParty\Twig\TokenParser\WithTokenParser;
 use Flames\ThirdParty\Twig\TwigFilter;
 use Flames\ThirdParty\Twig\TwigFunction;
 use Flames\ThirdParty\Twig\TwigTest;
-
+/**
+ * @internal
+ */
 final class CoreExtension extends AbstractExtension
 {
     private $dateFormats = ['F j, Y H:i', '%d days'];

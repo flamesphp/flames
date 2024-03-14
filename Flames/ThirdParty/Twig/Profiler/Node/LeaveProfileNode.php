@@ -16,9 +16,7 @@ use Flames\ThirdParty\Twig\Compiler;
 use Flames\ThirdParty\Twig\Node\Node;
 
 /**
- * Represents a profile leave node.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 #[YieldReady]
 class LeaveProfileNode extends Node

@@ -15,15 +15,7 @@ use Flames\ThirdParty\Twig\Attribute\YieldReady;
 use Flames\ThirdParty\Twig\Compiler;
 
 /**
- * Represents an autoescape node.
- *
- * The value is the escaping strategy (can be html, js, ...)
- *
- * The true value is equivalent to html.
- *
- * If autoescaping is disabled, then the value is false.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 #[YieldReady]
 class AutoEscapeNode extends Node

@@ -12,12 +12,7 @@
 namespace Flames\ThirdParty\Twig\Extension;
 
 /**
- * Enables usage of the deprecated Twig\Extension\AbstractExtension::getGlobals() method.
- *
- * Explicitly implement this interface if you really need to implement the
- * deprecated getGlobals() method in your extensions.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 interface GlobalsInterface
 {

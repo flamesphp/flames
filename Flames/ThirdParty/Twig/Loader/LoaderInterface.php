@@ -15,9 +15,7 @@ use Flames\ThirdParty\Twig\Error\LoaderError;
 use Flames\ThirdParty\Twig\Source;
 
 /**
- * Interface all loaders must implement.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 interface LoaderInterface
 {

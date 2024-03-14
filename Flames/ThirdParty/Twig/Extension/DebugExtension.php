@@ -15,7 +15,9 @@ use Flames\ThirdParty\Twig\Environment;
 use Flames\ThirdParty\Twig\Template;
 use Flames\ThirdParty\Twig\TemplateWrapper;
 use Flames\ThirdParty\Twig\TwigFunction;
-
+/**
+ * @internal
+ */
 final class DebugExtension extends AbstractExtension
 {
     public function getFunctions(): array

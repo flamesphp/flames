@@ -12,7 +12,9 @@
 namespace Flames\ThirdParty\Twig\Node\Expression;
 
 use Flames\ThirdParty\Twig\Compiler;
-
+/**
+ * @internal
+ */
 class ArrayExpression extends AbstractExpression
 {
     private $index;

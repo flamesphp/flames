@@ -17,9 +17,7 @@ use Flames\ThirdParty\Twig\Node\Expression\AbstractExpression;
 use Flames\ThirdParty\Twig\Node\Expression\ConstantExpression;
 
 /**
- * Represents an embed node.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 #[YieldReady]
 class EmbedNode extends IncludeNode

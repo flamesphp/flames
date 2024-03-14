@@ -12,13 +12,7 @@
 namespace Flames\ThirdParty\Twig\Cache;
 
 /**
- * Interface implemented by cache classes.
- *
- * It is highly recommended to always store templates on the filesystem to
- * benefit from the PHP opcode cache. This interface is mostly useful if you
- * need to implement a custom strategy for storing templates on the filesystem.
- *
- * @author Andrew Tch <andrew@noop.lv>
+ * @internal
  */
 interface CacheInterface
 {

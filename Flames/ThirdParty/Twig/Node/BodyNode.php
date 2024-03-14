@@ -14,9 +14,7 @@ namespace Flames\ThirdParty\Twig\Node;
 use Flames\ThirdParty\Twig\Attribute\YieldReady;
 
 /**
- * Represents a body node.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 #[YieldReady]
 class BodyNode extends Node

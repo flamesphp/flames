@@ -18,9 +18,7 @@ use Flames\ThirdParty\Twig\Node\Expression\AbstractExpression;
 use Flames\ThirdParty\Twig\Node\Expression\AssignNameExpression;
 
 /**
- * Represents a for node.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 #[YieldReady]
 class ForNode extends Node

@@ -12,9 +12,7 @@
 namespace Flames\ThirdParty\Twig\Sandbox;
 
 /**
- * Exception thrown when a not allowed class method is used in a template.
- *
- * @author Kit Burton-Senior <mail@kitbs.com>
+ * @internal
  */
 final class SecurityNotAllowedMethodError extends SecurityError
 {

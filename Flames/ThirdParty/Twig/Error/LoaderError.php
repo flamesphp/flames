@@ -12,9 +12,7 @@
 namespace Flames\ThirdParty\Twig\Error;
 
 /**
- * Exception thrown when an error occurs during template loading.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 class LoaderError extends Error
 {

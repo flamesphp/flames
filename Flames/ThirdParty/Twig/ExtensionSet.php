@@ -21,8 +21,6 @@ use Flames\ThirdParty\Twig\NodeVisitor\NodeVisitorInterface;
 use Flames\ThirdParty\Twig\TokenParser\TokenParserInterface;
 
 /**
- * @author Fabien Potencier <fabien@symfony.com>
- *
  * @internal
  */
 final class ExtensionSet

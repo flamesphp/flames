@@ -17,14 +17,6 @@ use Flames\ThirdParty\Twig\Error\LoaderError;
 use Flames\ThirdParty\Twig\Error\RuntimeError;
 
 /**
- * Default base class for compiled templates.
- *
- * This class is an implementation detail of how template compilation currently
- * works, which might change. It should never be used directly. Use $twig->load()
- * instead, which returns an instance of \Twig\TemplateWrapper.
- *
- * @author Fabien Potencier <fabien@symfony.com>
- *
  * @internal
  */
 abstract class Template

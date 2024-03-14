@@ -15,26 +15,7 @@ use Flames\ThirdParty\Twig\Source;
 use Flames\ThirdParty\Twig\Template;
 
 /**
- * Twig base exception.
- *
- * This exception class and its children must only be used when
- * an error occurs during the loading of a template, when a syntax error
- * is detected in a template, or when rendering a template. Other
- * errors must use regular PHP exception classes (like when the template
- * cache directory is not writable for instance).
- *
- * To help debugging template issues, this class tracks the original template
- * name and line where the error occurred.
- *
- * Whenever possible, you must set these information (original template name
- * and line number) yourself by passing them to the constructor. If some or all
- * these information are not available from where you throw the exception, then
- * this class will guess them automatically (when the line number is set to -1
- * and/or the name is set to null). As this is a costly operation, this
- * can be disabled by passing false for both the name and the line number
- * when creating a new instance of this class.
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @internal
  */
 class Error extends \Exception
 {
