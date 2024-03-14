@@ -56,10 +56,10 @@ final class Kernel
 //            Required::file(ROOT_PATH . '.fork/_Flames/Sage/Sage.php');
             ThirdParty\Sage\Sage::$theme = ThirdParty\Sage\Sage::THEME_SOLARIZED_DARK;
             ThirdParty\Sage\Sage::$editor = $environment->DUMP_IDE;
-            Required::file(ROOT_PATH . 'Flames/ThirdParty/Sage/register.php');
+            Required::file(ROOT_PATH . 'Flames/ThirdParty/Sage/Register.php');
         }
         else {
-//            Required::file(ROOT_PATH . '.fork/_Flames/Sage/plain.php');
+            Required::file(ROOT_PATH . 'Flames/ThirdParty/Sage/Plain.php');
         }
     }
 
