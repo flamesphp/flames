@@ -1,5 +1,6 @@
 <?php
 
+namespace Flames\ThirdParty\Sage\Parsers;
 /**
  * @internal
  */

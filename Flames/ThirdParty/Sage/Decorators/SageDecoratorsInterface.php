@@ -1,5 +1,10 @@
 <?php
 
+namespace Flames\ThirdParty\Sage\Decorators;
+
+use Flames\ThirdParty\Sage\inc\SageTraceStep;
+use Flames\ThirdParty\Sage\inc\SageVariableData;
+
 /**
  * @internal
  */

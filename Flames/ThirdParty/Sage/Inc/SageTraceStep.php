@@ -1,5 +1,14 @@
 <?php
 
+namespace Flames\ThirdParty\Sage\Inc;
+
+use Flames\ThirdParty\Sage\inc\SageHelper;
+use Flames\ThirdParty\Sage\inc\SageParser;
+use Flames\ThirdParty\Sage\inc\SageVariableData;
+use Flames\ThirdParty\Sage\Sage;
+use ReflectionFunction;
+use ReflectionMethod;
+
 /**
  * @internal
  */
@@ -16,9 +25,9 @@ class SageTraceStep
 
     public function __construct($step, $stepNumber)
     {
-        $this->fileLine      = $this->getFileAndLine($step);
+        $this->fileLine = $this->getFileAndLine($step);
         $this->argumentNames = $this->getStepArgumentNames($step);
-        $this->functionName  = $this->getStepFunctionName($step, $this->argumentNames);
+        $this->functionName = $this->getStepFunctionName($step, $this->argumentNames);
 
         if ($this->isStepBlacklisted($step, $stepNumber)) {
             $this->isBlackListed = true;
@@ -27,18 +36,18 @@ class SageTraceStep
         }
 
         // todo it's possible to parse the object name out from the source!!!
-        $this->object        = $this->getObject($step);
+        $this->object = $this->getObject($step);
         $this->sourceSnippet = $this->getSourceSnippet($step);
-        $this->arguments     = $this->getArguments($step, $this->argumentNames);
+        $this->arguments = $this->getArguments($step, $this->argumentNames);
     }
 
     private function isStepBlacklisted($step, $stepNumber)
     {
-        if (! Sage::$maxLevels) {
+        if (!Sage::$maxLevels) {
             return false;
         }
 
-        if (! isset($step['file'])) {
+        if (!isset($step['file'])) {
             return false;
         }
 
@@ -57,7 +66,7 @@ class SageTraceStep
 
     private function getFileAndLine($step)
     {
-        if (! isset($step['file'])) {
+        if (!isset($step['file'])) {
             return 'PHP internal call';
         }
 
@@ -115,7 +124,7 @@ class SageTraceStep
 
     private function getObject($step)
     {
-        if (! isset($step['object'])) {
+        if (!isset($step['object'])) {
             return null;
         }
 
@@ -126,22 +135,22 @@ class SageTraceStep
     {
         if (
             empty($step['file'])
-            || ! isset($step['line'])
+            || !isset($step['line'])
             || Sage::enabled() !== Sage::MODE_RICH
-            || ! is_readable($step['file'])
+            || !is_readable($step['file'])
         ) {
             return null;
         }
 
         // open the file and set the line position
-        $file        = fopen($step['file'], 'r');
-        $line        = $step['line'];
+        $file = fopen($step['file'], 'r');
+        $line = $step['line'];
         $readingLine = 0;
 
         // Set the reading range
         $range = array(
             'start' => $line - 7,
-            'end'   => $line + 7,
+            'end' => $line + 7,
         );
 
         // set the zero-padding amount for line numbers
@@ -179,10 +188,10 @@ class SageTraceStep
     {
         $result = array();
         foreach ($this->getRawArguments($step) as $k => $variable) {
-            $name             = isset($argumentNames[$k]) ? $argumentNames[$k] : '';
-            $parsed           = SageParser::process($variable, $argumentNames[$k]);
+            $name = isset($argumentNames[$k]) ? $argumentNames[$k] : '';
+            $parsed = SageParser::process($variable, $argumentNames[$k]);
             $parsed->operator = substr($name, 0, 1) === '$' ? '=' : ':';
-            $result[]         = $parsed;
+            $result[] = $parsed;
         }
 
         return $result;
@@ -191,7 +200,7 @@ class SageTraceStep
     private function getRawArguments($step)
     {
         if (
-            ! empty($step['args'])
+            !empty($step['args'])
             && in_array($step['function'], array('include', 'include_once', 'require', 'require_once'), true)
         ) {
             // sanitize the included file path

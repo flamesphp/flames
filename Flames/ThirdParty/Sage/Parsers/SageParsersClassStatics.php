@@ -1,5 +1,13 @@
 <?php
 
+namespace Flames\ThirdParty\Sage\Parsers;
+
+use Flames\ThirdParty\Sage\inc\SageHelper;
+use Flames\ThirdParty\Sage\inc\SageParser;
+use Flames\ThirdParty\Sage\parsers\SageParserInterface;
+use ReflectionClass;
+use ReflectionProperty;
+
 /**
  * @internal
  */
@@ -12,12 +20,12 @@ class SageParsersClassStatics implements SageParserInterface
 
     public function parse(&$variable, $varData)
     {
-        if (! SageHelper::isRichMode() || ! SageHelper::php53orLater() || ! is_object($variable)) {
+        if (!SageHelper::isRichMode() || !SageHelper::php53orLater() || !is_object($variable)) {
             return false;
         }
 
-        $statics    = array();
-        $class      = get_class($variable);
+        $statics = array();
+        $class = get_class($variable);
         $reflection = new ReflectionClass($class);
 
         // first show static values
@@ -32,19 +40,19 @@ class SageParsersClassStatics implements SageParserInterface
                 $access = 'public';
             }
 
-            if (method_exists($property, 'isInitialized') && ! $property->isInitialized($variable)) {
-                $value  = null;
+            if (method_exists($property, 'isInitialized') && !$property->isInitialized($variable)) {
+                $value = null;
                 $access .= ' [uninitialized]';
             } else {
                 $value = $property->getValue($variable);
             }
 
-            $name   = '$' . $property->getName();
+            $name = '$' . $property->getName();
             $output = SageParser::process($value, SageHelper::esc($name));
 
-            $output->access   = $access;
+            $output->access = $access;
             $output->operator = '::';
-            $statics[]        = $output;
+            $statics[] = $output;
         }
 
         if (empty($statics)) {

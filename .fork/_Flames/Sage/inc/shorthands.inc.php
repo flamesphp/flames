@@ -38,6 +38,8 @@
  *
  */
 
+use Flames\ThirdParty\Sage\Sage;
+
 if (! function_exists('sage')) {
     /**
      * Alias of Sage::dump()
@@ -56,7 +58,7 @@ if (! function_exists('sage')) {
 
         $params = func_get_args();
 
-        return call_user_func_array(array('Sage', 'dump'), $params);
+        return call_user_func_array(array('Flames\ThirdParty\Sage\Sage', 'dump'), $params);
     }
 }
 
@@ -78,7 +80,7 @@ if (! function_exists('s')) {
 
         $params = func_get_args();
 
-        return call_user_func_array(array('Sage', 'dump'), $params);
+        return call_user_func_array(array('Flames\ThirdParty\Sage\Sage', 'dump'), $params);
     }
 }
 
@@ -97,7 +99,7 @@ if (! function_exists('saged')) {
         Sage::$aliases[] = __FUNCTION__;
 
         $params = func_get_args();
-        call_user_func_array(array('Sage', 'dump'), $params);
+        call_user_func_array(array('Flames\ThirdParty\Sage\Sage', 'dump'), $params);
         die;
     }
 }
@@ -119,7 +121,7 @@ if (! function_exists('sd')) {
         Sage::$aliases[] = __FUNCTION__;
 
         $params = func_get_args();
-        call_user_func_array(array('Sage', 'dump'), $params);
+        call_user_func_array(array('Flames\ThirdParty\Sage\Sage', 'dump'), $params);
         die;
     }
 }
@@ -147,7 +149,7 @@ if (! function_exists('ssage')) {
         Sage::$aliases[]       = __FUNCTION__;
 
         $params = func_get_args();
-        $dump                  = call_user_func_array(array('Sage', 'dump'), $params);
+        $dump                  = call_user_func_array(array('Flames\ThirdParty\Sage\Sage', 'dump'), $params);
         Sage::$simplifyDisplay = $simplify;
 
         return $dump;
@@ -177,7 +179,7 @@ if (! function_exists('ss')) {
         Sage::$aliases[]       = __FUNCTION__;
 
         $params = func_get_args();
-        $dump                  = call_user_func_array(array('Sage', 'dump'), $params);
+        $dump                  = call_user_func_array(array('Flames\ThirdParty\Sage\Sage', 'dump'), $params);
         Sage::$simplifyDisplay = $simplify;
 
         return $dump;
@@ -199,7 +201,7 @@ if (! function_exists('ssaged')) {
         Sage::$simplifyDisplay = true;
         Sage::$aliases[]       = __FUNCTION__;
         $params = func_get_args();
-        call_user_func_array(array('Sage', 'dump'), $params);
+        call_user_func_array(array('Flames\ThirdParty\Sage\Sage', 'dump'), $params);
         die;
     }
 }
@@ -219,7 +221,7 @@ if (! function_exists('ssd')) {
         Sage::$simplifyDisplay = true;
         Sage::$aliases[]       = __FUNCTION__;
         $params = func_get_args();
-        call_user_func_array(array('Sage', 'dump'), $params);
+        call_user_func_array(array('Flames\ThirdParty\Sage\Sage', 'dump'), $params);
         die;
     }
 }
@@ -242,7 +244,7 @@ if (! function_exists('d')) {
 
         $params = func_get_args();
 
-        return call_user_func_array(array('Sage', 'dump'), $params);
+        return call_user_func_array(array('Flames\ThirdParty\Sage\Sage', 'dump'), $params);
     }
 }
 

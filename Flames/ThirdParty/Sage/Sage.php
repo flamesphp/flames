@@ -28,20 +28,28 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+namespace Flames\ThirdParty\Sage;
+
+use Flames\ThirdParty\Sage\decorators\SageDecoratorsPlain;
+use Flames\ThirdParty\Sage\decorators\SageDecoratorsRich;
+use Flames\ThirdParty\Sage\inc\SageHelper;
+use Flames\ThirdParty\Sage\inc\SageParser;
+use Flames\ThirdParty\Sage\inc\SageTraceStep;
+
 if (defined('SAGE_DIR')) {
     return;
 }
 define('SAGE_DIR', dirname(__FILE__) . '/');
 
-require SAGE_DIR . 'inc/SageVariableData.php';
-require SAGE_DIR . 'inc/SageTraceStep.php';
-require SAGE_DIR . 'inc/SageParser.php';
-require SAGE_DIR . 'inc/SageHelper.php';
-//require SAGE_DIR . 'inc/shorthands.inc.php';
-require SAGE_DIR . 'decorators/SageDecoratorsInterface.php';
-require SAGE_DIR . 'decorators/SageDecoratorsRich.php';
-require SAGE_DIR . 'decorators/SageDecoratorsPlain.php';
-require SAGE_DIR . 'parsers/SageParserInterface.php';
+//require SAGE_DIR . 'inc/SageVariableData.php';
+//require SAGE_DIR . 'inc/SageTraceStep.php';
+//require SAGE_DIR . 'inc/SageParser.php';
+//require SAGE_DIR . 'inc/SageHelper.php';
+////require SAGE_DIR . 'inc/shorthands.inc.php';
+//require SAGE_DIR . 'decorators/SageDecoratorsInterface.php';
+//require SAGE_DIR . 'decorators/SageDecoratorsRich.php';
+//require SAGE_DIR . 'decorators/SageDecoratorsPlain.php';
+//require SAGE_DIR . 'parsers/SageParserInterface.php';
 
 class Sage
 {
@@ -230,7 +238,7 @@ class Sage
      * @var string[] keys don't matter, but you can use them to unset a particular entry.
      */
     public static $traceBlacklist = array(
-        'vendor'     => '#\/vendor\/#',
+        'vendor' => '#\/vendor\/#',
         'middleware' => '#\/Middleware\/#'
     );
 
@@ -245,52 +253,52 @@ class Sage
 
     /** @var class-string<SageParser>[] */
     public static $enabledParsers = array(
-        'SageParsersSmarty'            => true,
-        'SageParsersSplFileInfo'       => true,
-        'SageParsersClosure'           => true,
-        'SageParsersEloquent'          => true,
-        'SageParsersDateTime'          => true,
-        'SageParsersSplObjectStorage'  => true,
-        'SageParsersTimestamp'         => true,
-        'SageParsersFilePath'          => true,
+        'SageParsersSmarty' => true,
+        'SageParsersSplFileInfo' => true,
+        'SageParsersClosure' => true,
+        'SageParsersEloquent' => true,
+        'SageParsersDateTime' => true,
+        'SageParsersSplObjectStorage' => true,
+        'SageParsersTimestamp' => true,
+        'SageParsersFilePath' => true,
         // above this line are only those parsers that $replacesAllOtherParsers
 
         // now we run the blacklist
-        'SageParsersBlacklist'         => true,
+        'SageParsersBlacklist' => true,
 
         // all the rest
-        'SageParsersXml'               => true,
+        'SageParsersXml' => true,
         'SageParsersObjectIterateable' => true,
-        'SageParsersClassStatics'      => true,
-        'SageParsersColor'             => true,
-        'SageParsersJson'              => true,
-        'SageParsersClassName'         => true,
-        'SageParsersMicrotime'         => true,
+        'SageParsersClassStatics' => true,
+        'SageParsersColor' => true,
+        'SageParsersJson' => true,
+        'SageParsersClassName' => true,
+        'SageParsersMicrotime' => true,
     );
 
     public static function saveState($state = array())
     {
-        $rich  = new SageDecoratorsRich();
+        $rich = new SageDecoratorsRich();
         $plain = new SageDecoratorsPlain();
 
         if (func_num_args()) {
-            self::$_enabledMode       = $state['enabled'];
-            self::$editor             = $state['editor'];
+            self::$_enabledMode = $state['enabled'];
+            self::$editor = $state['editor'];
             self::$fileLinkServerPath = $state['fileLinkServerPath'];
-            self::$fileLinkLocalPath  = $state['fileLinkLocalPath'];
-            self::$displayCalledFrom  = $state['displayCalledFrom'];
-            self::$maxLevels          = $state['maxLevels'];
-            self::$theme              = $state['theme'];
-            self::$expandedByDefault  = $state['expandedByDefault'];
-            self::$cliDetection       = $state['cliDetection'];
-            self::$cliColors          = $state['cliColors'];
-            self::$charEncodings      = $state['charEncodings'];
-            self::$returnOutput       = $state['returnOutput'];
-            self::$outputFile         = $state['outputFile'];
-            self::$aliases            = $state['aliases'];
-            self::$traceBlacklist     = $state['traceBlacklist'];
+            self::$fileLinkLocalPath = $state['fileLinkLocalPath'];
+            self::$displayCalledFrom = $state['displayCalledFrom'];
+            self::$maxLevels = $state['maxLevels'];
+            self::$theme = $state['theme'];
+            self::$expandedByDefault = $state['expandedByDefault'];
+            self::$cliDetection = $state['cliDetection'];
+            self::$cliColors = $state['cliColors'];
+            self::$charEncodings = $state['charEncodings'];
+            self::$returnOutput = $state['returnOutput'];
+            self::$outputFile = $state['outputFile'];
+            self::$aliases = $state['aliases'];
+            self::$traceBlacklist = $state['traceBlacklist'];
             self::$classNameBlacklist = $state['classNameBlacklist'];
-            self::$enabledParsers     = $state['enabledParsers'];
+            self::$enabledParsers = $state['enabledParsers'];
 
             $rich->setAssetsNeeded($state['SageDecoratorsRich::firstRun']);
             $plain->setAssetsNeeded($state['SageDecoratorsPlain::firstRun']);
@@ -299,24 +307,24 @@ class Sage
         }
 
         return array(
-            'enabled'                       => self::$_enabledMode,
-            'editor'                        => self::$editor,
-            'fileLinkServerPath'            => self::$fileLinkServerPath,
-            'fileLinkLocalPath'             => self::$fileLinkLocalPath,
-            'displayCalledFrom'             => self::$displayCalledFrom,
-            'maxLevels'                     => self::$maxLevels,
-            'theme'                         => self::$theme,
-            'expandedByDefault'             => self::$expandedByDefault,
-            'cliDetection'                  => self::$cliDetection,
-            'cliColors'                     => self::$cliColors,
-            'charEncodings'                 => self::$charEncodings,
-            'returnOutput'                  => self::$returnOutput,
-            'outputFile'                    => self::$outputFile,
-            'aliases'                       => self::$aliases,
-            'traceBlacklist'                => self::$traceBlacklist,
-            'classNameBlacklist'            => self::$classNameBlacklist,
-            'enabledParsers'                => self::$enabledParsers,
-            'SageDecoratorsRich::firstRun'  => $rich->areAssetsNeeded(),
+            'enabled' => self::$_enabledMode,
+            'editor' => self::$editor,
+            'fileLinkServerPath' => self::$fileLinkServerPath,
+            'fileLinkLocalPath' => self::$fileLinkLocalPath,
+            'displayCalledFrom' => self::$displayCalledFrom,
+            'maxLevels' => self::$maxLevels,
+            'theme' => self::$theme,
+            'expandedByDefault' => self::$expandedByDefault,
+            'cliDetection' => self::$cliDetection,
+            'cliColors' => self::$cliColors,
+            'charEncodings' => self::$charEncodings,
+            'returnOutput' => self::$returnOutput,
+            'outputFile' => self::$outputFile,
+            'aliases' => self::$aliases,
+            'traceBlacklist' => self::$traceBlacklist,
+            'classNameBlacklist' => self::$classNameBlacklist,
+            'enabledParsers' => self::$enabledParsers,
+            'SageDecoratorsRich::firstRun' => $rich->areAssetsNeeded(),
             'SageDecoratorsPlain::firstRun' => $plain->areAssetsNeeded()
         );
     }
@@ -376,7 +384,7 @@ class Sage
     {
         // act both as a setter...
         if (isset($forceMode)) {
-            $before             = self::$_enabledMode;
+            $before = self::$_enabledMode;
             self::$_enabledMode = $forceMode;
 
             return $before;
@@ -454,7 +462,7 @@ class Sage
         try {
             $params = func_get_args();
 
-            return call_user_func_array(array('Sage', 'doDump'), $params);
+            return call_user_func_array(array('Flames\ThirdParty\Sage\Sage', 'doDump'), $params);
         } catch (Throwable $e) {
         } catch (Exception $e) {
         }
@@ -466,7 +474,7 @@ class Sage
     {
         $enabledMode = self::enabled();
 
-        if (! $enabledMode) {
+        if (!$enabledMode) {
             return 5463;
         }
 
@@ -476,7 +484,7 @@ class Sage
 
         // auto-detect mode if not explicitly set
         if ($enabledMode === true) {
-            if (! empty($modifiers) && strpos($modifiers, 'print') !== false && isset($callee['file'])) {
+            if (!empty($modifiers) && strpos($modifiers, 'print') !== false && isset($callee['file'])) {
                 $newMode = self::MODE_RICH;
             } elseif (self::$outputFile && substr(self::$outputFile, -5) === '.html') {
                 $newMode = self::MODE_RICH;
@@ -497,7 +505,7 @@ class Sage
                 }
             }
 
-            if (! empty($modifiers) && strpos($modifiers, '~') !== false) {
+            if (!empty($modifiers) && strpos($modifiers, '~') !== false) {
                 switch ($newMode) {
                     case self::MODE_RICH:
                         $newMode = self::MODE_PLAIN;
@@ -514,23 +522,29 @@ class Sage
 
         $decoratorClass = self::enabled() === self::MODE_RICH ? 'SageDecoratorsRich' : 'SageDecoratorsPlain';
         /** @var SageDecoratorsPlain|SageDecoratorsRich $decorator */
-        $decorator = new $decoratorClass();
+
+        if ($decoratorClass === 'SageDecoratorsRich') {
+            $decorator = new SageDecoratorsRich();
+        }
+        elseif ($decoratorClass === 'SageDecoratorsPlain') {
+            $decorator = new SageDecoratorsPlain();
+        }
 
         $firstRunOldValue = $decorator->areAssetsNeeded();
 
         // process modifiers: @, +, !, ~ and -
-        if (! empty($modifiers) && strpos($modifiers, '-') !== false) {
+        if (!empty($modifiers) && strpos($modifiers, '-') !== false) {
             $decorator->setAssetsNeeded(true);
 
             while (ob_get_level()) {
                 ob_end_clean();
             }
         }
-        if (! empty($modifiers) && strpos($modifiers, '+') !== false) {
+        if (!empty($modifiers) && strpos($modifiers, '+') !== false) {
             $expandedByDefaultOldValue = self::$expandedByDefault;
-            self::$expandedByDefault   = true;
+            self::$expandedByDefault = true;
         }
-        if (! empty($modifiers) && strpos($modifiers, '!') !== false) {
+        if (!empty($modifiers) && strpos($modifiers, '!') !== false) {
             /*if (strpos($modifiers, '!!') !== false) {
                 $oldClassNameBlacklist = self::$classNameBlacklist = array();
                 $oldTraceBlacklist     = self::$traceBlacklist = array();
@@ -543,35 +557,35 @@ class Sage
                 }
             } else {*/
             $maxLevelsOldValue = self::$maxLevels;
-            self::$maxLevels   = false;
+            self::$maxLevels = false;
             /*}*/
         }
-        if (! empty($modifiers) && strpos($modifiers, '@') !== false) {
-            $returnOldValue     = self::$returnOutput;
+        if (!empty($modifiers) && strpos($modifiers, '@') !== false) {
+            $returnOldValue = self::$returnOutput;
             self::$returnOutput = true;
         }
         if (self::$returnOutput) {
             if (self::$returnOutput === true) {
                 $decorator->setAssetsNeeded(true);
-            } elseif (! isset(self::$_openedOutput[self::$returnOutput])) {
+            } elseif (!isset(self::$_openedOutput[self::$returnOutput])) {
                 $decorator->setAssetsNeeded(true);
 
                 self::$_openedOutput[self::$returnOutput] = true;
             }
         }
 
-        if (! empty($modifiers) && strpos($modifiers, 'print') !== false && isset($callee['file'])) {
+        if (!empty($modifiers) && strpos($modifiers, 'print') !== false && isset($callee['file'])) {
             $outputFileOldValue = self::$outputFile;
-            self::$outputFile   = dirname($callee['file']) . '/sage.html';
+            self::$outputFile = dirname($callee['file']) . '/sage.html';
         }
 
-        if (self::$outputFile && ! isset(self::$_openedOutput[self::$outputFile])) {
+        if (self::$outputFile && !isset(self::$_openedOutput[self::$outputFile])) {
             $firstRunOldValue = $decorator->areAssetsNeeded();
 
             $decorator->setAssetsNeeded(true);
         }
 
-        $trace      = false;
+        $trace = false;
         $lightTrace = false;
         if (func_num_args() === 1) {
             if ($names === array('1') && $data === 1) {
@@ -580,7 +594,7 @@ class Sage
             } elseif ($names === array('2') && $data === 2) {
                 // Sage::dump(2) shorthand todo: create Sage::traceWithoutArgs()
                 $lightTrace = true;
-                $trace      = debug_backtrace();
+                $trace = debug_backtrace();
             } elseif (is_array($data)) {
                 $trace = $data; // test if the single parameter is result of debug_backtrace()
             }
@@ -601,14 +615,14 @@ class Sage
         } else {
             if (func_num_args() === 0) {
                 SageParser::reset();
-                $tmp            = microtime();
-                $varData        = SageParser::process($tmp, '');
-                $varData->type  = null;
-                $varData->name  = 'Sage called with no arguments';
+                $tmp = microtime();
+                $varData = SageParser::process($tmp, '');
+                $varData->type = null;
+                $varData->name = 'Sage called with no arguments';
                 $varData->value = null;
-                $varData->size  = null;
-                if (! empty($callee['function'])) {
-                    if (! empty($callee['class']) && ! empty($callee['type'])) {
+                $varData->size = null;
+                if (!empty($callee['function'])) {
+                    if (!empty($callee['class']) && !empty($callee['type'])) {
                         $name = $callee['class'] . $callee['type'] . $callee['function'];
                     } else {
                         $name = $callee['function'];
@@ -634,7 +648,7 @@ class Sage
         // now restore all on-the-fly settings and return
 
         if (self::$outputFile) {
-            if (! isset(self::$_openedOutput[self::$outputFile])) {
+            if (!isset(self::$_openedOutput[self::$outputFile])) {
                 self::$_openedOutput[self::$outputFile] = fopen(self::$outputFile, 'w');
                 $decorator->setAssetsNeeded($firstRunOldValue);
             }
@@ -646,7 +660,7 @@ class Sage
 
         $decorator->setAssetsNeeded(false);
 
-        if (! empty($modifiers)) {
+        if (!empty($modifiers)) {
             if (strpos($modifiers, '~') !== false) {
                 $decorator->setAssetsNeeded($firstRunOldValue);
             }
@@ -659,8 +673,8 @@ class Sage
                 self::$maxLevels = $maxLevelsOldValue;
             }
 
-            if (! empty($modifiers) && strpos($modifiers, 'print') !== false && isset($callee['file'])) {
-                $tmp              = self::$outputFile;
+            if (!empty($modifiers) && strpos($modifiers, 'print') !== false && isset($callee['file'])) {
+                $tmp = self::$outputFile;
                 self::$outputFile = $outputFileOldValue;
 
                 if (strpos($modifiers, '@') === false) {
@@ -710,10 +724,10 @@ class Sage
      */
     private static function _getCalleeInfo()
     {
-        $trace                  = debug_backtrace();
-        $previousCaller         = array();
-        $miniTrace              = array();
-        $prevStep               = array();
+        $trace = debug_backtrace();
+        $previousCaller = array();
+        $miniTrace = array();
+        $prevStep = array();
         $insideTemplateDetected = null;
 
         // go from back of trace forward to find first occurrence of call to Sage or its wrappers
@@ -740,7 +754,7 @@ class Sage
         }
         $callee = $step;
 
-        if (! isset($callee['file']) || ! is_readable($callee['file'])) {
+        if (!isset($callee['file']) || !is_readable($callee['file'])) {
             return array(null, null, $callee, $previousCaller, $miniTrace);
         }
 
@@ -754,8 +768,8 @@ class Sage
         //
         //        } while (! $file->eof());
 
-        $file   = fopen($callee['file'], 'r');
-        $line   = 0;
+        $file = fopen($callee['file'], 'r');
+        $line = 0;
         $source = '';
         while (($row = fgets($file)) !== false) {
             if (++$line > $callee['line']) {
@@ -806,39 +820,39 @@ class Sage
             PREG_OFFSET_CAPTURE
         );
 
-        $modifiers  = end($matches[1]);
+        $modifiers = end($matches[1]);
         $callToSage = end($matches[2]);
-        $bracket    = end($matches[3]);
+        $bracket = end($matches[3]);
 
         if (empty($callToSage)) {
             // if a wrapper is misconfigured, don't display the whole file as variable name
             return array(array(), $modifiers, $callee, $previousCaller, $miniTrace);
         }
 
-        $modifiers    = str_replace("\x07", '', $modifiers[0]);
+        $modifiers = str_replace("\x07", '', $modifiers[0]);
         $paramsString = preg_replace("[\x07+]", ' ', substr($source, $bracket[1] + 1));
         // we now have a string like this:
         // <parameters passed>); <the rest of the last read line>
 
         // remove everything in brackets and quotes, we don't need nested statements nor literal strings which would
         // complicate separating individual arguments
-        $c              = strlen($paramsString);
-        $inString       = $escaped = $openedBracket = $closingBracket = false;
-        $i              = 0;
-        $inBrackets     = 0;
+        $c = strlen($paramsString);
+        $inString = $escaped = $openedBracket = $closingBracket = false;
+        $i = 0;
+        $inBrackets = 0;
         $openedBrackets = array();
-        $bracketPairs   = array('(' => ')', '[' => ']', '{' => '}');
+        $bracketPairs = array('(' => ')', '[' => ']', '{' => '}');
 
         while ($i < $c) {
             $letter = $paramsString[$i];
 
-            if (! $inString) {
+            if (!$inString) {
                 if ($letter === '\'' || $letter === '"') {
                     $inString = $letter;
                 } elseif ($letter === '(' || $letter === '[' || $letter === '{') {
                     $inBrackets++;
                     $openedBrackets[] = $openedBracket = $letter;
-                    $closingBracket   = $bracketPairs[$letter];
+                    $closingBracket = $bracketPairs[$letter];
                 } elseif ($inBrackets && $letter === $closingBracket) {
                     $inBrackets--;
                     array_pop($openedBrackets);
@@ -846,11 +860,11 @@ class Sage
                     if ($openedBracket) {
                         $closingBracket = $bracketPairs[$openedBracket];
                     }
-                } elseif (! $inBrackets && $letter === ')') {
+                } elseif (!$inBrackets && $letter === ')') {
                     $paramsString = substr($paramsString, 0, $i);
                     break;
                 }
-            } elseif ($letter === $inString && ! $escaped) {
+            } elseif ($letter === $inString && !$escaped) {
                 $inString = false;
             }
 
@@ -867,7 +881,7 @@ class Sage
                 }
             }
 
-            $escaped = ! $escaped && ($letter === '\\');
+            $escaped = !$escaped && ($letter === '\\');
             $i++;
         }
 
@@ -891,15 +905,15 @@ class Sage
      */
     private static function _removeAllButCode($source)
     {
-        $commentTokens    = array(
-            T_COMMENT     => true,
+        $commentTokens = array(
+            T_COMMENT => true,
             T_INLINE_HTML => true,
             T_DOC_COMMENT => true,
         );
         $whiteSpaceTokens = array(
-            T_WHITESPACE         => true,
-            T_CLOSE_TAG          => true,
-            T_OPEN_TAG           => true,
+            T_WHITESPACE => true,
+            T_CLOSE_TAG => true,
+            T_OPEN_TAG => true,
             T_OPEN_TAG_WITH_ECHO => true,
         );
 
@@ -927,17 +941,17 @@ class Sage
 
     private static function _parseTrace($data)
     {
-        $trace       = array();
+        $trace = array();
         $traceFields = array('file', 'line', 'args', 'class');
-        $fileFound   = false; // file element must exist in one of the steps
-        $lastStep    = array();
+        $fileFound = false; // file element must exist in one of the steps
+        $lastStep = array();
 
         // validate whether a trace was indeed passed
         foreach ($data as $step) {
-            if (! is_array($step) || ! isset($step['function'])) {
+            if (!is_array($step) || !isset($step['function'])) {
                 return false;
             }
-            if (! $fileFound && isset($step['file']) && file_exists($step['file'])) {
+            if (!$fileFound && isset($step['file']) && file_exists($step['file'])) {
                 $fileFound = true;
             }
 
@@ -948,7 +962,7 @@ class Sage
                     break;
                 }
             }
-            if (! $valid) {
+            if (!$valid) {
                 return false;
             }
 
@@ -961,8 +975,8 @@ class Sage
                 // take first step from the top that is not inside Sage already
                 if (isset($step['file'], $step['line'])) {
                     $lastStep = array(
-                        'file'     => $step['file'],
-                        'line'     => $step['line'],
+                        'file' => $step['file'],
+                        'line' => $step['line'],
                         'function' => '',
                     );
                 }
@@ -973,7 +987,7 @@ class Sage
             $trace[] = $step;
         }
 
-        if (! $fileFound) {
+        if (!$fileFound) {
             return false;
         }
 
@@ -1002,9 +1016,9 @@ class Sage
 
     private static function _initSetting($name, $default)
     {
-        if (! isset(self::$$name)) {
+        if (!isset(self::$$name)) {
             $value = get_cfg_var('sage.' . $name);
-            if (! $value) {
+            if (!$value) {
                 $value = $default;
             }
 

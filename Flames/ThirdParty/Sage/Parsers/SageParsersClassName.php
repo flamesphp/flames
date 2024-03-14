@@ -1,5 +1,14 @@
 <?php
 
+namespace Flames\ThirdParty\Sage\Parsers;
+
+use Exception;
+use Flames\ThirdParty\Sage\inc\SageHelper;
+use Flames\ThirdParty\Sage\parsers\SageParserInterface;
+use Flames\ThirdParty\Sage\Sage;
+use ReflectionClass;
+use Throwable;
+
 /**
  * @internal
  */
@@ -14,16 +23,16 @@ class SageParsersClassName implements SageParserInterface
     {
         if (
             Sage::enabled() === Sage::MODE_TEXT_ONLY
-            || ! SageHelper::php53orLater()
+            || !SageHelper::php53orLater()
             || empty($variable)
-            || ! is_string($variable)
+            || !is_string($variable)
             || strlen($variable) < 3
         ) {
             return false;
         }
 
         try {
-            if (! @class_exists($variable)) {
+            if (!@class_exists($variable)) {
                 return false;
             }
         } catch (Throwable $t) {
@@ -33,7 +42,7 @@ class SageParsersClassName implements SageParserInterface
         }
 
         $reflector = new ReflectionClass($variable);
-        if (! $reflector->isUserDefined()) {
+        if (!$reflector->isUserDefined()) {
             return false;
         }
 

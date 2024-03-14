@@ -1,5 +1,10 @@
 <?php
 
+namespace Flames\ThirdParty\Sage\Parsers;
+
+use Flames\ThirdParty\Sage\inc\SageHelper;
+use Flames\ThirdParty\Sage\parsers\SageParserInterface;
+
 /**
  * @internal
  */
@@ -15,8 +20,8 @@ class SageParsersMicrotime implements SageParserInterface
 
     public function parse(&$variable, $varData)
     {
-        if (! is_string($variable)
-            || ! preg_match('/^0\.[\d]{8} [\d]{10}$/', $variable)) {
+        if (!is_string($variable)
+            || !preg_match('/^0\.[\d]{8} [\d]{10}$/', $variable)) {
             return false;
         }
 
@@ -26,20 +31,20 @@ class SageParsersMicrotime implements SageParserInterface
 
         $size = memory_get_usage(true);
 
-        $unit        = array('B', 'KB', 'MB', 'GB', 'TB');
+        $unit = array('B', 'KB', 'MB', 'GB', 'TB');
         $memoryUsage = round($size / pow(1024, ($i = floor(log($size, 1024)))), 3) . $unit[$i];
 
         $numberOfCalls = count(self::$times);
         if ($numberOfCalls > 0) {
-            $lap          = $time - end(self::$times);
+            $lap = $time - end(self::$times);
             self::$laps[] = $lap;
 
             $sinceLast = round($lap, 4) . 's.';
             if ($numberOfCalls > 1) {
-                $sinceStart      = round($time - self::$times[0], 4) . 's.';
+                $sinceStart = round($time - self::$times[0], 4) . 's.';
                 $averageDuration = round(array_sum(self::$laps) / $numberOfCalls, 4) . 's.';
             } else {
-                $sinceStart      = null;
+                $sinceStart = null;
                 $averageDuration = null;
             }
 
@@ -58,7 +63,7 @@ class SageParsersMicrotime implements SageParserInterface
                 );
 
                 if ($sinceStart !== null) {
-                    $varData->extendedValue['Since start']      = $sinceStart;
+                    $varData->extendedValue['Since start'] = $sinceStart;
                     $varData->extendedValue['Average duration'] = $averageDuration;
                 }
 
@@ -67,7 +72,7 @@ class SageParsersMicrotime implements SageParserInterface
         } else {
             $varData->extendedValue = array(
                 'Time (from microtime)' => @date('Y-m-d H:i:s', (int)$sec) . substr($usec, 1),
-                'PHP MEMORY USAGE'      => $memoryUsage
+                'PHP MEMORY USAGE' => $memoryUsage
             );
         }
 

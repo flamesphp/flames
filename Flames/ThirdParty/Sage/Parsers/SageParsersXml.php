@@ -1,5 +1,12 @@
 <?php
 
+namespace Flames\ThirdParty\Sage\Parsers;
+
+use Exception;
+use Flames\ThirdParty\Sage\inc\SageHelper;
+use Flames\ThirdParty\Sage\inc\SageParser;
+use Flames\ThirdParty\Sage\parsers\SageParserInterface;
+
 /**
  * @internal
  */
@@ -13,13 +20,13 @@ class SageParsersXml implements SageParserInterface
     public function parse(&$variable, $varData)
     {
         return false; // this is an unsolved problem at humanity level
-        if (! SageHelper::isRichMode()) {
+        if (!SageHelper::isRichMode()) {
             return false;
         }
 
         if (is_string($variable) && substr($variable, 0, 5) === '<?xml') {
             try {
-                $e   = libxml_use_internal_errors(true);
+                $e = libxml_use_internal_errors(true);
                 $xml = simplexml_load_string($variable);
                 libxml_use_internal_errors($e);
             } catch (Exception $e) {

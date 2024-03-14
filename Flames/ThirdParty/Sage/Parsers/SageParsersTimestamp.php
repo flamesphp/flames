@@ -1,5 +1,10 @@
 <?php
 
+namespace Flames\ThirdParty\Sage\Parsers;
+
+use Flames\ThirdParty\Sage\inc\SageHelper;
+use Flames\ThirdParty\Sage\parsers\SageParserInterface;
+
 /**
  * @internal
  */
@@ -12,7 +17,7 @@ class SageParsersTimestamp implements SageParserInterface
 
     public function parse(&$variable, $varData)
     {
-        if (! $this->_fits($variable)) {
+        if (!$this->_fits($variable)) {
             return false;
         }
 
@@ -24,11 +29,11 @@ class SageParsersTimestamp implements SageParserInterface
 
     private function _fits($variable)
     {
-        if (! SageHelper::isRichMode()) {
+        if (!SageHelper::isRichMode()) {
             return false;
         }
 
-        if (! is_string($variable) && ! is_int($variable)) {
+        if (!is_string($variable) && !is_int($variable)) {
             return false;
         }
 

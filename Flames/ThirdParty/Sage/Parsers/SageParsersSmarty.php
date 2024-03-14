@@ -1,5 +1,10 @@
 <?php
 
+namespace Flames\ThirdParty\Sage\Parsers;
+
+use Flames\ThirdParty\Sage\parsers\SageParserInterface;
+use Smarty;
+
 /**
  * @internal
  */
@@ -12,8 +17,8 @@ class SageParsersSmarty implements SageParserInterface
 
     public function parse(&$variable, $varData)
     {
-        if (! $variable instanceof Smarty
-            || ! defined('Smarty::SMARTY_VERSION') // lower than 3.x
+        if (!$variable instanceof Smarty
+            || !defined('Smarty::SMARTY_VERSION') // lower than 3.x
         ) {
             return false;
         }

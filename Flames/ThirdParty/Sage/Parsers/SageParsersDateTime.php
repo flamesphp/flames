@@ -1,5 +1,10 @@
 <?php
 
+namespace Flames\ThirdParty\Sage\Parsers;
+
+use DateTimeInterface;
+use Flames\ThirdParty\Sage\parsers\SageParserInterface;
+
 /**
  * @internal
  */
@@ -12,7 +17,7 @@ class SageParsersDateTime implements SageParserInterface
 
     public function parse(&$variable, $varData)
     {
-        if (! $variable instanceof DateTimeInterface) {
+        if (!$variable instanceof DateTimeInterface) {
             return false;
         }
 
@@ -31,6 +36,6 @@ class SageParsersDateTime implements SageParserInterface
         $format .= ' (P)';
 
         $varData->value = $variable->format($format);
-        $varData->type  = get_class($variable);
+        $varData->type = get_class($variable);
     }
 }

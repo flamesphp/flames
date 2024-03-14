@@ -1,5 +1,12 @@
 <?php
 
+namespace Flames\ThirdParty\Sage\Parsers;
+
+use Flames\ThirdParty\Sage\inc\SageHelper;
+use Flames\ThirdParty\Sage\inc\SageParser;
+use Flames\ThirdParty\Sage\parsers\SageParserInterface;
+use ReflectionObject;
+
 /**
  * @internal
  */
@@ -12,7 +19,7 @@ class SageParsersEloquent implements SageParserInterface
 
     public function parse(&$variable, $varData)
     {
-        if (! SageHelper::php53orLater() || ! is_a($variable, '\Illuminate\Database\Eloquent\Model')) {
+        if (!SageHelper::php53orLater() || !is_a($variable, '\Illuminate\Database\Eloquent\Model')) {
             return false;
         }
 
@@ -29,7 +36,7 @@ class SageParsersEloquent implements SageParserInterface
             $varData->type = $reflection->getName();
             $varData->addTabToView($variable, 'data from ' . $reference, $attributes);
         } else {
-            $varData->type          = $reflection->getName() . '; ' . $reference . ' row data:';
+            $varData->type = $reflection->getName() . '; ' . $reference . ' row data:';
             $varData->extendedValue = SageParser::alternativesParse($variable, $attributes);
         }
     }
