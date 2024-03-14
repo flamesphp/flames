@@ -2,6 +2,7 @@
 
 namespace Flames\ORM\Database;
 
+use Exception;
 use Flames\Collection\Arr;
 use Flames\Model;
 use PDO;
@@ -38,9 +39,9 @@ abstract class Driver
         return null;
     }
 
-    public function getWithFilters(Arr|array $filters) : Arr|null
+    public function getWithFilters(Arr|array $filters, Arr|array $options = null) : Arr
     {
-        return null;
+        return Arr();
     }
 
     public function insert(Arr|array $data) : mixed
@@ -102,7 +103,7 @@ abstract class Driver
                 }
 
                 if ($column->default === null) {
-                    return (float)0;
+                    return 0.0;
                 }
                 return $column->default;
             }
@@ -119,10 +120,10 @@ abstract class Driver
                 return $column->default;
             }
 
-            if ($value === 1 || $value === (float)1 || $value === '1') {
+            if ($value === 1 || $value === 1.0 || $value === '1') {
                 return true;
             }
-            elseif ($value === 0 || $value === (float)0 || $value === '0') {
+            elseif ($value === 0 || $value === 0.0 || $value === '0') {
                 return false;
             }
             elseif ($value === 'true') {
@@ -131,7 +132,7 @@ abstract class Driver
             elseif ($value === 'false') {
                 return false;
             }
-            elseif ($value === -1 || $value === (float)-1 || $value === '-1') {
+            elseif ($value === -1 || $value === -1.0 || $value === '-1') {
                 if ($column->nullable === false) {
                     return $column->default;
                 }
@@ -142,5 +143,60 @@ abstract class Driver
         }
 
         return null;
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function getIndexColumn() : Arr|null
+    {
+        $indexColumn = null;
+        foreach ($this->data->column as $column) {
+            if ($column->primary === true || $column->autoIncrement === true) {
+                $indexColumn = $column;
+                break;
+            }
+        }
+        if ($indexColumn === null) {
+            foreach ($this->data->column as $column) {
+                if ($column->unique === true) {
+                    $indexColumn = $column;
+                    break;
+                }
+            }
+        }
+
+        if ($indexColumn === null) {
+            throw new Exception('Missing primary or unique column in model ' . $this->data->class . '.');
+        }
+
+        return $indexColumn;
+    }
+
+    protected function castData(Arr|array $data) : array
+    {
+        $castData = [];
+        foreach ($data as $key => $value) {
+            $castData[$key] = self::cast($key, $value);
+        }
+        return $castData;
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function verifyUpdateIndexData(mixed $index, Arr|array $data): void
+    {
+        if (isset($this->data->column->{$index}) === false) {
+            throw new \Exception('Column ' . $index . ' ($model->save() or driver::update()) in class ' . $this->data->class . ' does not exists.');
+        }
+
+        if (count($data) === 0) {
+            throw new \Exception('Data update payload ($model->save() or driver::update()) in class ' . $this->data->class . ' can\'t be empty.');
+        }
+
+        if (isset($data[$index]) === false) {
+            throw new \Exception('Data update payload ($model->save() or driver::update()) in class ' . $this->data->class . ' missing where index ' . $index .'.');
+        }
     }
 }

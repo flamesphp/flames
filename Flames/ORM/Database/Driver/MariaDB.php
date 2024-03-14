@@ -2,71 +2,91 @@
 
 namespace Flames\ORM\Database\Driver;
 
+use Exception;
 use Flames\Collection\Arr;
 use Flames\Model;
 use Flames\ORM\Database\Driver;
+use PDOException;
 
 class MariaDB extends Driver
 {
+    /**
+     * @throws Exception
+     */
     public function getByIndex(mixed $index) : Model|null
     {
-        $indexColumn = null;
-        foreach ($this->data->column as $column) {
-            if ($column->primary === true || $column->autoIncrement === true) {
-                $indexColumn = $column;
-                break;
-            }
+        $indexColumn = $this->getIndexColumn();
+
+        $inserts = $this->getWithFilters([$indexColumn->property => $index], ['limit' => 1]);
+        if ($inserts->count === 0) {
+            return null;
         }
-        if ($indexColumn === null) {
+
+        return $inserts[0];
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function getWithFilters(Arr|array $filters, Arr|array $options = null) : Arr
+    {
+        $query = ('SELECT * FROM `' . $this->data->table . '` ' . "WHERE (");
+
+        if (count($filters) === 0) {
+            throw new Exception('Filters payload getWithFilters() in class ' . $this->data->class . ' can\'t be empty.');
+        }
+
+        $filters = $this->parseFilters($filters);
+        $where = $this->mountWhere($filters);
+        $query .= $where['query'];
+
+        $variables = $where['variables'];
+        $query .= "\n)";
+
+
+        dump($options);
+
+        dump($query);
+        exit;
+
+        /////";
+
+        $statement = $this->connection->prepare($query);
+        $statement->execute($variables);
+
+        $models = Arr();
+        while ($row = $statement->fetch()) {
+            $modelData = [];
+
             foreach ($this->data->column as $column) {
-                if ($column->unique === true) {
-                    $indexColumn = $column;
-                    break;
-                }
+                $modelData[$column->property] = $row[$column->name];
             }
+
+            $models[] = new $this->data->class($modelData, true);
         }
 
-        if ($indexColumn === null) {
-            throw new \Exception('Missing primary or unique column in model ' . $this->data->class . '.');
-        }
-
-        $inserts = $this->getWithFilters([$indexColumn->property => $index]);
-        dump($inserts);
-        exit;
-
-
-        return null;
+        return $models;
     }
 
-    public function getWithFilters(Arr|array $filters) : Arr|null
+    /**
+     * @throws Exception
+     */
+    public function insert(Arr|array $data) : bool|Arr
     {
-        // TODO: verify memory
-
-        dump('with filter');
-        exit;
-
-        return null;
-    }
-
-    public function insert(Arr|array $data) : mixed
-    {
-        $castData = [];
-        foreach ($data as $key => $value) {
-            $castData[$key] = self::cast($key, $value);
-        }
-        $data = $castData;
+        $data = $this->castData($data);
 
         if (count($data) === 0) {
-            throw new \Exception('Data insert payload ($model->save() or driver::insert()) in class ' . $this->data->class . ' can\'t be empty.');
+            throw new Exception('Data insert payload ($model->save() or driver::insert()) in class ' . $this->data->class . ' can\'t be empty.');
         }
 
         $query = ('INSERT INTO `' . $this->data->table . '` ' . "\n\t(");
         foreach ($data as $key => $_) {
             if (isset($this->data->column->{$key}) === false) {
-                throw new \Exception('Column ' . $key . ' ($model->save() or driver::insert()) in class ' . $this->data->class . ' does not exists.');
+                throw new Exception('Column ' . $key . ' ($model->save() or driver::insert()) in class ' . $this->data->class . ' does not exists.');
             }
-            $query .= ('`' . $key . '`, ');
+            $query .= ('`' . $this->data->column->{$key}->name . '`, ');
         }
+
         $query = (substr($query, 0, -2) . ")\nVALUES (");
         foreach ($data as $key => $_) {
             $query .= (':' . $key . ', ');
@@ -93,19 +113,12 @@ class MariaDB extends Driver
         return true;
     }
 
+    /**
+     * @throws Exception
+     */
     public function update(mixed $index, Arr|array $data) : mixed
     {
-        if (isset($this->data->column->{$index}) === false) {
-            throw new \Exception('Column ' . $index . ' ($model->save() or driver::update()) in class ' . $this->data->class . ' does not exists.');
-        }
-
-        if (count($data) === 0) {
-            throw new \Exception('Data update payload ($model->save() or driver::update()) in class ' . $this->data->class . ' can\'t be empty.');
-        }
-
-        if (isset($data[$index]) === false) {
-            throw new \Exception('Data update payload ($model->save() or driver::update()) in class ' . $this->data->class . ' missing where index ' . $index .'.');
-        }
+        $this->verifyUpdateIndexData($index, $data);
 
         $query = ('UPDATE `' . $this->data->table . '` SET ');
         foreach ($data as $key => $value) {
@@ -114,13 +127,13 @@ class MariaDB extends Driver
             }
 
             if (isset($this->data->column->{$key}) === false) {
-                throw new \Exception('Column ' . $key . ' ($model->save() or driver::update()) in class ' . $this->data->class . ' does not exists.');
+                throw new Exception('Column ' . $key . ' ($model->save() or driver::update()) in class ' . $this->data->class . ' does not exists.');
             }
 
-            $query .= ("\n\t`" . $key . '` = :' . $key . ',');
+            $query .= ("\n\t`" . $this->data->column->{$key}->name . '` = :' . $key . ',');
         }
         $query = substr($query, 0, -1);
-        $query .= ("\nWHERE `" . $this->data->table . '`.`' . $index . '` = :' . $index . ';');
+        $query .= ("\nWHERE `" . $this->data->table . '`.`' . $this->data->column->{$index}->name . '` = :' . $index . ';');
 
         $statement = $this->connection->prepare($query);
         $statement->execute($data);
@@ -141,6 +154,90 @@ class MariaDB extends Driver
         return null;
     }
 
+    protected function __validateColumn(Arr $column) : Arr
+    {
+        if ($column->type === 'string') {
+            $column->type = 'varchar';
+        }
+
+        if ($column->type === 'bigint') {
+            if ($column->size === null) {
+                $column->size = 20;
+            }
+        }
+        elseif ($column->type === 'varchar') {
+            if ($column->size === null) {
+                $column->size = 256;
+            }
+        }
+        elseif ($column->type === 'int') {
+            if ($column->size === null) {
+                $column->size = 11;
+            }
+        }
+
+        return $column;
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function parseFilters(Arr|array $filters) : array
+    {
+        if ($filters instanceof Arr) {
+            $filters = (array)$filters;
+        }
+
+        $_filters = [];
+        foreach ($filters as $key => $filter) {
+            if (is_array($filter) || $filter instanceof Arr) {
+                $filterCount = count($filter);
+                if ($filterCount === 2) {
+                    $_filters[] = [$filter[0], '=', $filter[1], 'AND'];
+                }
+                elseif ($filterCount === 3) {
+                    $_filters[] = [$filter[0], $filter[1], $filter[2], 'AND'];
+                }
+                elseif ($filterCount === 4) {
+                    $_filters[] = [$filter[0], $filter[1], $filter[2], $filter[3], $filter[4]];
+                }
+                else {
+                    throw new Exception('Invalid filter data.');
+                }
+                continue;
+            }
+
+            $_filters[] = [$key, '=', $filter, 'AND'];
+        }
+
+        return $_filters;
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function mountWhere(Arr|array $filters) : array
+    {
+        $query     = '';
+        $variables = [];
+        $lastEnd   = null;
+
+        $countFilters = count($filters);
+        for ($i = 0; $i < $countFilters; $i++) {
+            $filter = $filters[$i];
+            if (isset($this->data->column->{$filter[0]}) === false) {
+                throw new Exception('Column ' . $filter[0] . ' getWithFilters() in class ' . $this->data->class . ' does not exists.');
+            }
+
+            $variables['filter_' . $i] = $filter[2];
+            $lastEnd = $filter[3];
+            $query .= ("\n\t`" . $this->data->column->{$filter[0]}->name . '` ' . $filter[1] . ' :filter_' . $i . ' ' . $filter[3]);
+        }
+
+        $query = substr($query, 0, -(strlen($lastEnd) + 1));
+        return ['query' => $query, 'variables' => $variables];
+    }
+
     protected const __VERSION__ = 1;
 
     protected function __checkStructure() : bool
@@ -155,7 +252,7 @@ class MariaDB extends Driver
         // Get migration table
         try {
             $query = $this->connection->query('SELECT * FROM `flames_migration`;');
-        } catch (\PDOException $_) {
+        } catch (PDOException $_) {
             // Case fail, create migration table
             $this->__mountMigration();
             $query = $this->connection->query('SELECT * FROM `flames_migration`;');
@@ -205,7 +302,7 @@ class MariaDB extends Driver
         return true;
     }
 
-    protected function __mountMigration()
+    protected function __mountMigration(): void
     {
         $query = <<<SQL
             START TRANSACTION;
@@ -226,7 +323,7 @@ SQL;
         $this->connection->query($query);
     }
 
-    protected function __mountTable(string $hash)
+    protected function __mountTable(string $hash): void
     {
         $query = <<<SQL
             START TRANSACTION;
@@ -265,7 +362,7 @@ SQL;
         $this->connection->query($query);
     }
 
-    protected function __updateTable(string $hash)
+    protected function __updateTable(string $hash): void
     {
         $query = $this->connection->query('SHOW COLUMNS FROM ' . $this->data->table . ';');
         $dbColumns = $query->fetchAll();
@@ -390,25 +487,6 @@ SQL;
         $query .= "\nCOMMIT;";
         $this->connection->query($query);
 
-        // Verify column order
-        // TODO: costs too much processing giant data, already adding new columns in correct order, may not do
-//        $first = true;
-//        $last = null;
-//        foreach ($columns as $column) {
-//            if ($first === true) {
-//                $last = $column;
-//                $first = false;
-//                continue;
-//            }
-//
-//            $preQuery = ("\n\tALTER TABLE `" . $this->data->table . '` CHANGE `' . $column->name . '` `' . $column->name . '` ' . $this->__createColumnBase($column));
-//            if ($column->autoIncrement === true) {
-//                $preQuery .= ' AUTO_INCREMENT';
-//            }
-//            $preQuery .= ' AFTER `' . $last->name . '`;';
-//            $query .= $preQuery;
-//        }
-
         // Drop removed columns
         $query = $this->connection->query('SHOW COLUMNS FROM ' . $this->data->table . ';');
         $dbColumns = $query->fetchAll();
@@ -478,29 +556,4 @@ SQL;
 //
 //        return $query;
 //    }
-
-    protected function __validateColumn(Arr $column) : Arr
-    {
-        if ($column->type === 'string') {
-            $column->type = 'varchar';
-        }
-
-        if ($column->type === 'bigint') {
-            if ($column->size === null) {
-                $column->size = 20;
-            }
-        }
-        elseif ($column->type === 'varchar') {
-            if ($column->size === null) {
-                $column->size = 256;
-            }
-        }
-        elseif ($column->type === 'int') {
-            if ($column->size === null) {
-                $column->size = 11;
-            }
-        }
-
-        return $column;
-    }
 }

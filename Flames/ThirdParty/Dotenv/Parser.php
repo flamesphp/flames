@@ -1,11 +1,9 @@
 <?php
 
-namespace _Flames\Bgaze\Dotenv;
+namespace Flames\ThirdParty\Dotenv;
 
 /**
- * A simple and standalone DotEnv parser for PHP 5.6+
- *
- * @author Bgaze <benjamin@bgaze.fr>
+ * @internal
  */
 class Parser {
 

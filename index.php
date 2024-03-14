@@ -1,4 +1,4 @@
 <?php
 
-require '.kernel/Flames/Kernel.php';
+require 'Flames/Kernel.php';
 Flames\Kernel::run();

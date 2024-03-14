@@ -227,7 +227,7 @@ class SageHelper
 
         $realPath = $file;
 
-        $environment = \Flames\Environment::default();
+        $environment = Flames\Environment::default();
         $localPath = $environment->DUMP_LOCAL_PATH;
         $remotePath = $environment->DUMP_REMOTE_PATH;
 

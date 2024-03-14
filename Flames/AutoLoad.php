@@ -21,7 +21,7 @@ final class AutoLoad
             // Case Flames Internal
             if (str_starts_with($name, 'Flames\\')) {
                 $name = str_replace('\\', '/', $name);
-                $path = (KERNEL_PATH . $name . '.php');
+                $path = (ROOT_PATH . $name . '.php');
                 require $path;
                 return;
             }
@@ -41,7 +41,7 @@ final class AutoLoad
             // Case Fork
             elseif (str_starts_with($name, '_Flames\\')) {
                 $name = str_replace('\\', '/', $name);
-                $path = (KERNEL_PATH . '.fork/' . $name . '.php');
+                $path = (ROOT_PATH . '.fork/' . $name . '.php');
                 require $path;
                 return;
             }

@@ -2,6 +2,7 @@
 
 namespace Flames;
 
+use Exception;
 use Flames\Collection\Arr;
 use Flames\ORM\Database;
 use Flames\ORM\Repository\Data;
@@ -14,6 +15,9 @@ abstract class Repository
     private static string $database;
     private static string $model;
 
+    /**
+     * @throws Exception
+     */
     public static function __constructStatic(): void
     {
         if (self::$__setup === true) {
@@ -24,16 +28,19 @@ abstract class Repository
         self::$__setup = true;
     }
 
+    /**
+     * @throws Exception
+     */
     private static function __setup(Arr $data): void
     {
         if ($data->model === null || class_exists($data->model) === false) {
-            throw new \Exception('Repository ' . static::class . ' need a model.');
+            throw new Exception('Repository ' . static::class . ' need a model.');
         }
 
         if ($data->database === null) {
             $data->database = $data->model::getDatabase();
             if ($data->database === null) {
-                throw new \Exception('Repository ' . static::class . ' need a database, not founded in model.');
+                throw new Exception('Repository ' . static::class . ' need a database, not founded in model.');
             }
         }
 
@@ -43,13 +50,14 @@ abstract class Repository
 
     public static function get(mixed $index) : Model|null
     {
-        $driver = self::getDriver();
-        $data   = $driver->getByIndex($index);
-        dump($data);
-        exit;
-
-        return null;
+        return self::getDriver()->getByIndex($index);
     }
+
+    public static function withFilters(Arr|array $filters, Arr|array $options = null) : Arr|null
+    {
+        return self::getDriver()->getWithFilters($filters, $options);
+    }
+
 
     public static function getDriver(): Database\Driver|null
     {

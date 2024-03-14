@@ -2,6 +2,7 @@
 
 namespace Flames;
 
+use Error;
 use Flames\Collection\Arr;
 use Flames\ORM\Database;
 use Flames\ORM\Model\Data;
@@ -35,7 +36,7 @@ abstract class Model
         }
 
         if ($indexColumn === null) {
-            throw new \Exception('Missing primary or unique column in table ' . self::$table . ' using class ' . static::class . '.');
+            throw new Error('Missing primary or unique column in table ' . self::$table . ' using class ' . static::class . '.');
         }
 
         $data = $this->toArray();

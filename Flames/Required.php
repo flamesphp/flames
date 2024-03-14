@@ -7,7 +7,7 @@ class Required
     public static function _function(string $name)
     {
         if (\function_exists($name) === false) {
-            $path = (ROOT_PATH . '.kernel/.polyfill/' . $name . '.php');
+            $path = (ROOT_PATH . 'Flames/Kernel/Polyfill/' . $name . '.php');
             require $path;
         }
     }

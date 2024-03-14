@@ -3,8 +3,6 @@
 namespace Flames\Collection
 {
 
-    use Flames\Collection\Arr;
-
     /**
      * Description for the class
      * @property int $length
