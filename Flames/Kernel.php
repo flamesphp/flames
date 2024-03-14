@@ -40,6 +40,7 @@ final class Kernel
         Required::file(ROOT_PATH . 'Flames/Kernel/Wrapper/Raw.php');
 
         self::setEnvironment();
+        self::setErrorHandler();
         self::setDumpper();
     }
 
@@ -47,6 +48,18 @@ final class Kernel
     {
         $environment = new Environment();
         $environment->inject();
+    }
+
+    protected static function setErrorHandler() : void
+    {
+        $environment = Environment::default();
+        if ($environment->ERROR_HANDLER_ENABLED === true) {
+            $errorHandler = new \Flames\ThirdParty\Whoops\Run;
+            $pageHandler = new \Flames\ThirdParty\Whoops\Handler\PrettyPageHandler();
+            $pageHandler->setEditor($environment->ERROR_HANDLER_IDE);
+            $errorHandler->pushHandler($pageHandler);
+            $errorHandler->register();
+        }
     }
 
     protected static function setDumpper() : void

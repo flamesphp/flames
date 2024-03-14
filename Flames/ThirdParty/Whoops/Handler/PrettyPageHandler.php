@@ -6,6 +6,8 @@
 
 namespace Flames\ThirdParty\Whoops\Handler;
 
+use Flames\Environment;
+use Flames\Kernel;
 use Flames\ThirdParty\Whoops\Exception\Formatter;
 use Flames\ThirdParty\Whoops\Util\Misc;
 use Flames\ThirdParty\Whoops\Util\TemplateHelper;
@@ -263,13 +265,17 @@ class PrettyPageHandler extends Handler
             "has_frames_tabs"   => $this->getApplicationPaths(),
 
             "tables"      => [
+                "Flames"                => [
+                    'VERSION' => Kernel::VERSION
+                ],
+                "Environment Variables" => $this->masked(Environment::default()->toArray(), '_ENV'),
                 "GET Data"              => $this->masked($_GET, '_GET'),
                 "POST Data"             => $this->masked($_POST, '_POST'),
                 "Files"                 => isset($_FILES) ? $this->masked($_FILES, '_FILES') : [],
                 "Cookies"               => $this->masked($_COOKIE, '_COOKIE'),
                 "Session"               => isset($_SESSION) ? $this->masked($_SESSION, '_SESSION') :  [],
                 "Server/Request Data"   => $this->masked($_SERVER, '_SERVER'),
-                "Environment Variables" => $this->masked($_ENV, '_ENV'),
+                "PHP Environment Variables" => $this->masked($_ENV, '_ENV'),
             ],
         ];
 
@@ -523,8 +529,21 @@ class PrettyPageHandler extends Handler
             );
         }
 
+        $environment = \Flames\Environment::default();
+        $localPath = $environment->ERROR_HANDLER_LOCAL_PATH;
+        $remotePath = $environment->ERROR_HANDLER_REMOTE_PATH;
+
+        $realPath = \Flames\Collection\Strings::sub($filePath, \Flames\Collection\Strings::length($remotePath));
+        $realPath = ($localPath . $realPath);
+
+        if (\Flames\Collection\Strings::contains($realPath, '\\') === true) {
+            $realPath = str_replace('/', '\\', $realPath);
+        } else {
+            $realPath = str_replace('\\', '/', $realPath);
+        }
+
         $editor['url'] = str_replace("%line", rawurlencode($line), $editor['url']);
-        $editor['url'] = str_replace("%file", rawurlencode($filePath), $editor['url']);
+        $editor['url'] = str_replace("%file", rawurlencode($realPath), $editor['url']);
 
         return $editor['url'];
     }
