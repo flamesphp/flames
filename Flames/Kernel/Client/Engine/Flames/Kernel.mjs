@@ -1,3 +1,19 @@
+console.log(` 
+    ███████╗██╗      █████╗ ███╗   ███╗███████╗███████╗
+    ██╔════╝██║     ██╔══██╗████╗ ████║██╔════╝██╔════╝
+    █████╗  ██║     ███████║██╔████╔██║█████╗  ███████╗
+    ██╔══╝  ██║     ██╔══██║██║╚██╔╝██║██╔══╝  ╚════██║
+    ██║     ███████╗██║  ██║██║ ╚═╝ ██║███████╗███████║
+    ╚═╝     ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚══════╝
+    
+    𝗖𝗿𝗲𝗮𝘁𝗲𝗱 𝗯𝘆 𝗚𝗮𝗯𝗿𝗶𝗲𝗹 '𝗞𝗮𝘇𝘇' 𝗠𝗼𝗿𝗴𝗮𝗱𝗼
+    Github: https://github.com/flamesphp/flames
+    Docs:   https://flamesphp.com
+    
+    
+  > Initializing...
+`);
+
 import { PhpBase } from './kernel/base.mjs';
 import PhpBinary from './kernel/web.mjs';
 import PHP from "./kernel/web.mjs";
@@ -241,22 +257,24 @@ export const runFlames = () => {
     php.addEventListener('output', outListener);
     php.addEventListener('error',  errListener);
     php.addEventListener('ready', () => {
-        php.run('<?php class Javascript { public static function getWindow() { return new Vrzno; } } ?>')
-            .then(exitCode => function() {} ) //console.log(exitCode))
-            .catch(error => console.error(error))
-            .finally(() => {
-                php.flush();
-                if (stdout.includes('Parse error: syntax error') ||
-                    stdout.includes('Fatal error: ')
-                ) {
-                    console.error(stdout);
-                    stdout = '';
-                    return;
-                }
-                if (stdout !== '') {
-                    console.log(stdout);
-                    stdout = '';
-                }
-            });
+
+        console.log('  > Core loading...')
+        var coreLength = Flames.Internal.Build.core.length;
+        for (var i = 0; i < coreLength; i++) {
+            var core = Flames.Internal.Build.core[i];
+            var decode = atob(core);
+            window.PHP.eval(decode);
+        }
+
+        var clientLength = Flames.Internal.Build.client.length;
+        for (var i = 0; i < clientLength; i++) {
+            var client = Flames.Internal.Build.client[i];
+            var decode = atob(client[1]);
+            console.log('  > Loading ' + client[0] + '.');
+            window.PHP.eval(decode);
+        }
+
+        console.log("  > Route loading...\n\r \n\r \n\r \n\r \n\r ");
+        window.PHP.eval('<?php \\Flames\\Kernel\\Client::run(); ?>');
     });
 }

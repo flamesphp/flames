@@ -20,6 +20,7 @@ use Flames\Collection\Arr;
  * @property string|null $ip
  * @property string|null $command
  * @property Arr $headers
+ * @property Arr $data
  */
 class RequestData
 {
@@ -35,9 +36,10 @@ class RequestData
     protected string|null $host;
     protected int|null $port;
     protected string|null $ip;
-    protected Arr $headers;
+    protected Arr|null $headers;
+    protected Arr|null $data;
 
-    public function __construct(string $method, string|null $url, Arr $queries, Arr $uries, Arr $multipart, Arr $urlEncoded, Arr|null $json, Arr $request, Arr $headers, string|null $host, string|null $port, string|null $ip, string|null $command)
+    public function __construct(string $method, string|null $url, Arr $queries, Arr $uries, Arr $multipart, Arr $urlEncoded, Arr|null $json, Arr $request, Arr $headers, string|null $host, string|null $port, string|null $ip, string|null $command, Arr|null $data)
     {
         $this->method     = $method;
         $this->url        = $url;
@@ -52,6 +54,7 @@ class RequestData
         $this->json       = $json;
         $this->request    = $request;
         $this->command    = $command;
+        $this->data       = $data;
 
         return null;
     }

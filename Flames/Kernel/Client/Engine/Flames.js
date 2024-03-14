@@ -80,5 +80,5 @@
     };
 })();
 
-// Load Phoenix
+// Load Flames
 import('/.flames/kernel.mjs').then(({runFlames}) => runFlames());

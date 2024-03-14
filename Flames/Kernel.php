@@ -4,6 +4,7 @@ namespace Flames;
 
 use Flames\Collection\Arr;
 use Flames\Controller\Response;
+use Flames\Kernel\Client\Build;
 use Flames\Kernel\Route;
 use Flames\Route\Client;
 
@@ -20,7 +21,10 @@ final class Kernel
         self::setup();
 
         if (self::dispatchEvents() === false) {
-            // TODO: 404
+
+            if (self::dispatchCLI() === false) {
+                // TODO: 404
+            }
         }
 
         self::shutdown();
@@ -127,6 +131,17 @@ final class Kernel
         echo $output;
 
         return true;
+    }
+
+    protected static function dispatchCLI() : bool
+    {
+        if ($_SERVER['REDIRECT_URL'] === '/build') {
+            $build = new Build();
+            $build->run();
+            return true;
+        }
+
+        return false;
     }
 
     protected static function sendHeaders(Arr|null $headers, int $code)
