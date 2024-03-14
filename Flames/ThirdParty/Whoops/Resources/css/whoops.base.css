@@ -97,14 +97,15 @@ header {
 .details-container {
   left: 30%;
   width: 70%;
-  background: #fafafa;
+  background: #2a2a2a;
+  color: #c2c2c2;
 }
   .details {
     padding: 5px;
   }
 
     .details-heading {
-      color: #4288CE;
+      color: #ffffff;
       font-weight: 300;
       padding-bottom: 10px;
       margin-bottom: 10px;
@@ -128,16 +129,17 @@ header {
     .details pre.sf-dump .sf-dump-meta,
     .details pre.sf-dump .sf-dump-key,
     .details pre.sf-dump .sf-dump-index {
-      color: #463C54;
+      color: #f08d49;
     }
 
 .left-panel {
   width: 30%;
-  background: #ded8d8;
+  background: #303030;
 }
 
   .frames-description {
-    background: rgba(0, 0, 0, .05);
+    /*background: rgba(0, 0, 0, .05);*/
+    background: #303030;
     padding: 8px 15px;
     color: #a29d9d;
     font-size: 11px;
@@ -168,19 +170,24 @@ header {
     padding: 14px;
     cursor: pointer;
     transition: all 0.1s ease;
-    background: #eeeeee;
+    background: #343434;
+    color: #ffffff;
   }
     .frame:not(:last-child) {
       border-bottom: 1px solid rgba(0, 0, 0, .05);
     }
 
     .frame.active {
-      box-shadow: inset -5px 0 0 0 #4288CE;
-      color: #4288CE;
+      box-shadow: inset -5px 0 0 0 #f08d49;
+      color: #f08d49;
     }
 
     .frame:not(.active):hover {
-      background: #BEE9EA;
+      background: #f08d49;
+    }
+
+    .frame-file span {
+      color: #cbcbcb;
     }
 
     .frame-method-info {
@@ -312,7 +319,7 @@ header {
 
 .data-table-container label {
   font-size: 16px;
-  color: #303030;
+  color: #d5d5d5;
   font-weight: bold;
   margin: 10px 0;
 
@@ -343,7 +350,7 @@ header {
     min-width: 130px;
     overflow: hidden;
     font-weight: bold;
-    color: #463C54;
+    color: #f08d49;
     padding-right: 5px;
 
   }
@@ -359,7 +366,7 @@ header {
   }
 
   .data-table span.empty {
-    color: rgba(0, 0, 0, .3);
+    /*color: rgba(0, 0, 0, .3);*/
     font-weight: 300;
   }
   .data-table label.empty {

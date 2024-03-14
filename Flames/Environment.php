@@ -57,6 +57,11 @@ final class Environment
         return;
     }
 
+    public function toArray() : array
+    {
+        return (array)$this->data;
+    }
+
     public static function default() : Environment|null
     {
         return self::$dataDefault;
