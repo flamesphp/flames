@@ -7,6 +7,8 @@ use Vrzno;
 
 class JS
 {
+    protected static $window = null;
+
     public static function eval(string $code) : mixed
     {
         if (Kernel::MODULE === 'SERVER') {
@@ -21,7 +23,10 @@ class JS
         if (Kernel::MODULE === 'SERVER') {
             throw new Exception('Method only works on client.');
         } else {
-            return new Vrzno();
+            if (self::$window === null) {
+                self::$window = new Vrzno();
+            }
+            return self::$window;
         }
     }
 }

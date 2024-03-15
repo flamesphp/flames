@@ -21,8 +21,9 @@ class Build
         'Flames/RequestData.php',
         'Flames/Kernel/Route.php',
         'Flames/Router.php',
-        'Flames/Event/Client/Route.php',
+        'Flames/Event/Route.php',
         'Flames/ThirdParty/AltoRouter.php',
+        'Flames/Element.php',
         'Flames/Kernel/Client.php',
     ];
 

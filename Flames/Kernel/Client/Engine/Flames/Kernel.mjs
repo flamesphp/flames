@@ -1,4 +1,4 @@
-console.log(` 
+console.log(`%c 
     ███████╗██╗      █████╗ ███╗   ███╗███████╗███████╗
     ██╔════╝██║     ██╔══██╗████╗ ████║██╔════╝██╔════╝
     █████╗  ██║     ███████║██╔████╔██║█████╗  ███████╗
@@ -11,8 +11,43 @@ console.log(`
     Docs:   https://flamesphp.com
     
     
-  > Initializing...
-`);
+  > Initializing...`, 'color: #ffb158; font-size: 14px;');
+
+window.Flames = (window.Flames || {});
+Flames.Internal = (Flames.Internal || {});
+Flames.Internal.uid = 0;
+
+Flames.Internal.generateUid = (function(uid) {
+    uid = uid.toString();
+
+    var newUid = md5(uid);
+    newUid = newUid.substring(0, 18 - uid.length);
+
+    for (var i = 0; i < uid.length; i++) {
+        if (uid[i] === '0') {
+            newUid += 'a';
+        } else if (uid[i] === '1') {
+            newUid += 'e';
+        } else if (uid[i] === '2') {
+            newUid += 'd';
+        } else if (uid[i] === '3') {
+            newUid += 'b';
+        } else if (uid[i] === '4') {
+            newUid += 'c';
+        } else if (uid[i] === '5') {
+            newUid += 'f';
+        } else if (uid[i] === '6') {
+            newUid += '3';
+        } else if (uid[i] === '7') {
+            newUid += '2';
+        } else if (uid[i] === '8') {
+            newUid += '1';
+        } else if (uid[i] === '9') {
+            newUid += '0';
+        }
+    }
+    return newUid;
+});
 
 import { PhpBase } from './kernel/base.mjs';
 import PhpBinary from './kernel/web.mjs';
@@ -258,7 +293,7 @@ export const runFlames = () => {
     php.addEventListener('error',  errListener);
     php.addEventListener('ready', () => {
 
-        console.log('  > Core loading...')
+        console.log('%c  > Core loading...', 'color: #ffb158; font-size: 14px;');
         var coreLength = Flames.Internal.Build.core.length;
         for (var i = 0; i < coreLength; i++) {
             var core = Flames.Internal.Build.core[i];
@@ -270,11 +305,11 @@ export const runFlames = () => {
         for (var i = 0; i < clientLength; i++) {
             var client = Flames.Internal.Build.client[i];
             var decode = atob(client[1]);
-            console.log('  > Loading ' + client[0] + '.');
+            console.log('%c  > Loading ' + client[0] + '.', 'color: #ffb158; font-size: 14px;');
             window.PHP.eval(decode);
         }
 
-        console.log("  > Route loading...\n\r \n\r \n\r \n\r \n\r ");
+        console.log("%c  > Route loading...\n\r", 'color: #ffb158; font-size: 14px;');
         window.PHP.eval('<?php \\Flames\\Kernel\\Client::run(); ?>');
     });
 }

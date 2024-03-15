@@ -2,19 +2,28 @@
 
 function dump() : void
 {
-    $debug = debug_backtrace()[1];
+    $debug = debug_backtrace();
 
     $link = 'phpstorm://open?file=C:\Dev\repository\kazzcorp\flames\\';
-    $link .= ($debug['class'] . '.php&line=' . $debug['line']);
+    $link .= ($debug[1]['class'] . '.php&line=' . $debug[0]['line']);
 
     $arg = func_get_args()[0];
+
+    if ($arg instanceof \Flames\Element) {
+        \Flames\JS::eval('console.log(
+            document.querySelector(\'[fs-uid="' . $arg->uid . '"]\'),
+            \' | Called at ' . str_replace('\\', '\\\\', $debug[1]['class'] . ':' . $debug[0]['line'] . ' | ' . $link) . '\'
+        );');
+        return;
+    }
 
     if (is_object($arg) === true) {
         $arg = (array)$arg;
     }
 
     $data = base64_encode(json_encode($arg));
-
-    \Flames\JS::eval('console.log(\'' . str_replace('\\', '\\\\', $debug['class'] . ':' . $debug['line'] . ' ' . $link) . '\');');
-    \Flames\JS::eval('console.log(JSON.parse(atob(\'' . $data . '\')));');
+    \Flames\JS::eval('console.log(
+        JSON.parse(atob(\'' . $data . '\')),
+        \'       | Called at ' . str_replace('\\', '\\\\', $debug[1]['class'] . ':' . $debug[0]['line'] . ' | ' . $link) . '\'
+    );');
 }
