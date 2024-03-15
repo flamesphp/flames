@@ -1,6 +1,6 @@
 <?php
 
-namespace Flames\Event\Server;
+namespace Flames\Event;
 
 abstract class Load
 {

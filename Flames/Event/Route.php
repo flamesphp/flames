@@ -1,6 +1,6 @@
 <?php
 
-namespace Flames\Event\Client;
+namespace Flames\Event;
 
 use Flames\RequestData;
 use Flames\Router;

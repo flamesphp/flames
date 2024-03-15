@@ -91,6 +91,8 @@ class RequestData
             return $this->request;
         } elseif ($key === 'command') {
             return $this->command;
+        } elseif ($key === 'data') {
+            return $this->data;
         }
     }
 }
