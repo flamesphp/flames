@@ -11,7 +11,7 @@ console.log(`%c
     Docs:   https://flamesphp.com
     
     
-  > Initializing...`, 'color: #ffb158; font-size: 14px;');
+  > Initializing`, 'color: #ffb158; font-size: 14px;');
 
 window.Flames = (window.Flames || {});
 Flames.Internal = (Flames.Internal || {});
@@ -48,6 +48,10 @@ Flames.Internal.generateUid = (function(uid) {
     }
     return newUid;
 });
+
+window.php = function (code) {
+    window.PHP.eval('<?php ' + code + ' ?>');
+}
 
 import { PhpBase } from './kernel/base.mjs';
 import PhpBinary from './kernel/web.mjs';
@@ -293,7 +297,7 @@ export const runFlames = () => {
     php.addEventListener('error',  errListener);
     php.addEventListener('ready', () => {
 
-        console.log('%c  > Core loading...', 'color: #ffb158; font-size: 14px;');
+        console.log('%c  > Core loading', 'color: #ffb158; font-size: 14px;');
         var coreLength = Flames.Internal.Build.core.length;
         for (var i = 0; i < coreLength; i++) {
             var core = Flames.Internal.Build.core[i];
@@ -305,11 +309,11 @@ export const runFlames = () => {
         for (var i = 0; i < clientLength; i++) {
             var client = Flames.Internal.Build.client[i];
             var decode = atob(client[1]);
-            console.log('%c  > Loading ' + client[0] + '.', 'color: #ffb158; font-size: 14px;');
+            console.log('%c  > Loading', 'color: #ffb158; font-size: 14px;', client[0]);
             window.PHP.eval(decode);
         }
 
-        console.log("%c  > Route loading...\n\r", 'color: #ffb158; font-size: 14px;');
+        console.log("%c  > Flames loaded successfully\n\r", 'color: #ffb158; font-size: 14px;');
         window.PHP.eval('<?php \\Flames\\Kernel\\Client::run(); ?>');
     });
 }
