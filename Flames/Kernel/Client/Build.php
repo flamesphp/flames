@@ -11,7 +11,7 @@ class Build
 
     protected static $defaultFiles = [
         'Flames/Kernel/Client/Engine/Kernel.phpc',
-        'Flames/ThirdParty/Sage/Client.php',
+        'Flames/Dump/Client.php',
         'Flames/Collection/Strings.php',
         'Flames/Collection/Arr.php',
         'Flames/Kernel/Wrapper/Raw.php',
@@ -22,7 +22,7 @@ class Build
         'Flames/Kernel/Route.php',
         'Flames/Router.php',
         'Flames/Event/Route.php',
-        'Flames/ThirdParty/AltoRouter.php',
+        'Flames/Router/Parser.php',
         'Flames/Element.php',
         'Flames/Kernel/Client.php',
     ];

@@ -3,7 +3,6 @@
 namespace Flames;
 
 use Flames\Collection\Arr;
-use http\Client;
 
 class View
 {
@@ -30,17 +29,17 @@ class View
 
     protected function renderHtml(Arr|array $data = null)
     {
-        $loader = new \Flames\ThirdParty\Twig\Loader\ArrayLoader([
+        $loader = new TemplateEngine\Loader\ArrayLoader([
             'index' => $this->html,
         ]);
-        $twig = new \Flames\ThirdParty\Twig\Environment($loader);
+        $twig = new TemplateEngine\Environment($loader);
         return $this->postRender($twig->render('index', $data), $data);
     }
 
     protected function renderFile(Arr|array $data = null)
     {
-        $loader = new \Flames\ThirdParty\Twig\Loader\FilesystemLoader(ROOT_PATH . 'App/Client/View/');
-        $twig = new \Flames\ThirdParty\Twig\Environment($loader, [
+        $loader = new TemplateEngine\Loader\FilesystemLoader(ROOT_PATH . 'App/Client/View/');
+        $twig = new TemplateEngine\Environment($loader, [
 //            'cache' => (ROOT_PATH . '.cache/view-twig'),
         ]);
 

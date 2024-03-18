@@ -7,9 +7,9 @@ namespace Flames;
  */
 final class AutoLoad
 {
-    public static $event = false;
+    public static bool $event = false;
 
-    public static function run()
+    public static function run(): void
     {
         // Verify if event load exists and register
         $path = (ROOT_PATH . 'App/Server/Event/Load.php');
@@ -18,37 +18,34 @@ final class AutoLoad
         }
 
         \spl_autoload_register(function ($name) {
-            // Case Flames Internal
-            if (str_starts_with($name, 'Flames\\')) {
-                $name = str_replace('\\', '/', $name);
-                $path = (ROOT_PATH . $name . '.php');
-                require $path;
-                return;
-            }
-
-            // Case App
-            elseif (str_starts_with($name, 'App\\')) {
-                $fileName = str_replace('\\', '/', $name);
-                $path = (ROOT_PATH . $fileName . '.php');
-                require $path;
-
-                if (method_exists($name, '__constructStatic') === true) {
-                    ($name . '::__constructStatic')();
-                }
-                return;
-            }
-
-            // Case Fork
-            elseif (str_starts_with($name, '_Flames\\')) {
-                $name = str_replace('\\', '/', $name);
-                $path = (ROOT_PATH . '.fork/' . $name . '.php');
-                require $path;
-                return;
-            }
-
-            elseif (self::$event === true) {
-                Event::dispatch('Load', 'onLoad', $name);
-            }
+            self::onLoad($name);
         });
+    }
+
+    protected static function onLoad(string $name): void
+    {
+        // Case Flames Internal
+        if (str_starts_with($name, 'Flames\\')) {
+            $name = str_replace('\\', '/', $name);
+            $path = (ROOT_PATH . $name . '.php');
+            require $path;
+            return;
+        }
+
+        // Case App
+        elseif (str_starts_with($name, 'App\\')) {
+            $fileName = str_replace('\\', '/', $name);
+            $path = (ROOT_PATH . $fileName . '.php');
+            require $path;
+
+            if (method_exists($name, '__constructStatic') === true) {
+                ($name . '::__constructStatic')();
+            }
+            return;
+        }
+
+        elseif (self::$event === true) {
+            Event::dispatch('Load', 'onLoad', $name);
+        }
     }
 }
