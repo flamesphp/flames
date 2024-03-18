@@ -1,6 +1,6 @@
 <?php
 
-namespace Flames\Route;
+namespace Flames\Router;
 /***
  * @internal
  */
