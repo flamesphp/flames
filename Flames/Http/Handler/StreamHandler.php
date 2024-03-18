@@ -13,7 +13,7 @@ use Flames\Http\Psr\Http\Message\UriInterface;
 use Flames\Http\TransferStats;
 use Flames\Http\Utils;
 use Http\Promise as P;
-use Http\Psr7;
+use Http\Async;
 
 /**
  * HTTP handler that uses PHP's HTTP stream wrapper.
@@ -109,7 +109,7 @@ class StreamHandler
         }
 
         [$stream, $headers] = $this->checkDecode($options, $headers, $stream);
-        $stream = \Flames\Http\Psr7\Utils::streamFor($stream);
+        $stream = \Flames\Http\Async\Utils::streamFor($stream);
         $sink = $stream;
 
         if (\strcasecmp('HEAD', $request->getMethod())) {
@@ -117,7 +117,7 @@ class StreamHandler
         }
 
         try {
-            $response = new \Flames\Http\Psr7\Response($status, $headers, $sink, $ver, $reason);
+            $response = new \Flames\Http\Async\Response($status, $headers, $sink, $ver, $reason);
         } catch (\Exception $e) {
             return \Flames\Http\Promise\Create::rejectionFor(
                 new RequestException('An error was encountered while creating the response', $request, null, $e)
@@ -151,9 +151,9 @@ class StreamHandler
             return $stream;
         }
 
-        $sink = $options['sink'] ?? \Flames\Http\Psr7\Utils::tryFopen('php://temp', 'r+');
+        $sink = $options['sink'] ?? \Flames\Http\Async\Utils::tryFopen('php://temp', 'r+');
 
-        return \is_string($sink) ? new \Flames\Http\Psr7\LazyOpenStream($sink, 'w+') : \Flames\Http\Psr7\Utils::streamFor($sink);
+        return \is_string($sink) ? new \Flames\Http\Async\LazyOpenStream($sink, 'w+') : \Flames\Http\Async\Utils::streamFor($sink);
     }
 
     /**
@@ -167,7 +167,7 @@ class StreamHandler
             if (isset($normalizedKeys['content-encoding'])) {
                 $encoding = $headers[$normalizedKeys['content-encoding']];
                 if ($encoding[0] === 'gzip' || $encoding[0] === 'deflate') {
-                    $stream = new \Flames\Http\Psr7\InflateStream(\Flames\Http\Psr7\Utils::streamFor($stream));
+                    $stream = new \Flames\Http\Async\InflateStream(\Flames\Http\Async\Utils::streamFor($stream));
                     $headers['x-encoded-content-encoding'] = $headers[$normalizedKeys['content-encoding']];
 
                     // Remove content-encoding header
@@ -204,7 +204,7 @@ class StreamHandler
         // that number of bytes has been read. This can prevent infinitely
         // reading from a stream when dealing with servers that do not honor
         // Connection: Close headers.
-        \Flames\Http\Psr7\Utils::copyToStream(
+        \Flames\Http\Async\Utils::copyToStream(
             $source,
             $sink,
             (\strlen($contentLength) > 0 && (int) $contentLength > 0) ? (int) $contentLength : -1

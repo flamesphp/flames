@@ -10,7 +10,7 @@ use Flames\Http\Promise\PromiseInterface;
 use Flames\Http\Psr\Http\Message\RequestInterface;
 use Flames\Http\Psr\Http\Message\ResponseInterface;
 use Flames\Http\Psr\Http\Message\UriInterface;
-use Http\Psr7;
+use Http\Async;
 
 /**
  * Request redirect middleware.
@@ -92,7 +92,7 @@ class RedirectMiddleware
         $nextRequest = $this->modifyRequest($request, $options, $response);
 
         // If authorization is handled by curl, unset it if URI is cross-origin.
-        if (\Flames\Http\Psr7\UriComparator::isCrossOrigin($request->getUri(), $nextRequest->getUri()) && defined('\CURLOPT_HTTPAUTH')) {
+        if (\Flames\Http\Async\UriComparator::isCrossOrigin($request->getUri(), $nextRequest->getUri()) && defined('\CURLOPT_HTTPAUTH')) {
             unset(
                 $options['curl'][\CURLOPT_HTTPAUTH],
                 $options['curl'][\CURLOPT_USERPWD]
@@ -186,7 +186,7 @@ class RedirectMiddleware
         }
 
         $modify['uri'] = $uri;
-        \Flames\Http\Psr7\Message::rewindBody($request);
+        \Flames\Http\Async\Message::rewindBody($request);
 
         // Add the Referer header if it is told to do so and only
         // add the header if we are not redirecting from https to http.
@@ -200,12 +200,12 @@ class RedirectMiddleware
         }
 
         // Remove Authorization and Cookie headers if URI is cross-origin.
-        if (\Flames\Http\Psr7\UriComparator::isCrossOrigin($request->getUri(), $modify['uri'])) {
+        if (\Flames\Http\Async\UriComparator::isCrossOrigin($request->getUri(), $modify['uri'])) {
             $modify['remove_headers'][] = 'Authorization';
             $modify['remove_headers'][] = 'Cookie';
         }
 
-        return \Flames\Http\Psr7\Utils::modifyRequest($request, $modify);
+        return \Flames\Http\Async\Utils::modifyRequest($request, $modify);
     }
 
     /**
@@ -216,9 +216,9 @@ class RedirectMiddleware
         ResponseInterface $response,
         array $protocols
     ): UriInterface {
-        $location = \Flames\Http\Psr7\UriResolver::resolve(
+        $location = \Flames\Http\Async\UriResolver::resolve(
             $request->getUri(),
-            new \Flames\Http\Psr7\Uri($response->getHeaderLine('Location'))
+            new \Flames\Http\Async\Uri($response->getHeaderLine('Location'))
         );
 
         // Ensure that the redirect URI is allowed based on the protocols.

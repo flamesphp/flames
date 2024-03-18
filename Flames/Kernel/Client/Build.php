@@ -10,7 +10,7 @@ class Build
     const BASE_PATH = (ROOT_PATH . 'App/Client/Resource/');
 
     protected static $defaultFiles = [
-        'Flames/Kernel/Client/Engine/Kernel.phpc',
+        'Flames/Kernel/Client.php',
         'Flames/Dump/Client.php',
         'Flames/Collection/Strings.php',
         'Flames/Collection/Arr.php',
@@ -24,7 +24,10 @@ class Build
         'Flames/Event/Route.php',
         'Flames/Router/Parser.php',
         'Flames/Element.php',
-        'Flames/Kernel/Client.php',
+        'Flames/Http/Client/Client.php',
+        'Flames/Http/Async/Request/Client.php',
+        'Flames/Http/Async/Response/Client.php',
+        'Flames/Kernel/Client/Dispatch.php',
     ];
 
     public function run()
@@ -54,8 +57,19 @@ class Build
     protected function injectDefaultFiles($stream) : void
     {
         foreach (self::$defaultFiles as $defaultFile) {
+            $phpFile = file_get_contents(ROOT_PATH . $defaultFile);
+            if ($defaultFile === 'Flames/Kernel/Client.php') {
+                $phpFile = str_replace(['namespace Flames\Kernel;', 'final class Client'], ['namespace Flames;', 'final class Kernel'], $phpFile);
+            } elseif ($defaultFile === 'Flames/Http/Client/Client.php') {
+                $phpFile = str_replace('namespace Flames\Http\Client;', 'namespace Flames\Http;', $phpFile);
+            } elseif ($defaultFile === 'Flames/Http/Async/Request/Client.php') {
+                $phpFile = str_replace(['namespace Flames\Http\Async\Request;', 'class Client'], ['namespace Flames\Http\Async;', 'class Request'], $phpFile);
+            } elseif ($defaultFile === 'Flames/Http/Async/Response/Client.php') {
+                $phpFile = str_replace(['namespace Flames\Http\Async\Response;', 'class Client'], ['namespace Flames\Http\Async;', 'class Response'], $phpFile);
+            }
+
             fputs($stream, ('Flames.Internal.Build.core[Flames.Internal.Build.core.length] = \'' .
-                base64_encode(file_get_contents(ROOT_PATH . $defaultFile))) . "';\n");
+                base64_encode($phpFile)) . "';\n");
         }
     }
 

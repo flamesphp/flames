@@ -7,7 +7,7 @@ use Flames\Http\Exception\RequestException;
 use Flames\Http\Promise\FulfilledPromise;
 use Flames\Http\Promise\PromiseInterface;
 use Flames\Http\Psr\Http\Message\RequestInterface;
-use Flames\Http\Psr7\LazyOpenStream;
+use Flames\Http\Async\LazyOpenStream;
 use Flames\Http\TransferStats;
 use Flames\Http\Utils;
 use Http\Promise as P;
@@ -398,11 +398,11 @@ class CurlFactory implements CurlFactoryInterface
 
         if (!isset($options['sink'])) {
             // Use a default temp stream if no sink was set.
-            $options['sink'] = \Flames\Http\Psr7\Utils::tryFopen('php://temp', 'w+');
+            $options['sink'] = \Flames\Http\Async\Utils::tryFopen('php://temp', 'w+');
         }
         $sink = $options['sink'];
         if (!\is_string($sink)) {
-            $sink = \Flames\Http\Psr7\Utils::streamFor($sink);
+            $sink = \Flames\Http\Async\Utils::streamFor($sink);
         } elseif (!\is_dir(\dirname($sink))) {
             // Ensure that the directory exists before failing in curl.
             throw new \RuntimeException(\sprintf('Directory %s does not exist for sink value of %s', \dirname($sink), $sink));
