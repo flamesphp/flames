@@ -173,7 +173,7 @@ class Route
             null,
             null,
             null,
-            Arr(unserialize(base64_decode(JS::getWindow()->eval('document.querySelector(\'flames\').innerHTML'))))
+            Arr(Kernel::__getData())
         );
     }
 }
