@@ -3,7 +3,7 @@
 namespace Flames;
 
 use Flames\Collection\Arr;
-use Flames\ThirdParty\Dotenv\Helpers;
+use Flames\Environment\Helpers;
 
 /**
  * Description for the class

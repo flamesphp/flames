@@ -58,8 +58,8 @@ final class Kernel
     {
         $environment = Environment::default();
         if ($environment->ERROR_HANDLER_ENABLED === true) {
-            $errorHandler = new \Flames\ThirdParty\Whoops\Run;
-            $pageHandler = new \Flames\ThirdParty\Whoops\Handler\PrettyPageHandler();
+            $errorHandler = new ErrorHandler\Run;
+            $pageHandler = new ErrorHandler\Handler\PrettyPageHandler();
             $pageHandler->setEditor($environment->ERROR_HANDLER_IDE);
             $errorHandler->pushHandler($pageHandler);
             $errorHandler->register();
@@ -70,13 +70,13 @@ final class Kernel
     {
         $environment = Environment::default();
         if ($environment->DUMP_ENABLED === true) {
-//            Required::file(ROOT_PATH . '.fork/_Flames/Sage/Sage.php');
-            ThirdParty\Sage\Sage::$theme = ThirdParty\Sage\Sage::THEME_SOLARIZED_DARK;
-            ThirdParty\Sage\Sage::$editor = $environment->DUMP_IDE;
-            Required::file(ROOT_PATH . 'Flames/ThirdParty/Sage/Register.php');
+//            Required::file(ROOT_PATH . '.fork/_Flames/Dump/Dump.php');
+            Dump\Dump::$theme = Dump\Dump::THEME_SOLARIZED_DARK;
+            Dump\Dump::$editor = $environment->DUMP_IDE;
+            Required::file(ROOT_PATH . 'Flames/Dump/Register.php');
         }
         else {
-            Required::file(ROOT_PATH . 'Flames/ThirdParty/Sage/Plain.php');
+            Required::file(ROOT_PATH . 'Flames/Dump/Plain.php');
         }
     }
 

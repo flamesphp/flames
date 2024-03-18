@@ -87,7 +87,7 @@ class Router
     protected function getMatchWeb()
     {
         // Mount router
-        $router = new ThirdParty\AltoRouter();
+        $router = new Router\Parser();
 
         $paramItems = Arr();
         for ($i = 0; $i < $this->routes->count; $i++) {
