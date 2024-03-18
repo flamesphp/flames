@@ -13,8 +13,6 @@ console.log(`%c
     
   > Initializing`, 'color: #ffb158; font-size: 14px;');
 
-window.Flames = (window.Flames || {});
-Flames.Internal = (Flames.Internal || {});
 Flames.Internal.uid = 0;
 
 Flames.Internal.generateUid = (function(uid) {
@@ -48,6 +46,42 @@ Flames.Internal.generateUid = (function(uid) {
     }
     return newUid;
 });
+
+Flames.Internal.HttpResponse = [];
+
+Flames.Internal.Http = function(data) {
+    var data = JSON.parse(data);
+
+    Flames.Internal.HttpAxios({
+        method: data.method,
+        url: data.url
+    }).then(function (_response) {
+        var headers = [];
+        var key;
+        for (key in _response.headers) {
+            if (_response.headers.hasOwnProperty(key)) {
+                headers[headers.length] = [key, _response.headers[key]];
+            }
+        }
+
+        var response = //JSON.stringify(
+            {
+            status: _response.status,
+            body: _response.data,
+            header: headers
+        }
+
+        window.PHP.eval('<?php Flames\\Http\\Client::callback(' + data.id + ', \'' + JSON.stringify(response) + '\'); ?>');
+    }).catch(function (error) {
+        var response = JSON.stringify({
+            status: 'error',
+            message: error.message,
+            header: []
+        });
+
+        window.PHP.eval('<?php Flames\\Http\\Client::callback(' + data.id + ', \'' + response + '\'); ?>');
+    });
+}
 
 window.php = function (code) {
     window.PHP.eval('<?php ' + code + ' ?>');
@@ -314,6 +348,6 @@ export const runFlames = () => {
         }
 
         console.log("%c  > Flames loaded successfully\n\r", 'color: #ffb158; font-size: 14px;');
-        window.PHP.eval('<?php \\Flames\\Kernel\\Client::run(); ?>');
+        window.PHP.eval('<?php \\Flames\\Kernel\\Client\\Dispatch::run(); ?>');
     });
 }

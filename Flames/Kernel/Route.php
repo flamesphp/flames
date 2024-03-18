@@ -6,7 +6,6 @@ use Flames\CLI;
 use Flames\Collection\Arr;
 use Flames\Connection;
 use Flames\JS;
-use Flames\Kernel;
 use Flames\RequestData;
 use Flames\Required;
 
@@ -27,7 +26,7 @@ class Route
         $json        = null;
         $queryString = null;
 
-        if (Kernel::MODULE === 'SERVER')
+        if (\Flames\Kernel::MODULE === 'SERVER')
         {
             if ($isCLI === false) {
                 $method = $_SERVER['REQUEST_METHOD'];
@@ -173,7 +172,7 @@ class Route
             null,
             null,
             null,
-            Arr(Kernel::__getData())
+            Arr(\Flames\Kernel::__getData())
         );
     }
 }

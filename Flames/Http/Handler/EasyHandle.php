@@ -5,7 +5,7 @@ namespace Flames\Http\Handler;
 use Flames\Http\Psr\Http\Message\RequestInterface;
 use Flames\Http\Psr\Http\Message\ResponseInterface;
 use Flames\Http\Psr\Http\Message\StreamInterface;
-use Flames\Http\Psr7\Response;
+use Flames\Http\Async\Response;
 use Flames\Http\Utils;
 
 /**

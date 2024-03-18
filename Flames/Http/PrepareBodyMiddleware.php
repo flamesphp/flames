@@ -6,7 +6,7 @@ namespace Flames\Http;
 
 use Flames\Http\Promise\PromiseInterface;
 use Flames\Http\Psr\Http\Message\RequestInterface;
-use Http\Psr7;
+use Http\Async;
 
 /**
  * Prepares requests that contain a body, adding the Content-Length,
@@ -43,7 +43,7 @@ class PrepareBodyMiddleware
         // Add a default content-type if possible.
         if (!$request->hasHeader('Content-Type')) {
             if ($uri = $request->getBody()->getMetadata('uri')) {
-                if (is_string($uri) && $type = \Flames\Http\Psr7\MimeType::fromFilename($uri)) {
+                if (is_string($uri) && $type = \Flames\Http\Async\MimeType::fromFilename($uri)) {
                     $modify['set_headers']['Content-Type'] = $type;
                 }
             }
@@ -64,7 +64,7 @@ class PrepareBodyMiddleware
         // Add the expect header if needed.
         $this->addExpectHeader($request, $options, $modify);
 
-        return $fn(\Flames\Http\Psr7\Utils::modifyRequest($request, $modify), $options);
+        return $fn(\Flames\Http\Async\Utils::modifyRequest($request, $modify), $options);
     }
 
     /**
