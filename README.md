@@ -33,7 +33,7 @@ Working in progress...
 * Performance goal: 10.000 database rows rendered in template engine at 10ms.
 * Support NGINX.
 * ORM with Models and Repositories.
-* HTTP Client based on GuzzleHttp.
+* HTTP Client based on Http.
 * Frontend PHP engine with Routes, Controllers and Elements wrapper.
 * Templating engine based on TWIG running on backend and frontend.
 * Command for build PHP project as static website (to upload on S3, GitHub Pages, CloudFlare Pages or simple HTML-only server).
