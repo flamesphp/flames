@@ -49,12 +49,22 @@ Flames.Internal.generateUid = (function(uid) {
 
 Flames.Internal.HttpResponse = [];
 
-Flames.Internal.Http = function(data) {
+Flames.Internal.Http = (function(data) {
     var data = JSON.parse(data);
+
+    var params = null;
+
+    if (data.header.form_params !== undefined) {
+        params = data.header.form_params;
+        data.header.form_params = undefined;
+    }
 
     Flames.Internal.HttpAxios({
         method: data.method,
-        url: data.url
+        url: data.url,
+        data: params,
+        responseType: 'text',
+        headers: data.header
     }).then(function (_response) {
         var headers = [];
         var key;
@@ -81,7 +91,45 @@ Flames.Internal.Http = function(data) {
 
         window.PHP.eval('<?php Flames\\Http\\Client::callback(' + data.id + ', \'' + response + '\'); ?>');
     });
-}
+});
+
+(function() {
+    new MutationObserver(function() {
+        Flames.Internal.verifyFS();
+    }).observe(document.querySelector('body'), {
+        childList: true,
+        subtree: true,
+        attributes: true
+    });
+})();
+
+Flames.Internal.onClick = (function(uid) {
+    var event = Flames.Internal.Build.click[uid];
+    if (event === null || event === undefined) {
+        return;
+    }
+
+    var _class = decodeURIComponent(event[0]);
+    var method = event[1];
+    window.PHP.eval('<?php \\Flames\\Kernel\\Client\\Dispatch::getInstance(\'' + _class + '\')->' + method + '(\\Flames\\Element::query(\'[fs-click="' + uid + '"]\')); ?>');
+});
+
+Flames.Internal.verifyFS = (function() {
+    var clicks = document.querySelectorAll('[fs-click]');
+    for (var i = 0; i < clicks.length; i++) {
+        var element = clicks[i];
+
+        if (element.getAttribute('fs-uid') === null) {
+            Flames.Internal.uid++;
+            element.setAttribute('fs-uid', Flames.Internal.generateUid(Flames.Internal.uid));
+            element.addEventListener('click', function(event) {
+               event.preventDefault();
+               Flames.Internal.onClick(event.target.getAttribute('fs-click'));
+            });
+        }
+    }
+});
+Flames.Internal.verifyFS();
 
 window.php = function (code) {
     window.PHP.eval('<?php ' + code + ' ?>');
@@ -349,5 +397,6 @@ export const runFlames = () => {
 
         console.log("%c  > Flames loaded successfully\n\r", 'color: #ffb158; font-size: 14px;');
         window.PHP.eval('<?php \\Flames\\Kernel\\Client\\Dispatch::run(); ?>');
+
     });
 }

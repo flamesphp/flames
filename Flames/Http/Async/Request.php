@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Flames\Http\Async;
 
+use Flames\Collection\Arr;
 use Flames\Http\Psr\Http\Message\RequestInterface;
 use Flames\Http\Psr\Http\Message\StreamInterface;
 use Flames\Http\Psr\Http\Message\UriInterface;
@@ -35,7 +36,7 @@ class Request implements RequestInterface
     public function __construct(
         string $method,
         $uri,
-        array $headers = [],
+        Arr|array|null $headers = [],
         $body = null,
         string $version = '1.1'
     ) {
@@ -46,6 +47,11 @@ class Request implements RequestInterface
 
         $this->method = strtoupper($method);
         $this->uri = $uri;
+        if ($headers === null) {
+            $headers = [];
+        } else {
+            $headers = (array)$headers;
+        }
         $this->setHeaders($headers);
         $this->protocol = $version;
 
