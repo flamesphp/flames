@@ -11,6 +11,7 @@ use Flames\Router;
  */
 final class Dispatch
 {
+    protected static $instances = [];
     public static function run() : void
     {
         self::setup();
@@ -25,7 +26,7 @@ final class Dispatch
     {
         $location = JS::getWindow()->location;
         $origin = $location->origin;
-        $_SERVER['REQUEST_URI'] = substr($location->href, strlen($origin));
+        $_SERVER['REQUEST_URI'] = explode('#', substr($location->href, strlen($origin)))[0];
     }
 
     protected static function dispatchEvents() : bool
@@ -56,8 +57,18 @@ final class Dispatch
         }
 
         $controller = new $routeData->controller();
+        self::$instances[$routeData->controller] = $controller;
         $controller->{$routeData->delegate}($requestData);
 
         return true;
+    }
+
+    public static function getInstance(string $class) : mixed
+    {
+        if (isset(self::$instances[$class]) === true) {
+            return self::$instances[$class];
+        }
+
+        return null;
     }
 }

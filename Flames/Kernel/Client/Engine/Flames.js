@@ -489,6 +489,7 @@ window.Flames = (window.Flames || {});
 Flames.Internal = (Flames.Internal || {});
 Flames.Internal.HttpAxios = window.__axios;
 window.__axios = undefined;
+window.dump = console.log;
 
 // Load Flames
 import('/.flames/kernel.mjs').then(({runFlames}) => runFlames());

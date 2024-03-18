@@ -33,11 +33,6 @@ class Client
     {
         $this->request = $request;
 
-
-
-
-
-//        JS::eval('Flames.Internal.Http(\'' . json_encode($data) . '\');');
         return $this;
     }
 
@@ -49,7 +44,8 @@ class Client
         $data = [
             'id'      => self::$lastId,
             'method'  => strtolower($this->request->getMethod()),
-            'url'     => $this->request->getUri()
+            'url'     => $this->request->getUri(),
+            'header'  => $this->request->getHeaders()
         ];
 
         if ($this->baseUri !== null) {

@@ -11,11 +11,16 @@ class Client
 {
     private string $method;
     private string $url;
+    private array $header;
 
-    public function __construct(string $method = 'GET', string $url = '/')
+    public function __construct(string $method = 'GET', string $url = '/', Arr|array|null $headers = [])
     {
         $this->method = strtoupper($method);
-        $this->url = $url;
+        $this->url    = $url;
+        if ($headers === null) {
+            $headers = [];
+        }
+        $this->header = (array)$headers;
     }
 
     public function getMethod() : string
@@ -26,5 +31,10 @@ class Client
     public function getUri() : string
     {
         return $this->url;
+    }
+
+    public function getHeaders() : array
+    {
+        return $this->header;
     }
 }

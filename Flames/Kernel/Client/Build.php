@@ -2,8 +2,7 @@
 
 namespace Flames\Kernel\Client;
 
-use RecursiveDirectoryIterator;
-use RecursiveTreeIterator;
+use Flames\Kernel\Client\Build\Data;
 
 class Build
 {
@@ -51,7 +50,7 @@ class Build
 
     protected function injectStructure($stream) : void
     {
-        fputs($stream,"window.Flames = (window.Flames || {});\nFlames.Internal = (Flames.Internal || {});\nFlames.Internal.Build = (Flames.Internal.Build || {});\nFlames.Internal.Build.core = [];\nFlames.Internal.Build.client = [];\n");
+        fputs($stream,"window.Flames = (window.Flames || {});\nFlames.Internal = (Flames.Internal || {});\nFlames.Internal.Build = (Flames.Internal.Build || {});\nFlames.Internal.Build.core = [];\nFlames.Internal.Build.client = [];\nFlames.Internal.Build.click = [];\n");
     }
 
     protected function injectDefaultFiles($stream) : void
@@ -84,12 +83,37 @@ class Build
                     if (is_dir($file) === true) {
                         continue;
                     }
+
+                    if ($module === 'Controller') {
+                        $attributes = $this->verifyAttributes($file);
+                        foreach ($attributes->click as $clickTrigger) {
+                            fputs($stream, ('Flames.Internal.Build.click[\'' . $clickTrigger->uid . '\'] = [\'' . urlencode($clickTrigger->class) . '\',\'' . $clickTrigger->name . "'];\n"));
+                        }
+                    }
+
                     fputs($stream, ('Flames.Internal.Build.client[Flames.Internal.Build.client.length] = [\'' .
                         substr($file, strlen(ROOT_PATH), -4) . '\', \'' .
                         base64_encode(file_get_contents($file))) . "'];\n");
                 }
             }
         }
+    }
+
+    protected function verifyAttributes(string $file)
+    {
+        $class = (str_replace('/', '\\', substr($file, strlen(ROOT_PATH), -4)));
+        $data = Data::mountData($class);
+
+        $attributes = Arr(['click' => Arr()]);
+
+        foreach ($data->methods as $method) {
+            if ($method->type === 'click') {
+                $method->class = $class;
+                $attributes->click[] = $method;
+            }
+        }
+
+        return $attributes;
     }
 
     protected function getDirContents($dir, &$results = array()) {
