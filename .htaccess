@@ -14,10 +14,9 @@ AddDefaultCharset UTF-8
     RewriteRule ^readme.md(.*)$ /$1 [NC,L]
     RewriteRule ^.htaccess(.*)$ /$1 [NC,L]
     RewriteRule ^cli(.*)$ /$1 [NC,L]
-    RewriteRule ^.tools/(.*)$ /$1 [NC,L]
-    RewriteRule ^.kernel/(.*)$ /$1 [NC,L]
+    RewriteRule ^.docker/(.*)$ /$1 [NC,L]
     RewriteRule ^.cache/(.*)$ /$1 [NC,L]
-    RewriteRule ^app/(.*)$ /$1 [NC,L]
+    RewriteRule ^App/(.*)$ /$1 [NC,L]
 
     RewriteCond %{REQUEST_URI}::$1 ^(.*?/)(.*)::\2
     RewriteCond %{DOCUMENT_ROOT}%1App/Client/Public/%2 -f
