@@ -6,7 +6,7 @@ use Flames\Collection\Arr;
 use Flames\Controller\Response;
 use Flames\Kernel\Client\Build;
 use Flames\Kernel\Route;
-use Flames\Route\Client;
+use Flames\Router\Client;
 
 /**
  * @internal
