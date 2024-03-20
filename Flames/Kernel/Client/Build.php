@@ -29,8 +29,12 @@ class Build
         'Flames/Kernel/Client/Dispatch.php',
     ];
 
-    public function run()
+    protected bool $debug = false;
+
+    public function run(bool $debug = false)
     {
+        $this->debug = $debug;
+
         $this->createFolder();
 
         $stream = fopen(self::BASE_PATH . 'client.js', "w");
@@ -42,7 +46,15 @@ class Build
 
     protected function createFolder() : void
     {
+        if ($this->debug === true) {
+            echo ('Verifying base resource folder ' . substr(self::BASE_PATH, strlen(ROOT_PATH)) . "\n");
+        }
+
         if (is_dir(self::BASE_PATH) === false) {
+            if ($this->debug === true) {
+                echo ('Creating base resource folder ' . self::BASE_PATH . "\n");
+            }
+
             mkdir(self::BASE_PATH, 0777, true);
             chmod(self::BASE_PATH, 0777);
         }
@@ -50,6 +62,10 @@ class Build
 
     protected function injectStructure($stream) : void
     {
+        if ($this->debug === true) {
+            echo ("Inject structure javascript system\n");
+        }
+
         fputs($stream,"window.Flames = (window.Flames || {});\nFlames.Internal = (Flames.Internal || {});\nFlames.Internal.Build = (Flames.Internal.Build || {});\nFlames.Internal.Build.core = [];\nFlames.Internal.Build.client = [];\nFlames.Internal.Build.click = [];\n");
     }
 
@@ -65,6 +81,10 @@ class Build
                 $phpFile = str_replace(['namespace Flames\Http\Async\Request;', 'class Client'], ['namespace Flames\Http\Async;', 'class Request'], $phpFile);
             } elseif ($defaultFile === 'Flames/Http/Async/Response/Client.php') {
                 $phpFile = str_replace(['namespace Flames\Http\Async\Response;', 'class Client'], ['namespace Flames\Http\Async;', 'class Response'], $phpFile);
+            }
+
+            if ($this->debug === true) {
+                echo ('Compile ' . substr($defaultFile, 0, -4) . "\n");
             }
 
             fputs($stream, ('Flames.Internal.Build.core[Flames.Internal.Build.core.length] = \'' .
@@ -89,6 +109,10 @@ class Build
                         foreach ($attributes->click as $clickTrigger) {
                             fputs($stream, ('Flames.Internal.Build.click[\'' . $clickTrigger->uid . '\'] = [\'' . urlencode($clickTrigger->class) . '\',\'' . $clickTrigger->name . "'];\n"));
                         }
+                    }
+
+                    if ($this->debug === true) {
+                        echo ('Compile module ' . strtolower($module) . ': ' . substr($file, strlen(ROOT_PATH), -4) . "\n");
                     }
 
                     fputs($stream, ('Flames.Internal.Build.client[Flames.Internal.Build.client.length] = [\'' .
@@ -136,5 +160,9 @@ class Build
     {
         fputs($stream, "\n\n");
         fclose($stream);
+
+        if ($this->debug === true) {
+            echo ("\nAssets build successfully\n");
+        }
     }
 }
