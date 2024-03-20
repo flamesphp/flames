@@ -167,7 +167,7 @@ class Router
         ]);
     }
 
-    protected function getMatchCLI()
+    protected function getMatchCLI() : Arr|null
     {
         $args = $_SERVER['argv'];
         if (count($args) === 1) {

@@ -20,11 +20,19 @@ final class Kernel
     {
         self::setup();
 
+
+        $dispatchCLI = false;
         if (self::dispatchEvents() === false) {
 
-            if (self::dispatchCLI() === false) {
-                // TODO: 404
+            // TODO: 404
+            if (CLI::isCLI() === true) {
+                self::dispatchCLI();
+                $dispatchCLI = true;
             }
+        }
+
+        if ($dispatchCLI === false && CLI::isCLI() === true) {
+            self::dispatchCLI();
         }
 
         self::shutdown();
@@ -44,7 +52,9 @@ final class Kernel
         Required::file(ROOT_PATH . 'Flames/Kernel/Wrapper/Raw.php');
 
         self::setEnvironment();
-        self::setErrorHandler();
+        if (CLI::isCLI() === false) {
+            self::setErrorHandler();
+        }
         self::setDumpper();
     }
 
@@ -133,15 +143,10 @@ final class Kernel
         return true;
     }
 
-    protected static function dispatchCLI() : bool
+    protected static function dispatchCLI()
     {
-        if ($_SERVER['REDIRECT_URL'] === '/build') {
-            $build = new Build();
-            $build->run();
-            return true;
-        }
-
-        return false;
+        $system = new CLI\System();
+        $system->run();
     }
 
     protected static function sendHeaders(Arr|null $headers, int $code)
