@@ -2,7 +2,7 @@ version: "3"
 services:
     # PHP: Server
     php:
-        container_name: flames-php
+        container_name: ${APPLICATION_NAME}-php
         build: ./.docker/php
         restart: always
         volumes:
@@ -16,7 +16,7 @@ services:
 
     # MySQL: Server
     mysql:
-        container_name: flames-mysql
+        container_name: ${APPLICATION_NAME}-mysql
         image: mysql:5.7
         volumes:
             - ./.docker/.data/mysql:/var/lib/mysql:delegated
@@ -32,7 +32,7 @@ services:
 
     # MySQL: PhpMyAdmin
     pma:
-        container_name: flames-pma
+        container_name: ${APPLICATION_NAME}-pma
         image: phpmyadmin/phpmyadmin
         environment:
             PMA_HOSTS: "mysql"
@@ -41,7 +41,7 @@ services:
 
     # Redis: Server
     redis:
-        container_name: flames-redis
+        container_name: ${APPLICATION_NAME}-redis
         image: redis:latest
         command: --loglevel verbose
         ports:
@@ -49,7 +49,7 @@ services:
 
     # Redis: PhpRedisAdmin
     phpredisadmin:
-        container_name: flames-pra
+        container_name: ${APPLICATION_NAME}-pra
         image: erikdubbelboer/phpredisadmin
         environment:
             - ADMIN_USER=root

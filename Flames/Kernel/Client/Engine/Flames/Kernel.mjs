@@ -380,6 +380,11 @@ export const runFlames = () => {
     php.addEventListener('ready', () => {
 
         console.log('%c  > Core loading', 'color: #ffb158; font-size: 14px;');
+        if (Flames.Internal.Build === undefined) {
+            console.log('%c  > Core not compiled, please run command: php bin build:assets', 'color: #ff6666; font-size: 14px;');
+            return;
+        }
+
         var coreLength = Flames.Internal.Build.core.length;
         for (var i = 0; i < coreLength; i++) {
             var core = Flames.Internal.Build.core[i];
@@ -397,6 +402,5 @@ export const runFlames = () => {
 
         console.log("%c  > Flames loaded successfully\n\r", 'color: #ffb158; font-size: 14px;');
         window.PHP.eval('<?php \\Flames\\Kernel\\Client\\Dispatch::run(); ?>');
-
     });
 }
