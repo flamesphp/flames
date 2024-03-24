@@ -69,7 +69,22 @@ class Assets
             echo ("Inject structure javascript system\n");
         }
 
-        fputs($stream,"window.Flames = (window.Flames || {});\nFlames.Internal = (Flames.Internal || {});\nFlames.Internal.Build = (Flames.Internal.Build || {});\nFlames.Internal.Build.core = [];\nFlames.Internal.Build.client = [];\nFlames.Internal.Build.click = [];\n");
+        fputs($stream, '/*
+    ███████╗██╗      █████╗ ███╗   ███╗███████╗███████╗
+    ██╔════╝██║     ██╔══██╗████╗ ████║██╔════╝██╔════╝
+    █████╗  ██║     ███████║██╔████╔██║█████╗  ███████╗
+    ██╔══╝  ██║     ██╔══██║██║╚██╔╝██║██╔══╝  ╚════██║
+    ██║     ███████╗██║  ██║██║ ╚═╝ ██║███████╗███████║
+    ╚═╝     ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚══════╝
+    
+    𝗖𝗿𝗲𝗮𝘁𝗲𝗱 𝗯𝘆 𝗚𝗮𝗯𝗿𝗶𝗲𝗹 \'𝗞𝗮𝘇𝘇\' 𝗠𝗼𝗿𝗴𝗮𝗱𝗼
+    Github: https://github.com/flamesphp/flames
+    Docs:   https://flamesphp.com
+    
+*/
+
+');
+        fputs($stream,"window.Flames = (window.Flames || {});Flames.Internal = (Flames.Internal || {});Flames.Internal.Build = (Flames.Internal.Build || {});Flames.Internal.Build.core = [];Flames.Internal.Build.client = [];Flames.Internal.Build.click = [];");
     }
 
     protected function injectDefaultFiles($stream) : void
@@ -89,11 +104,11 @@ class Assets
             }
 
             if ($this->debug === true) {
-                echo ('Compile ' . substr($defaultFile, 0, -4) . "\n");
+                echo ('Compile ' . substr($defaultFile, 0, -4) . "");
             }
 
             fputs($stream, ('Flames.Internal.Build.core[Flames.Internal.Build.core.length] = \'' .
-                    base64_encode($phpFile)) . "';\n");
+                    base64_encode($phpFile)) . "';");
         }
     }
 
@@ -112,7 +127,7 @@ class Assets
                     if ($module === 'Controller') {
                         $attributes = $this->verifyAttributes($file);
                         foreach ($attributes->click as $clickTrigger) {
-                            fputs($stream, ('Flames.Internal.Build.click[\'' . $clickTrigger->uid . '\'] = [\'' . urlencode($clickTrigger->class) . '\',\'' . $clickTrigger->name . "'];\n"));
+                            fputs($stream, ('Flames.Internal.Build.click[\'' . $clickTrigger->uid . '\'] = [\'' . urlencode($clickTrigger->class) . '\',\'' . $clickTrigger->name . "'];"));
                         }
                     }
 
@@ -122,7 +137,7 @@ class Assets
 
                     fputs($stream, ('Flames.Internal.Build.client[Flames.Internal.Build.client.length] = [\'' .
                             substr($file, strlen(ROOT_PATH), -4) . '\', \'' .
-                            base64_encode(file_get_contents($file))) . "'];\n");
+                            base64_encode(file_get_contents($file))) . "'];");
                 }
             }
         }
