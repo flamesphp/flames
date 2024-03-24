@@ -17,11 +17,7 @@ function dump() : void
     $buffer = ob_get_contents();
     ob_end_clean();
 
-    $headers = null;
-    try {
-        $headers = getallheaders();
-    } catch (\Error $_) {}
-
+    $headers = (function_exists('getallheaders') ? getallheaders() : null);;
     if (isset($headers['User-Agent']) === true) {
         if (str_starts_with($headers['User-Agent'], 'PostmanRuntime') === true) {
             $buffer = str_replace('"_sage-parent"', '"_sage-parent _sage-show"', $buffer);

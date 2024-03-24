@@ -4,9 +4,12 @@ namespace Flames\CLI;
 
 use Flames\CLI\Command\Build\Assets;
 use Flames\CLI\Command\Build\Project\StaticEx;
-use Flames\Collection\Arr;
 use Flames\CLI\Data;
+use Flames\Collection\Arr;
 
+/**
+ * @internal
+ */
 class System
 {
     protected static $commands = [
@@ -15,34 +18,50 @@ class System
     ];
 
     protected Arr $data;
+    protected bool $debug;
 
-    public function __construct()
+    public function __construct(Arr $data = null, bool $debug = true)
     {
-        $this->data = Data::getData();
+        $this->debug = $debug;
+
+        if ($data === null) {
+            $this->data = Data::getData();
+            return;
+        }
+
+        $this->data = $data;
     }
 
-    public function run() : void
+    public function run() : bool
     {
         if ($this->data->command === null || isset(self::$commands[$this->data->command]) === false) {
             $this->dispatchHelper();
-            return;
+            return false;
         }
 
         $this->dispatchBase();
 
-        echo ' 
+        if ($this->debug === true) {
+            echo ' 
 Initializing command ' . $this->data->command . '
 
 ';
-        $command = new self::$commands[$this->data->command]($this->data);
-        $command->run();
+        }
 
-        echo "\n";
+        $command = new self::$commands[$this->data->command]($this->data);
+        $return = $command->run($this->debug);
+
+        if ($this->debug === true) {
+            echo "\n";
+        }
+
+        return $return;
     }
 
     protected function dispatchBase()
     {
-        $buffer = '
+        if ($this->debug === true) {
+            $buffer = '
     ███████╗██╗      █████╗ ███╗   ███╗███████╗███████╗
     ██╔════╝██║     ██╔══██╗████╗ ████║██╔════╝██╔════╝
     █████╗  ██║     ███████║██╔████╔██║█████╗  ███████╗
@@ -56,20 +75,23 @@ Initializing command ' . $this->data->command . '
     
     _________________________________________________________________ 
 ';
-        echo $buffer;
+            echo $buffer;
+        }
     }
 
     protected function dispatchHelper() : void
     {
         $this->dispatchBase();
 
-        $buffer = '
+        if ($this->debug === true) {
+            $buffer = '
 Available commands:
   * build:assets                      | build clientside assets, like controllers, events, components and resource
   * build:project:static              | build complete project as static html pages
   * build:project:static --cloudflare | build complete project as static html pages for CloudFlare Pages
   
 ';
-        echo $buffer;
+            echo $buffer;
+        }
     }
 }

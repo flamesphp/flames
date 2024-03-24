@@ -2,6 +2,7 @@
 
 namespace Flames\Kernel\Client;
 
+use Flames\Connection;
 use Flames\JS;
 use Flames\Kernel\Route;
 use Flames\Router;
@@ -49,7 +50,7 @@ final class Dispatch
 
     protected static function dispatchRoute($routeData, $route) : bool
     {
-        $requestData = Route::mountRequestData($routeData);
+        $requestData = Route::mountRequestData($routeData, Connection::getIp());
 
         $requestDataAllow = $route->onMatch($requestData);
         if ($requestDataAllow === false) {

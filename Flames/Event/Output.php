@@ -6,7 +6,7 @@ use Flames\RequestData;
 
 abstract class Output
 {
-    public function onOutput(RequestData $requestData, string $buffer) : string
+    public function onOutput(RequestData $requestData, string|null $buffer) : string|null
     {
         return $buffer;
     }
