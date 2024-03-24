@@ -15,6 +15,7 @@ abstract class Controller
 
     public function success(Arr|array|string $data = null, int $code = 200, Arr|array|null $headers = null) : Response|string
     {
+
         if (is_string($data)) {
 
         } else {
@@ -24,9 +25,11 @@ abstract class Controller
 
             $method = self::__getCaller();
             if ($method !== null) {
-                if (static::$__methods->containsKey($method)) {
+                $class = static::class;
+
+                if (static::$__methods[$class]->containsKey($method)) {
                     $view = new View();
-                    $view->addView(static::$__methods[$method]->path);
+                    $view->addView(static::$__methods[$class][$method]->path);
                     return new Response($view->render($data), $data, $code, $headers);
                 }
             }
@@ -42,21 +45,22 @@ abstract class Controller
         return $this->success($data, 500, $headers);
     }
 
-    private static bool $__setup = false;
-    private static $__methods = null;
+    private static array $__setup = [];
+    private static array $__methods = [];
     public static function __constructStatic(): void
     {
-        if (self::$__setup === true) {
+        $class = static::class;
+        if (isset(static::$__setup[$class]) === true && static::$__setup[$class] === true) {
             return;
         }
 
-        self::__setup(Data::mountData(static::class));
-        self::$__setup = true;
+        static::__setup(Data::mountData($class), $class);
+        static::$__setup[$class] = true;
     }
 
-    private static function __setup(Arr $data): void
+    private static function __setup(Arr $data, string $class): void
     {
-        self::$__methods = $data->methods;
+        static::$__methods[$class] = $data->methods;
     }
 
     private static function __getCaller()

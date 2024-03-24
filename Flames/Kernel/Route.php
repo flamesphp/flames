@@ -14,7 +14,7 @@ use Flames\Required;
  */
 class Route
 {
-    public static function mountRequestData(Arr $routeData) : RequestData
+    public static function mountRequestData(Arr $routeData, string|null $ip = null) : RequestData
     {
         $isCLI       = (CLI::isCLI() === true);
         $method      = null;
@@ -30,7 +30,7 @@ class Route
         {
             if ($isCLI === false) {
                 $method = $_SERVER['REQUEST_METHOD'];
-                $headers = ((CLI::isCLI() === true) ? null : getallheaders());
+                $headers = (function_exists('getallheaders') ? getallheaders() : null);
                 $contentType = null;
                 if (isset($headers['Content-Type']) === true) {
                     $contentType = $headers['Content-Type'];
@@ -117,7 +117,7 @@ class Route
                     Arr($headers),
                     $_SERVER['SERVER_NAME'],
                     $_SERVER['SERVER_PORT'],
-                    Connection::getIp(),
+                    $ip,
                     null,
                     null
                 );

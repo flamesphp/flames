@@ -7,6 +7,7 @@ use Flames\Controller\Response;
 use Flames\Kernel\Client\Build;
 use Flames\Kernel\Route;
 use Flames\Router\Client;
+use Flames\Router;
 
 /**
  * @internal
@@ -15,6 +16,8 @@ final class Kernel
 {
     public const VERSION = '1.0.18';
     public const MODULE  = 'SERVER';
+
+    protected static Router|null $defaultRouter = null;
 
     public static function run() : void
     {
@@ -92,6 +95,8 @@ final class Kernel
 
     protected static function dispatchEvents() : bool
     {
+        Header::set('X-Powered-By', 'Flames');
+
         if (Event::dispatch('Initialize', 'onInitialize') === false) {
             return false;
         }
@@ -102,9 +107,9 @@ final class Kernel
             }
         }
 
-        $router = Event::dispatch('Route', 'onRoute', new Router());
-        if ($router !== null) {
-            $match = $router->getMatch();
+        self::$defaultRouter = Event::dispatch('Route', 'onRoute', new Router());
+        if (self::$defaultRouter !== null) {
+            $match = self::$defaultRouter->getMatch();
             if ($match === null) {
                 return false;
             }
@@ -117,7 +122,7 @@ final class Kernel
 
     protected static function dispatchRoute($routeData) : bool
     {
-        $requestData = Route::mountRequestData($routeData);
+        $requestData = Route::mountRequestData($routeData, Connection::getIp());
         $requestDataAllow = Event::dispatch('Route', 'onMatch', $requestData);
         if ($requestDataAllow === false) {
             return false;
@@ -151,19 +156,25 @@ final class Kernel
 
     protected static function sendHeaders(Arr|null $headers, int $code)
     {
-        header('X-Powered-By: Flames');
-        http_response_code($code);
+        Header::set('Code', $code);
 
         if ($headers !== null) {
             foreach ($headers as $key => $value) {
-                header($key . ':' . $value);
+                Header::set($key, $value);
             }
         }
+
+        Header::send();
     }
 
     protected static function shutdown()
     {
         $runTime = microtime(true) - constant('START_TIME');
 //        dump($runTime);
+    }
+
+    public static function getDefaultRouter() : Router|null
+    {
+        return self::$defaultRouter;
     }
 }

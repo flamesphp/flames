@@ -2,11 +2,16 @@
 
 namespace Flames\CLI;
 
+/**
+ * @internal
+ */
 class Data
 {
-    public static function getData()
+    public static function getData(array $args = null)
     {
-        $args = $_SERVER['argv'];
+        if ($args === null) {
+            $args = $_SERVER['argv'];
+        }
 
         $data = Arr([
             'command'   => null,

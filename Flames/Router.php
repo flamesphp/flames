@@ -195,4 +195,9 @@ class Router
 
         return null;
     }
+
+    public function getMetadata() : Arr
+    {
+        return $this->routes;
+    }
 }
