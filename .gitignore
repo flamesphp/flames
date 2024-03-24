@@ -5,4 +5,5 @@ vendor/
 .cache/
 .docker/.data
 .idea/
+.build/
 .env
