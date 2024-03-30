@@ -9,7 +9,7 @@ use Flames\Collection\Arr;
  */
 class Data
 {
-    private const __VERSION__ = 2;
+    private const __VERSION__ = 4;
 
     public static function mountData(string $class) : Arr
     {
@@ -65,6 +65,26 @@ class Data
                             'name' => $method->name,
                             'uid' => $arguments['uid'],
                             'type' => 'click'
+                        ]);
+                    }
+                }
+                elseif ($attributeName === \Flames\Browser\Change::class) {
+                    $arguments = $attribute->getArguments();
+                    if (isset($arguments['uid'])) {
+                        $data->methods[$method->name] = Arr([
+                            'name' => $method->name,
+                            'uid' => $arguments['uid'],
+                            'type' => 'change'
+                        ]);
+                    }
+                }
+                elseif ($attributeName === \Flames\Browser\Input::class) {
+                    $arguments = $attribute->getArguments();
+                    if (isset($arguments['uid'])) {
+                        $data->methods[$method->name] = Arr([
+                            'name' => $method->name,
+                            'uid' => $arguments['uid'],
+                            'type' => 'input'
                         ]);
                     }
                 }

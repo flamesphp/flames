@@ -13,6 +13,8 @@ console.log(`%c
     
   > Initializing`, 'color: #ffb158; font-size: 14px;');
 
+Flames.Internal.char = 'ロ';
+
 Flames.Internal.uid = 0;
 
 Flames.Internal.generateUid = (function(uid) {
@@ -111,22 +113,32 @@ Flames.Internal.onClick = (function(uid) {
 
     var _class = decodeURIComponent(event[0]);
     var method = event[1];
-    window.PHP.eval('<?php \\Flames\\Kernel\\Client\\Dispatch::getInstance(\'' + _class + '\')->' + method + '(\\Flames\\Element::query(\'[fs-click="' + uid + '"]\')); ?>');
+    window.PHP.eval('<?php \\Flames\\Kernel\\Client\\Dispatch::getInstance(\'' + _class + '\')->' + method + '(\\Flames\\Element::query(\'[' + Flames.Internal.char + 'click="' + uid + '"]\')); ?>');
+});
+
+Flames.Internal.verifyUid = (function(element) {
+    if (element.getAttribute(Flames.Internal.char + 'uid') === null) {
+        Flames.Internal.uid++;
+        element.setAttribute(Flames.Internal.char + 'uid', Flames.Internal.generateUid(Flames.Internal.uid));
+    }
 });
 
 Flames.Internal.verifyFS = (function() {
-    var clicks = document.querySelectorAll('[fs-click]');
-    for (var i = 0; i < clicks.length; i++) {
-        var element = clicks[i];
+    var elements = document.querySelectorAll('*');
+    for (var i = 0; i < elements.length; i++) {
+        var element = elements[i];
 
-        if (element.getAttribute('fs-uid') === null) {
-            Flames.Internal.uid++;
-            element.setAttribute('fs-uid', Flames.Internal.generateUid(Flames.Internal.uid));
+        if (element.getAttribute('@click') !== null) {
+            element.setAttribute(Flames.Internal.char + 'click', element.getAttribute('@click'));
+            element.removeAttribute('@click');
+            Flames.Internal.verifyUid(element);
             element.addEventListener('click', function(event) {
                 event.preventDefault();
-                Flames.Internal.onClick(event.target.getAttribute('fs-click'));
+                Flames.Internal.onClick(event.target.getAttribute(Flames.Internal.char + 'click'));
             });
         }
+
+
     }
 });
 Flames.Internal.verifyFS();

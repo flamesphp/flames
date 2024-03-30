@@ -24,9 +24,13 @@ class Assets
         'Flames/Event/Route.php',
         'Flames/Router/Parser.php',
         'Flames/Element.php',
+        'Flames/Element/Event.php',
         'Flames/Http/Client/Client.php',
         'Flames/Http/Async/Request/Client.php',
         'Flames/Http/Async/Response/Client.php',
+        'Flames/Event/Element/Click.php',
+        'Flames/Event/Element/Change.php',
+        'Flames/Event/Element/Input.php',
         'Flames/Kernel/Client/Dispatch.php',
     ];
 
@@ -84,7 +88,7 @@ class Assets
 */
 
 ');
-        fputs($stream,"window.Flames = (window.Flames || {});Flames.Internal = (Flames.Internal || {});Flames.Internal.Build = (Flames.Internal.Build || {});Flames.Internal.Build.core = [];Flames.Internal.Build.client = [];Flames.Internal.Build.click = [];");
+        fputs($stream,"window.Flames = (window.Flames || {});Flames.Internal = (Flames.Internal || {});Flames.Internal.Build = (Flames.Internal.Build || {});Flames.Internal.Build.core = [];Flames.Internal.Build.client = [];Flames.Internal.Build.click = [];Flames.Internal.Build.change = [];Flames.Internal.Build.input = [];");
     }
 
     protected function injectDefaultFiles($stream) : void
@@ -126,8 +130,14 @@ class Assets
 
                     if ($module === 'Controller') {
                         $attributes = $this->verifyAttributes($file);
-                        foreach ($attributes->click as $clickTrigger) {
-                            fputs($stream, ('Flames.Internal.Build.click[\'' . $clickTrigger->uid . '\'] = [\'' . urlencode($clickTrigger->class) . '\',\'' . $clickTrigger->name . "'];"));
+                        foreach ($attributes->click as $trigger) {
+                            fputs($stream, ('Flames.Internal.Build.click[\'' . $trigger->uid . '\'] = [\'' . urlencode($trigger->class) . '\',\'' . $trigger->name . "'];"));
+                        }
+                        foreach ($attributes->change as $trigger) {
+                            fputs($stream, ('Flames.Internal.Build.change[\'' . $trigger->uid . '\'] = [\'' . urlencode($trigger->class) . '\',\'' . $trigger->name . "'];"));
+                        }
+                        foreach ($attributes->input as $trigger) {
+                            fputs($stream, ('Flames.Internal.Build.input[\'' . $trigger->uid . '\'] = [\'' . urlencode($trigger->class) . '\',\'' . $trigger->name . "'];"));
                         }
                     }
 
@@ -148,12 +158,25 @@ class Assets
         $class = (str_replace('/', '\\', substr($file, strlen(ROOT_PATH), -4)));
         $data = Data::mountData($class);
 
-        $attributes = Arr(['click' => Arr()]);
+        $attributes = Arr([
+            'click'  => Arr(),
+            'change' => Arr(),
+            'input'  => Arr()
+        ]);
 
         foreach ($data->methods as $method) {
+            dump($method);
             if ($method->type === 'click') {
                 $method->class = $class;
                 $attributes->click[] = $method;
+            }
+            elseif ($method->type === 'change') {
+                $method->class = $class;
+                $attributes->change[] = $method;
+            }
+            elseif ($method->type === 'input') {
+                $method->class = $class;
+                $attributes->input[] = $method;
             }
         }
 

@@ -3,6 +3,10 @@
 namespace Flames\Kernel\Client;
 
 use Flames\Connection;
+use Flames\Element;
+use Flames\Event\Element\Click;
+use Flames\Event\Element\Change;
+use Flames\Event\Element\Input;
 use Flames\JS;
 use Flames\Kernel\Route;
 use Flames\Router;
@@ -71,5 +75,26 @@ final class Dispatch
         }
 
         return null;
+    }
+
+    public static function onClick(string $class, string $method, string $uid)
+    {
+        $click = new Click(Element::query($uid));
+        $instance = self::getInstance($class);
+        $instance->{$method}($click);
+    }
+
+    public static function onChange(string $class, string $method, string $uid)
+    {
+        $change = new Change(Element::query($uid));
+        $instance = self::getInstance($class);
+        $instance->{$method}($change);
+    }
+
+    public static function onInput(string $class, string $method, string $uid)
+    {
+        $input = new Input(Element::query($uid));
+        $instance = self::getInstance($class);
+        $instance->{$method}($input);
     }
 }

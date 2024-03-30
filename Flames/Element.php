@@ -13,6 +13,7 @@ use Flames\Collection\Arr;
  * @property Arr $classes
  * @property string|null $value
  * @property string|null $checked
+ * @property Element\Event|null $event
  */
 class Element
 {
@@ -22,6 +23,7 @@ class Element
     protected Arr $classes;
     protected string|null $value = null;
     protected string|null $checked = null;
+    protected Element\Event|null $event = null;
 
     public function __construct(string $uid = null)
     {
@@ -60,6 +62,12 @@ class Element
         }
         elseif ($key === 'checked') {
             return $this->checked;
+        }
+        elseif ($key === 'event') {
+            if ($this->event === null) {
+                $this->event = new Element\Event($this->uid);
+            }
+            return $this->event;
         }
 
         return null;
@@ -168,14 +176,14 @@ class Element
     {
         $data = JS::eval("
             (function() {
-                var element = document.querySelector('[fs-uid=\"" . $this->uid . "\"]');
+                var element = document.querySelector('[' + Flames.Internal.char + 'uid=\"" . $this->uid . "\"]');
                 if (element !== null) {
                     var data = [];
                     data.tag = element.tagName.toLowerCase();
                     data.attributes = {};
                     var attributes = element.attributes;
                     for (var i = 0; i < attributes.length; i++) {
-                        if (attributes[i].name === 'class' || attributes[i].name === 'fs-uid') {
+                        if (attributes[i].name === 'class' || attributes[i].name === Flames.Internal.char + 'uid') {
                             continue;
                         }
                         data.attributes[attributes[i].name] = attributes[i].value;
@@ -207,7 +215,7 @@ class Element
     {
         $data = JS::eval("
             (function() {
-                var element = document.querySelector('[fs-uid=\"" . $this->uid . "\"]');
+                var element = document.querySelector('[Flames.Internal.char + 'uid'=\"" . $this->uid . "\"]');
                 if (element !== null) {
                     element." . $code . ";
                 }
@@ -225,12 +233,12 @@ class Element
             (function() {
                 var element = document.querySelector('" . $query . "');
                 if (element !== null) {
-                    if (element.getAttribute('fs-uid') === null) {
+                    if (element.getAttribute(Flames.Internal.char + 'uid') === null) {
                         Flames.Internal.uid++;
-                        element.setAttribute('fs-uid', Flames.Internal.generateUid(Flames.Internal.uid));
+                        element.setAttribute(Flames.Internal.char + 'uid', Flames.Internal.generateUid(Flames.Internal.uid));
                     }
                     
-                    return element.getAttribute('fs-uid');
+                    return element.getAttribute(Flames.Internal.char + 'uid');
                 }
             })();
         ");

@@ -11,7 +11,7 @@ function dump() : void
 
     if ($arg instanceof \Flames\Element) {
         \Flames\JS::eval('console.log(
-            document.querySelector(\'[fs-uid="' . $arg->uid . '"]\'),
+            document.querySelector(\'[\' + Flames.Internal.char + \'uid="' . $arg->uid . '"]\'),
             \' | Called at ' . str_replace('\\', '\\\\', $debug[1]['class'] . ':' . $debug[0]['line'] . ' | ' . $link) . '\'
         );');
         return;
