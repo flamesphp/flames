@@ -14,6 +14,13 @@ of **PHP components**.
 * Flames framework created for high performance and large number of accesses.
 * You don't need to learn JS to develop your frontend, just run PHP natively in Flames.
 * ORM with automatic migrations turn database easy.
+* ORM with Models and Repositories.
+* Server HTTP Client based on GuzzleHttp.
+* Client HTTP Client based on Axios.
+* Frontend PHP engine with Routes, Controllers and Elements wrapper.
+* Templating engine based on TWIG running on backend and frontend.
+* Command for build PHP project as static website (to upload on S3, GitHub Pages, CloudFlare Pages or simple HTML-only server).
+* JetBrains PhpStorm and Visual Code plugins.
 
 ## Release
 
@@ -32,11 +39,6 @@ Working in progress...
 # TODO
 * Performance goal: 10.000 database rows rendered in template engine at 10ms.
 * Support NGINX.
-* ORM with Models and Repositories.
-* HTTP Client based on Http.
-* Frontend PHP engine with Routes, Controllers and Elements wrapper.
-* Templating engine based on TWIG running on backend and frontend.
-* Command for build PHP project as static website (to upload on S3, GitHub Pages, CloudFlare Pages or simple HTML-only server).
 * ORM support: PostgreSQL, Oracle Database, SQL Server, ElasticSearch, MongoDB, Redis Stack, Apache Cassandra, Amazon DynamoDB and SQLite.
 * Caching ORM models, with support: KeyDB Flash (KeyDB with RocksDB), KeyDB, Redis, Redis Stack, MemCached and FileStorage.
 * Profiler injection with requests, benchmarks, memory, etc.
@@ -54,7 +56,6 @@ Working in progress...
 * Backend Python engine like V8JS  with native PHP, to do things that PHP can't (ex: get server mouse position, supporting automate server GUI apps using OCR's and mouse/keyboard interceptor).
 * P2P/TOR protocol support.
 * Database Admin supporting all types of database (include from cache) like PhpMyAdmin.
-* JetBrains PhpStorm and Visual Code plugins.
 
 ## License
 
