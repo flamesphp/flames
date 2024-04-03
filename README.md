@@ -27,9 +27,19 @@ of **PHP components**.
 Working in progress...
 
 # Installation
-* PHP 8.2/8.3
-* mbstring extension
-* Apache
+
+* Flames will create .env, unique key and cryptography unique key.
+
+#### Setup Docker
+* Run `docker-compose up -d` in your root folder
+* Run `php bin install` in your docker php container
+
+#### Setup Local
+* Required PHP 8.2/8.3
+* Required PHP mbstring extension
+* Required Apache
+* Required MySQL
+* Run `php bin install` in your root folder
 
 # Important things
 * Continuous development, we are here to stay.
