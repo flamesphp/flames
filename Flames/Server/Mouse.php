@@ -13,7 +13,7 @@ class Mouse
     const CLICK_RIGHT  = 'right';
     const CLICK_MIDDLE = 'middle';
 
-    public static function getMousePosition() : Arr
+    public static function getPosition() : Arr
     {
         if (Server::isUnix() === true) {
             throw new Exception('Unix not supported yet.');
@@ -29,7 +29,7 @@ class Mouse
         ]);
     }
 
-    public static function setMousePosition(int $x, int $y)
+    public static function setPosition(int $x, int $y, bool $leftClick = false)
     {
         if (Server::isUnix() === true) {
             throw new Exception('Unix not supported yet.');
@@ -38,6 +38,10 @@ class Mouse
 
         $tmpData = file_get_contents(str_replace('/', '\\', (ROOT_PATH . 'Flames/Server/Mouse/SetMousePosition.ps1')));
         $tmpData = str_replace(['$x', '$y'], [$x, $y], $tmpData);
+
+        if ($leftClick === true) {
+            $tmpData .= ("\n" . file_get_contents(str_replace('/', '\\', (ROOT_PATH . 'Flames/Server/Mouse/LeftClickMouseJoin.ps1'))));
+        }
 
         $tmpPath = str_replace('/', '\\', (ROOT_PATH . '.cache/powershell/' . Hash::getRandom() . '.ps1'));
         $tmpDir = dirname($tmpPath);
@@ -49,7 +53,7 @@ class Mouse
         unlink($tmpPath);
     }
 
-    public static function setMouseClick(string $type = 'left')
+    public static function click(string $type = 'left')
     {
         if (Server::isUnix() === true) {
             throw new Exception('Unix not supported yet.');

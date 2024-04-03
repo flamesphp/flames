@@ -85,14 +85,6 @@ final class Kernel
         foreach ($polyfill as $_polyfill) {
             Required::_function($_polyfill);
         }
-
-        var_dump($polyfill);
-        exit;
-
-
-        var_dump(Environment::default());
-        exit;
-
     }
 
     protected static function setErrorHandler() : void
