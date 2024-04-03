@@ -211,6 +211,10 @@ class Parser {
      */
     protected function expandLineVariables($key, $value) {
         // Value is an expandable variable.
+        if ($value === null) {
+            return false;
+        }
+
         if (preg_match('/^\$\{([A-Z][A-Z0-9_]*)\}$/', $value, $matches)) {
             $this->content[$key] = isset($this->content[$matches[1]]) ? $this->content[$matches[1]] : null;
             return true;

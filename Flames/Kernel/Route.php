@@ -51,7 +51,6 @@ class Route
                 // Get Multipart Data
                 if ($contentType !== null && str_starts_with($contentType, 'multipart/form-data')) {
                     if ($method === 'GET') {
-                        Required::_function('parse_raw_http_request');
                         parse_raw_http_request($multipart);
                     } else {
                         foreach ($_POST as $key => $value) {

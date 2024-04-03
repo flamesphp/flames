@@ -59,6 +59,7 @@ final class Kernel
         Required::file(ROOT_PATH . 'Flames/Kernel/Wrapper/Raw.php');
 
         self::setEnvironment();
+        self::loadPolyfill();
         if (CLI::isCLI() === false) {
             self::setErrorHandler();
         }
@@ -69,6 +70,29 @@ final class Kernel
     {
         $environment = new Environment();
         $environment->inject();
+    }
+
+    protected static function loadPolyfill()
+    {
+        $polyfill = Environment::default()->POLYFILL_FUNCTIONS;
+        if ($polyfill !== null) {
+            $polyfill = explode(',', Environment::default()->POLYFILL_FUNCTIONS);
+        } else {
+            $polyfill = [];
+        }
+
+        $polyfill[] = 'parse_raw_http_request';
+        foreach ($polyfill as $_polyfill) {
+            Required::_function($_polyfill);
+        }
+
+        var_dump($polyfill);
+        exit;
+
+
+        var_dump(Environment::default());
+        exit;
+
     }
 
     protected static function setErrorHandler() : void
