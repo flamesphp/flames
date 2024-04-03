@@ -9,6 +9,10 @@ use Flames\Server;
 
 class Mouse
 {
+    const CLICK_LEFT   = 'left';
+    const CLICK_RIGHT  = 'right';
+    const CLICK_MIDDLE = 'middle';
+
     public static function getMousePosition() : Arr
     {
         if (Server::isUnix() === true) {
@@ -43,5 +47,19 @@ class Mouse
         @file_put_contents($tmpPath, $tmpData);
         shell_exec('powershell.exe -File ' . $tmpPath);
         unlink($tmpPath);
+    }
+
+    public static function setMouseClick(string $type = 'left')
+    {
+        if (Server::isUnix() === true) {
+            throw new Exception('Unix not supported yet.');
+        }
+
+        if ($type !== self::CLICK_LEFT) {
+            throw new Exception('Click ' . $type . ' not supported yet.');
+        }
+
+        $execPath = str_replace('/', '\\', (ROOT_PATH . 'Flames/Server/Mouse/LeftClickMouse.ps1'));
+        shell_exec('powershell.exe -File ' . $execPath);
     }
 }
