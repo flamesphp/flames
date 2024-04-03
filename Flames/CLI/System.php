@@ -2,6 +2,8 @@
 
 namespace Flames\CLI;
 
+use Flames\CLI\Command\Install;
+use Flames\CLI\Command\Key\Generate as KeyGenerate;
 use Flames\CLI\Command\Build\Assets;
 use Flames\CLI\Command\Build\Project\StaticEx;
 use Flames\CLI\Data;
@@ -13,6 +15,8 @@ use Flames\Collection\Arr;
 class System
 {
     protected static $commands = [
+        'install'              => Install::class,
+        'key:generate'         => KeyGenerate::class,
         'build:assets'         => Assets::class,
         'build:project:static' => StaticEx::class
     ];
@@ -86,10 +90,13 @@ Initializing command ' . $this->data->command . '
         if ($this->debug === true) {
             $buffer = '
 Available commands:
+  * install                           | install
+  * install --nokey                   | install without generate unique key
+  * install --noexample               | install without example project
+  * key:generate                      | create or update project unique key
   * build:assets                      | build clientside assets, like controllers, events, components and resource
   * build:project:static              | build complete project as static html pages
   * build:project:static --cloudflare | build complete project as static html pages for CloudFlare Pages
-  
 ';
             echo $buffer;
         }

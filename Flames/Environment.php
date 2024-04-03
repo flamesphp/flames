@@ -17,6 +17,8 @@ final class Environment
     protected static Environment|null $dataDefault = null;
 
     protected Arr|null $data = null;
+    protected bool $valid = true;
+    protected string|null $path;
 
     public function __construct(mixed $path = null)
     {
@@ -26,7 +28,8 @@ final class Environment
             $path = (ROOT_PATH . '.env');
         }
 
-        $this->load($path);
+        $this->path = $path;
+        $this->load();
         if (self::$dataDefault === null) {
             self::$dataDefault = $this;
         }
@@ -55,6 +58,11 @@ final class Environment
 
         $this->data[$key] = $value;
         return;
+    }
+
+    public function getAll() : Arr
+    {
+        return $this->data;
     }
 
     public function toArray() : array
@@ -107,18 +115,55 @@ final class Environment
         }
     }
 
-    protected function load(mixed $path) : void
+    public function save() : void
+    {
+        $data = str_replace(["\r\n", "\r"], "\n", file_get_contents($this->path));
+        $mount = '';
+
+        $lines = explode("\n", $data);
+        foreach ($lines as $line) {
+            if (str_starts_with($line, "\n") || str_starts_with($line, '#') || str_contains($line, '=') === false) {
+                $mount .= ($line . "\n");
+                continue;
+            }
+
+            $var = trim(explode('=', $line)[0]);
+            $value = $this->{$var};
+            if ($value === true) {
+                $value = 'true';
+            } elseif ($value === false) {
+                $value = 'false';
+            }
+            $mount .= ($var . '=' . $value . "\n");
+        }
+
+        @file_put_contents($this->path, $mount);
+    }
+
+    public function isValid() : bool
+    {
+        return $this->valid;
+    }
+
+    protected function load() : void
     {
         $basePath  = (ROOT_PATH . '.cache/environment/');
-        $cachePath = ($basePath . sha1($path));
-        $currentTime = filemtime($path);
+        $cachePath = ($basePath . sha1($this->path));
+
+        if (file_exists($this->path) === false) {
+            $this->valid = false;
+            $this->data = Arr();
+            return;
+        }
+
+        $currentTime = filemtime($this->path);
 
         if (file_exists($cachePath) === true && filemtime($cachePath) === $currentTime) {
             $this->data = unserialize(file_get_contents($cachePath));
             return;
         }
 
-        $this->data = Arr(Helpers::fromFile($path));
+        $this->data = Arr(Helpers::fromFile($this->path));
         $success = @file_put_contents($cachePath, serialize($this->data));
         if ($success === false) {
             if (is_dir($basePath) === false) {
