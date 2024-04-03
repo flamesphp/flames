@@ -4,6 +4,9 @@ namespace Flames\CLI\Command\Build;
 
 use Flames\CLI\Command\Build\Assets\Data;
 
+/**
+ * @internal
+ */
 class Assets
 {
     const BASE_PATH = (ROOT_PATH . 'App/Client/Resource/');

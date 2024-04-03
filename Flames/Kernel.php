@@ -31,6 +31,10 @@ final class Kernel
             if (CLI::isCLI() === true) {
                 self::dispatchCLI();
                 $dispatchCLI = true;
+            } else {
+                ErrorPage::dispatch404();
+                self::shutdown();
+                return;
             }
         }
 

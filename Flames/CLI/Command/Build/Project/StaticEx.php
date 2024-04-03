@@ -12,6 +12,9 @@ use Flames\Kernel;
 use Flames\Kernel\Route;
 use ZipArchive;
 
+/**
+ * @internal
+ */
 class StaticEx
 {
     protected bool $debug = false;
@@ -48,7 +51,7 @@ class StaticEx
 
             $_SERVER['REQUEST_URI'] = $metadata->routeFormatted;
             $match = $router->getMatch();
-            $responseData = $this->getResponse($match);
+            $responseData = self::getResponse($match);
 
             $this->saveResponse($metadata, $responseData);
         }
@@ -225,7 +228,7 @@ class StaticEx
 
     protected function saveHeader($metadata, $responseData, $urls) : void {}
 
-    protected function getResponse($routeData) : bool|Arr
+    public static function getResponse($routeData) : bool|Arr
     {
         Header::set('X-Powered-By', 'Flames');
         if (Event::dispatch('Initialize', 'onInitialize') === false) {
@@ -267,7 +270,6 @@ class StaticEx
         Header::clear();
         return $data;
     }
-
 
     protected function saveInputs() : void
     {
