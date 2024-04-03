@@ -4,6 +4,7 @@ namespace Flames\CLI;
 
 use Flames\CLI\Command\Install;
 use Flames\CLI\Command\Key\Generate as KeyGenerate;
+use Flames\CLI\Command\Cryptography\Key\Generate as CryptographyKeyGenerate;
 use Flames\CLI\Command\Build\Assets;
 use Flames\CLI\Command\Build\Project\StaticEx;
 use Flames\CLI\Data;
@@ -15,10 +16,11 @@ use Flames\Collection\Arr;
 class System
 {
     protected static $commands = [
-        'install'              => Install::class,
-        'key:generate'         => KeyGenerate::class,
-        'build:assets'         => Assets::class,
-        'build:project:static' => StaticEx::class
+        'install'                   => Install::class,
+        'key:generate'              => KeyGenerate::class,
+        'cryptography:key:generate' => CryptographyKeyGenerate::class,
+        'build:assets'              => Assets::class,
+        'build:project:static'      => StaticEx::class
     ];
 
     protected Arr $data;
@@ -92,6 +94,7 @@ Initializing command ' . $this->data->command . '
 Available commands:
   * install                           | install
   * install --nokey                   | install without generate unique key
+  * install --nocryptographykey       | install without generate cryptography unique key
   * install --noexample               | install without example project
   * key:generate                      | create or update project unique key
   * build:assets                      | build clientside assets, like controllers, events, components and resource

@@ -1,6 +1,6 @@
 <?php
 
-namespace Flames\CLI\Command\Key;
+namespace Flames\CLI\Command\Cryptography\Key;
 
 use Flames\Command;
 use Flames\Cryptography\Hash;
@@ -21,7 +21,7 @@ class Generate
             $environment = Environment::default();
         }
 
-        $environment->APPLICATION_KEY = Hash::getRandom();
+        $environment->CRYPTOGRAPHY_KEY = Hash::getRandom();
         $environment->save();
 
         return true;
