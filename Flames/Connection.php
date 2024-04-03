@@ -32,7 +32,11 @@ class Connection
             return self::$currentIp;
         }
 
-        self::$currentIp = $_SERVER['REMOTE_ADDR'];
-        return self::$currentIp;
+        if (isset($_SERVER['REMOTE_ADDR'])) {
+            self::$currentIp = $_SERVER['REMOTE_ADDR'];
+            return self::$currentIp;
+        }
+
+        return null;
     }
 }
