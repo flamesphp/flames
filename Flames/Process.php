@@ -17,8 +17,7 @@ class Process
         if ( $procSocket = proc_open("start /b " . $command, [
             0 => ["pipe", "r"],
             1 => ["pipe", "w"],
-        ], $pipes))
-        {
+        ], $pipes)) {
             $procStatus = proc_get_status($procSocket);
             $this->pid = $procStatus['pid'];
         }
@@ -26,6 +25,10 @@ class Process
 
     public function destroy()
     {
-//        exec('taskkill /pid ' . $this->pid . ' /F');
+        if (OS::isUnix() === true) {
+            throw new Exception('Unix not supported yet.');
+        }
+
+        exec('taskkill /pid ' . $this->pid . ' /F');
     }
 }
