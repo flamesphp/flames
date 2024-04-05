@@ -60,7 +60,7 @@ final class Kernel
         self::setEnvironment();
         self::loadPolyfill();
         if (CLI::isCLI() === false) {
-//            self::setErrorHandler();
+            self::setErrorHandler();
         }
         self::setDumpper();
     }

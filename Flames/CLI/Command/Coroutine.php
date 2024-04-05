@@ -55,10 +55,12 @@ class Coroutine
         @ob_end_clean();
 
         $coroutinePath = (ROOT_PATH . self::BASE_FOLDER);
-        file_put_contents($coroutinePath . sha1($this->coroutine['hash']), serialize([
-            'buffer' => $buffer,
-            'response' => serialize($response)
-        ]));
+        if (file_exists($coroutinePath . $this->coroutine['hash']) === true) {
+            file_put_contents($coroutinePath . sha1($this->coroutine['hash']), serialize([
+                'buffer' => $buffer,
+                'response' => serialize($response)
+            ]));
+        }
 
         self::$isCoroutineRunning = false;
         return true;
@@ -75,10 +77,12 @@ class Coroutine
         ob_end_clean();
 
         $coroutinePath = (ROOT_PATH . self::BASE_FOLDER);
-        file_put_contents($coroutinePath . sha1(self::$currentCoroutine->coroutine['hash']), serialize([
-            'buffer' => $buffer,
-            'response' => serialize(null)
-        ]));
+        if (file_exists($coroutinePath . self::$currentCoroutine->coroutine['hash']) === true) {
+            file_put_contents($coroutinePath . sha1(self::$currentCoroutine->coroutine['hash']), serialize([
+                'buffer' => $buffer,
+                'response' => serialize(null)
+            ]));
+        }
 
         return true;
     }
