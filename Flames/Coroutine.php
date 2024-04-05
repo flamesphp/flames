@@ -91,6 +91,21 @@ class Coroutine
             if ($data === false) {
                 $results[] = null;
             } else {
+                if ($data['error'] !== null) {
+                    foreach ($coroutinesWaiting as $coroutineWaiting) {
+                        unlink($coroutinePath . $coroutineWaiting['coroutine']['hash']);
+                        if (file_exists($responsePath) === true) {
+                            unlink($responsePath);
+                        }
+                    }
+                    $error = (array)json_decode($data['error']);
+                    if (Environment::default()->ERROR_HANDLER_ENABLED === true) {
+                        $errorHandler = Kernel::getErrorHandler();
+                        $errorHandler->handleError($error['type'], $error['message'], $error['file'], $error['line']);
+                    }
+
+                    trigger_error('Coroutine Error - ' . $error['message'], E_USER_ERROR);
+                }
                 if ($echoOutput === true && $data['buffer'] !== '') {
                     echo $data['buffer'];
                 }

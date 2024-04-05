@@ -57,8 +57,9 @@ class Coroutine
         $coroutinePath = (ROOT_PATH . self::BASE_FOLDER);
         if (file_exists($coroutinePath . $this->coroutine['hash']) === true) {
             file_put_contents($coroutinePath . sha1($this->coroutine['hash']), serialize([
-                'buffer' => $buffer,
-                'response' => serialize($response)
+                'buffer'  => $buffer,
+                'response' => serialize($response),
+                'error'    => null
             ]));
         }
 
@@ -79,8 +80,9 @@ class Coroutine
         $coroutinePath = (ROOT_PATH . self::BASE_FOLDER);
         if (file_exists($coroutinePath . self::$currentCoroutine->coroutine['hash']) === true) {
             file_put_contents($coroutinePath . sha1(self::$currentCoroutine->coroutine['hash']), serialize([
-                'buffer' => $buffer,
-                'response' => serialize(null)
+                'buffer'   => $buffer,
+                'response' => serialize(null),
+                'error'    => json_encode(error_get_last())
             ]));
         }
 

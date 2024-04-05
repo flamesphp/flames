@@ -8,6 +8,7 @@ use Flames\Kernel\Client\Build;
 use Flames\Kernel\Route;
 use Flames\Router\Client;
 use Flames\Router;
+use Flames\ErrorHandler;
 
 /**
  * @internal
@@ -18,6 +19,7 @@ final class Kernel
     public const MODULE  = 'SERVER';
 
     protected static Router|null $defaultRouter = null;
+    protected static ErrorHandler\Run|null $errorHandler = null;
 
     public static function run() : void
     {
@@ -90,19 +92,24 @@ final class Kernel
     {
         $environment = Environment::default();
         if ($environment->ERROR_HANDLER_ENABLED === true) {
-            $errorHandler = new ErrorHandler\Run;
+            self::$errorHandler = new ErrorHandler\Run;
             $pageHandler = new ErrorHandler\Handler\PrettyPageHandler();
             $pageHandler->setEditor($environment->ERROR_HANDLER_IDE);
-            $errorHandler->pushHandler($pageHandler);
-            $errorHandler->register();
+            self::$errorHandler->pushHandler($pageHandler);
+            self::$errorHandler->register();
         }
+    }
+
+
+    public static function getErrorHandler()
+    {
+        return self::$errorHandler;
     }
 
     protected static function setDumpper() : void
     {
         $environment = Environment::default();
         if ($environment->DUMP_ENABLED === true) {
-//            Required::file(ROOT_PATH . '.fork/_Flames/Dump/Dump.php');
             Dump\Dump::$theme = Dump\Dump::THEME_SOLARIZED_DARK;
             Dump\Dump::$editor = $environment->DUMP_IDE;
             Required::file(ROOT_PATH . 'Flames/Dump/Register.php');
