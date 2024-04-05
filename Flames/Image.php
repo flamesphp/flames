@@ -22,7 +22,7 @@ class Image
         if ($this->path !== null) {
             $imageData = file_get_contents($this->path );
             $imageGd = imagecreatefromstring($imageData);
-            if ($imageGd !== null) {
+            if ($imageGd !== false) {
                 $this->image = $imageGd;
             }
         }
@@ -87,7 +87,7 @@ class Image
         chdir($tmpDir);
         exec('tesseract ' . $imageHash . '.png ' . $imageHash . ' --psm 7');
         chdir(ROOT_PATH);
-        $ocrData = @file_get_contents($tmpDir . $imageHash . '.txt');
+        $ocrData = @file_get_contents($tmpPathTxt);
         unlink($tmpPathPng);
         unlink($tmpPathTxt);
         if ($ocrData === false) {
