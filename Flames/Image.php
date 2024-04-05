@@ -3,12 +3,15 @@
 namespace Flames;
 
 use Flames\Cryptography\Hash;
+use Flames\Exception\Unserialize;
 use Flames\Http\Client;
 use Flames\Http\Async\Request;
 use GdImage;
 
 class Image
 {
+    protected const VERSION = 1;
+
     const FORMAT_PNG = 'png';
     const FORMAT_JPG = 'jpg';
 
@@ -20,7 +23,7 @@ class Image
         $this->path = $path;
 
         if ($this->path !== null) {
-            $imageData = file_get_contents($this->path );
+            $imageData = file_get_contents($this->path);
             $imageGd = imagecreatefromstring($imageData);
             if ($imageGd !== false) {
                 $this->image = $imageGd;
@@ -162,5 +165,28 @@ class Image
         $image = new Image();
         $image->image = $gdImage;
         return $image;
+    }
+
+    public function __serialize(): array
+    {
+        return [
+            'version' => self::VERSION,
+            'path'    => $this->path,
+            'image'   => $this->getString()
+        ];
+    }
+
+    public function __unserialize(array $data): void
+    {
+        if ($data['version'] !== self::VERSION) {
+            throw new Unserialize('Outdated serialize data version.');
+        }
+
+        $this->path = $data['path'];
+
+        $imageGd = imagecreatefromstring($data['image']);
+        if ($imageGd !== false) {
+            $this->image = $imageGd;
+        }
     }
 }
