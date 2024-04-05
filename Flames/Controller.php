@@ -77,5 +77,4 @@ abstract class Controller
 
         return $lastFunc;
     }
-
 }

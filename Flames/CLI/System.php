@@ -2,6 +2,7 @@
 
 namespace Flames\CLI;
 
+use Flames\CLI\Command\Coroutine;
 use Flames\CLI\Command\Install;
 use Flames\CLI\Command\Key\Generate as KeyGenerate;
 use Flames\CLI\Command\Cryptography\Key\Generate as CryptographyKeyGenerate;
@@ -20,7 +21,8 @@ class System
         'key:generate'              => KeyGenerate::class,
         'cryptography:key:generate' => CryptographyKeyGenerate::class,
         'build:assets'              => Assets::class,
-        'build:project:static'      => StaticEx::class
+        'build:project:static'      => StaticEx::class,
+        'internal:coroutine'        => Coroutine::class
     ];
 
     protected Arr $data;
@@ -43,6 +45,10 @@ class System
         if ($this->data->command === null || isset(self::$commands[$this->data->command]) === false) {
             $this->dispatchHelper();
             return false;
+        }
+
+        if ($this->data->command === 'internal:coroutine') {
+            $this->debug = false;
         }
 
         $this->dispatchBase();

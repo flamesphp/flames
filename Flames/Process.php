@@ -11,7 +11,14 @@ class Process
     public function __construct(string $command)
     {
         if (OS::isUnix() === true) {
-            throw new Exception('Unix not supported yet.');
+            $command = ($command . ' > /dev/null 2>&1 & echo $!');
+            exec($command, $output);
+
+            if (is_array($output) === true) {
+                $this->pid = (int)$output[0];
+            }
+
+            return;
         }
 
         if ( $procSocket = proc_open("start /b " . $command, [
@@ -23,10 +30,16 @@ class Process
         }
     }
 
+    public function getPid() : int|null
+    {
+        return $this->pid;
+    }
+
     public function destroy()
     {
         if (OS::isUnix() === true) {
-            throw new Exception('Unix not supported yet.');
+            exec('kill -9 ' . $this->pid);
+            return;
         }
 
         exec('taskkill /pid ' . $this->pid . ' /F');

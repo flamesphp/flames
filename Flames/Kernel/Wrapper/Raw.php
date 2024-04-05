@@ -10,3 +10,13 @@ function Arr(mixed $value = null) : Arr
 
     return new \Flames\Collection\Arr($value);
 }
+
+/**
+ * @internal
+ */
+function __shutdown__()
+{
+    Flames\Kernel::shutdown();
+}
+
+register_shutdown_function('__shutdown__');

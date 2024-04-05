@@ -23,7 +23,6 @@ final class Kernel
     {
         self::setup();
 
-
         $dispatchCLI = false;
         if (self::dispatchEvents() === false) {
 
@@ -61,7 +60,7 @@ final class Kernel
         self::setEnvironment();
         self::loadPolyfill();
         if (CLI::isCLI() === false) {
-            self::setErrorHandler();
+//            self::setErrorHandler();
         }
         self::setDumpper();
     }
@@ -187,9 +186,13 @@ final class Kernel
         Header::send();
     }
 
-    protected static function shutdown()
+    public static function shutdown()
     {
-        $runTime = microtime(true) - constant('START_TIME');
+        if (CLI::isCLI() === true && \Flames\CLI\Command\Coroutine::isCoroutineRunning() === true) {
+            \Flames\CLI\Command\Coroutine::errorHandler();
+        }
+
+//        $runTime = microtime(true) - constant('START_TIME');
 //        dump($runTime);
     }
 

@@ -26,4 +26,6 @@ function dump() : void
 
     $buffer = str_replace('>Flames\Collection\Arr</a>', '>Arr</a>', $buffer);
     echo $buffer;
+    @flush();
+    @ob_flush();
 }
