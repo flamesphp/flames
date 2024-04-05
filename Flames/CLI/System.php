@@ -2,58 +2,14 @@
 
 namespace Flames\CLI;
 
-use /**
- * Class Coroutine
- *
- * This class represents a command that starts a coroutine.
- *
- * @package Flames\CLI\Command
- */
-    Flames\CLI\Command\Coroutine;
-use /**
- * Class Install
- *
- * This class represents the install command for Flames CLI tool.
- * It is responsible for executing the installation process.
- */
-    Flames\CLI\Command\Install;
-use /**
- * Class KeyGenerate
- *
- * The KeyGenerate class provides a CLI command to generate a new encryption key.
- */
-    Flames\CLI\Command\Key\Generate as KeyGenerate;
-use /**
- * Class CryptographyKeyGenerate
- *
- * This class represents the CLI command for generating a cryptographic key.
- */
-    Flames\CLI\Command\Cryptography\Key\Generate as CryptographyKeyGenerate;
-use /**
- * Class Assets
- *
- * This class represents the command to build assets for a project.
- */
-    Flames\CLI\Command\Build\Assets;
-use /**
- * Class StaticEx
- *
- * This class is responsible for building the static files of a project.
- * It contains methods to generate CSS and JS files from the source code.
- */
-    Flames\CLI\Command\Build\Project\StaticEx;
-use /**
- * Class Data
- *
- * This class is responsible for handling and manipulating CLI data.
- */
-    Flames\CLI\Data;
-use /**
- * Class Arr
- *
- * A collection of static methods for performing various operations on arrays.
- */
-    Flames\Collection\Arr;
+use Flames\CLI\Command\Coroutine;
+use Flames\CLI\Command\Install;
+use Flames\CLI\Command\Key\Generate as KeyGenerate;
+use Flames\CLI\Command\Cryptography\Key\Generate as CryptographyKeyGenerate;
+use Flames\CLI\Command\Build\Assets;
+use Flames\CLI\Command\Build\Project\StaticEx;
+use Flames\CLI\Data;
+use Flames\Collection\Arr;
 
 /**
  * Class System

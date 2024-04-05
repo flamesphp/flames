@@ -2,13 +2,31 @@
 
 namespace Flames\Collection;
 
+/**
+ * The Strings class provides various methods for manipulating and working with strings.
+ */
 final class Strings
 {
+    /**
+     * Converts a given value to a string representation.
+     *
+     * @param mixed $value The value to be converted.
+     *
+     * @return string The string representation of the given value.
+     */
     public static function parse(mixed $value)
     {
         return (string)$value;
     }
 
+    /**
+     * Calculates the length of a given value.
+     *
+     * @param mixed $value The value to calculate the length for.
+     * @param bool $multibyte Indicates whether to calculate the length using multibyte encoding. Default is false.
+     *
+     * @return int The length of the value.
+     */
     public static function length(mixed $value, bool $multibyte = false) : int
     {
         $value = (string)$value;
@@ -20,12 +38,28 @@ final class Strings
         return strlen($value);
     }
 
+    /**
+     * Counts the number of characters in a given value.
+     *
+     * @param mixed $value The value to count the characters for.
+     * @param bool $multibyte Indicates whether to count the characters using multibyte encoding. Default is false.
+     *
+     * @return int The number of characters in the value.
+     */
     public static function count(mixed $value, bool $multibyte = false) : int
     {
         $value = (string)$value;
         return self::length($value, $multibyte);
     }
 
+    /**
+     * Converts a given value to lowercase.
+     *
+     * @param mixed $value The value to convert to lowercase.
+     * @param bool $multibyte Indicates whether to use multibyte encoding for the conversion. Default is false.
+     *
+     * @return string The value converted to lowercase.
+     */
     public static function toLower(mixed $value, bool $multibyte = false) : string
     {
         $value = (string)$value;
@@ -37,6 +71,14 @@ final class Strings
         return strtolower($value);
     }
 
+    /**
+     * Converts a given value to uppercase.
+     *
+     * @param mixed $value The value to convert to uppercase.
+     * @param bool $multibyte Indicates whether to convert the value using multibyte encoding. Default is false.
+     *
+     * @return string The value converted to uppercase.
+     */
     public static function toUpper(mixed $value, bool $multibyte = false) : string
     {
         $value = (string)$value;
@@ -48,6 +90,15 @@ final class Strings
         return strtoupper($value);
     }
 
+    /**
+     * Checks if a given value starts with a specified substring.
+     *
+     * @param mixed $value The value to check if it starts with the substring.
+     * @param mixed $needle The substring to check if it is at the beginning of the value.
+     * @param bool $caseSensitive Optional. Indicates whether the comparison should be case-sensitive. Default is true.
+     *
+     * @return bool True if the value starts with the substring, false otherwise.
+     */
     public static function startsWith(mixed $value, mixed $needle, bool $caseSensitive = true) : bool
     {
         $value  = (string)$value;
@@ -62,6 +113,15 @@ final class Strings
         return str_starts_with($value, $needle);
     }
 
+    /**
+     * Checks if a given value ends with a specified substring.
+     *
+     * @param mixed $value The value to check.
+     * @param mixed $needle The substring to look for.
+     * @param bool $caseSensitive Indicates whether the comparison is case-sensitive. Default is true.
+     *
+     * @return bool True if the value ends with the specified substring, false otherwise.
+     */
     public static function endsWith(mixed $value, mixed $needle, bool $caseSensitive = true) : bool
     {
         $value  = (string)$value;
@@ -76,6 +136,15 @@ final class Strings
         return str_ends_with($value, $needle);
     }
 
+    /**
+     * Checks whether a given value contains a specified needle.
+     *
+     * @param mixed $value The value to check for containment.
+     * @param mixed $needle The value to search for within the value.
+     * @param bool $caseSensitive Indicates whether the search should be case-sensitive. Default is true.
+     *
+     * @return bool Returns true if the value contains the needle, otherwise false.
+     */
     public static function contains(mixed $value, mixed $needle, bool $caseSensitive = true) : bool
     {
         $value  = (string)$value;
@@ -90,6 +159,15 @@ final class Strings
         return str_contains($value, $needle);
     }
 
+    /**
+     * Checks if a given value contains any of the elements in the array.
+     *
+     * @param mixed $value The value to check.
+     * @param mixed $array The array containing the elements to search for.
+     * @param bool $caseSensitive Indicates whether the search is case-sensitive. Default is true.
+     *
+     * @return bool True if the value contains any of the array elements, false otherwise.
+     */
     public static function containsAny(mixed $value, mixed $array, bool $caseSensitive = true) : bool
     {
         $value = (string)$value;
@@ -119,6 +197,15 @@ final class Strings
         return false;
     }
 
+    /**
+     * Checks if a given value is equal to a needle.
+     *
+     * @param mixed $value The value to check equality for.
+     * @param mixed $needle The needle to compare against.
+     * @param bool $caseSensitive Indicates whether the comparison should be case sensitive or not. Default is true.
+     *
+     * @return bool True if the value is equal to the needle, false otherwise.
+     */
     public static function equals(mixed $value, mixed $needle, bool $caseSensitive = true) : bool
     {
         $value  = (string)$value;
@@ -133,6 +220,15 @@ final class Strings
         return ($value === $needle);
     }
 
+    /**
+     * Checks if a value equals any of the values in an array.
+     *
+     * @param mixed $value The value to check.
+     * @param mixed $array The array of values to compare to.
+     * @param bool $caseSensitive Indicates whether the comparison should be case sensitive. Default is true.
+     *
+     * @return bool True if the value equals any of the values in the array, false otherwise.
+     */
     public static function equalsAny(mixed $value, mixed $array, bool $caseSensitive = true) : bool
     {
         $value = (string)$value;
@@ -162,12 +258,28 @@ final class Strings
         return false;
     }
 
+    /**
+     * Checks if a given value is empty.
+     *
+     * @param mixed $value The value to check for emptiness.
+     *
+     * @return bool Returns true if the value is empty, false otherwise.
+     */
     public static function isEmpty(mixed $value) : bool
     {
         $value = (string)$value;
         return empty($value);
     }
 
+    /**
+     * Replaces all occurrences of a substring in a string with another substring.
+     *
+     * @param mixed $value The input string where the replacements will be made.
+     * @param mixed $needle The substring to be replaced.
+     * @param mixed $replace The replacement substring.
+     *
+     * @return string The resulting string after all replacements.
+     */
     public static function replace(mixed $value, mixed $needle, mixed $replace) : string
     {
         $value   = (string)$value;
@@ -177,6 +289,14 @@ final class Strings
         return str_replace($needle, $replace, $value);
     }
 
+    /**
+     * Removes all occurrences of a given substring from a string.
+     *
+     * @param mixed $value The input string to remove occurrences from.
+     * @param mixed $needle The substring to remove from the input string.
+     *
+     * @return string The input string with all occurrences of the substring removed.
+     */
     public static function remove(mixed $value, mixed $needle) : string
     {
         $value  = (string)$value;
@@ -185,6 +305,14 @@ final class Strings
         return str_replace($needle, '', $value);
     }
 
+    /**
+     * Encodes a given value.
+     *
+     * @param mixed $value The value to encode.
+     * @param bool $raw Indicates whether to use raw encoding. Default is false.
+     *
+     * @return string The encoded value.
+     */
     public static function encode(mixed $value, bool $raw = false) : string
     {
         $value = (string)$value;
@@ -196,6 +324,14 @@ final class Strings
         return urlencode($value);
     }
 
+    /**
+     * Decodes a given value.
+     *
+     * @param mixed $value The value to decode.
+     * @param bool $raw Indicates whether to decode using rawurldecode(). Default is false.
+     *
+     * @return string The decoded value.
+     */
     public static function decode(mixed $value, bool $raw = false) : string
     {
         $value = (string)$value;
@@ -207,6 +343,16 @@ final class Strings
         return urldecode($value);
     }
 
+    /**
+     * Splits a string into an array based on a given delimiter.
+     *
+     * @param mixed $value The value to be splitted.
+     * @param string $needle The delimiter used to split the value. Default is ','.
+     * @param bool $clearEmpty Indicates whether to remove empty elements from the resulting array. Default is true.
+     * @param bool $keepDelimiter Indicates whether to keep the delimiter as a separate element in the array. Default is false.
+     *
+     * @return Arr An array containing the splitted elements.
+     */
     public static function split(mixed $value, string $needle = ',', bool $clearEmpty = true, bool $keepDelimiter = false) : Arr
     {
         $value = (string)$value;
@@ -225,6 +371,14 @@ final class Strings
         return $return;
     }
 
+    /**
+     * Splits a given value into substrings of a specified length.
+     *
+     * @param mixed $value The value to split.
+     * @param mixed $length The length of each substring.
+     *
+     * @return Arr An array containing the substrings of the given value.
+     */
     public static function splitLength(mixed $value, mixed $length) : Arr
     {
         $value  = (string)$value;
@@ -239,13 +393,26 @@ final class Strings
         return $split;
     }
 
+    /**
+     * Splits a given value into an array of words.
+     *
+     * @param mixed $value The value to split into words.
+     *
+     * @return Arr An array containing the words from the value.
+     */
     public static function splitWords(mixed $value) : Arr
     {
         $value  = (string)$value;
         return Arr(explode(' ', $value));
     }
 
-
+    /**
+     * Splits a given value into an array of lines.
+     *
+     * @param mixed $value The value to split into lines.
+     *
+     * @return Arr An array containing the lines of the value.
+     */
     public static function splitLines(mixed $value): Arr
     {
         $value  = (string)$value;
@@ -254,6 +421,15 @@ final class Strings
         return Arr(explode("\n", $value));
     }
 
+    /**
+     * Retrieves a substring from a given value.
+     *
+     * @param mixed $value The value to extract the substring from.
+     * @param mixed $start The starting position of the substring.
+     * @param mixed|null $length The length of the substring, optional. Default is null.
+     *
+     * @return string The extracted substring.
+     */
     public static function sub(mixed $value, mixed $start, mixed $length = null) : string
     {
         $value = (string)$value;
@@ -266,6 +442,15 @@ final class Strings
         return substr($value, $start, $length);
     }
 
+    /**
+     * Returns the index of the first occurrence of a substring in a given value.
+     *
+     * @param mixed $value The value to search in.
+     * @param mixed $needle The substring to search for.
+     * @param bool $caseSensitive Indicates whether the search should be case sensitive. Default is true.
+     *
+     * @return int|null The index of the first occurrence of the substring, or null if not found.
+     */
     public static function indexOf(mixed $value, mixed $needle, bool $caseSensitive = true) : int|null
     {
         $value  = (string)$value;
@@ -287,6 +472,15 @@ final class Strings
         return $return;
     }
 
+    /**
+     * Returns the last occurrence of a substring in a string, or null if not found.
+     *
+     * @param mixed $value The string to search in.
+     * @param mixed $needle The string to search for.
+     * @param bool $caseSensitive Determines whether the search is case-sensitive. Default is true.
+     *
+     * @return int|null The index of the last occurrence of the substring, or null if not found.
+     */
     public static function lastIndexOf(mixed $value, mixed $needle, bool $caseSensitive = true) : int|null
     {
         $value  = (string)$value;
@@ -309,6 +503,15 @@ final class Strings
         return $return;
     }
 
+    /**
+     * Trims specified characters from the beginning and end of a string.
+     *
+     * @param mixed $value The string to be trimmed.
+     * @param mixed $charList The characters to be trimmed. Default is null (trim whitespace characters).
+     * @param bool $multibyte Indicates whether to use multibyte encoding for trimming. Default is false.
+     *
+     * @return string The trimmed string.
+     */
     public static function trim(mixed $value, mixed $charList, bool $multibyte = false) : string
     {
         $value = (string)$value;
@@ -327,24 +530,52 @@ final class Strings
         return trim($value, $charList);
     }
 
+    /**
+     * Adds slashes to a given value.
+     *
+     * @param mixed $value The value to add slashes to.
+     *
+     * @return string The value with slashes added.
+     */
     public static function addSlashes(mixed $value) : string
     {
         $value = (string)$value;
         return addslashes($value);
     }
 
+    /**
+     * Removes slashes from a given value.
+     *
+     * @param mixed $value The value to remove slashes from.
+     *
+     * @return string The value with slashes removed.
+     */
     public static function removeSlashes(mixed $value) : string
     {
         $value = (string)$value;
         return stripslashes($value);
     }
 
+    /**
+     * Converts a given value to a base64 encoded string.
+     *
+     * @param mixed $value The value to convert to base64 encoding.
+     *
+     * @return string The base64 encoded value.
+     */
     public static function toBase64(mixed $value) : string
     {
         $value = (string)$value;
         return base64_encode($value);
     }
 
+    /**
+     * Decodes a value from Base64 encoding.
+     *
+     * @param mixed $value The value to decode from Base64.
+     *
+     * @return string|null The decoded value, or null if decoding fails.
+     */
     public static function fromBase64(mixed $value) : string|null
     {
         $value = (string)$value;
@@ -359,6 +590,14 @@ final class Strings
         return $return;
     }
 
+    /**
+     * Retrieves only the numbers from a given value.
+     *
+     * @param mixed $value The value to extract numbers from.
+     * @param mixed $whiteList Characters or numbers that should not be removed from the value. Default is an empty string.
+     *
+     * @return string The extracted numbers from the value.
+     */
     public static function getOnlyNumbers(mixed $value, mixed $whiteList = '') : string
     {
         $value     = (string)$value;
@@ -367,13 +606,28 @@ final class Strings
         return preg_replace("/[^0-9" . $whiteList . "]*/", '', $value);
     }
 
+    /**
+     * Removes all non-letter characters from a given value.
+     *
+     * @param mixed $value The value to remove non-letter characters from.
+     *
+     * @return string The value with all non-letter characters removed.
+     */
     public static function getOnlyLetters(mixed $value) : string
     {
         $value = (string)$value;
         return preg_replace('/[^a-zA-Z]+/', '', $value);
     }
 
-    public static function limit(mixed $value, mixed $limit = 10, $returnString = true) : string
+    /**
+     * Limits the length of a given value.
+     *
+     * @param mixed $value The value to limit.
+     * @param mixed $limit The maximum length to limit the value to. Default is 10.
+     *
+     * @return string The limited value.
+     */
+    public static function limit(mixed $value, mixed $limit = 10) : string
     {
         $value = (string)$value;
         $limit = (int)$limit;
@@ -381,6 +635,13 @@ final class Strings
         return substr($value, 0, $limit);
     }
 
+    /**
+     * Generates a random string with a specified length.
+     *
+     * @param int $length The length of the random string to generate. Default is 32.
+     *
+     * @return string The random string.
+     */
     public static function getRandom(int $length = 32)
     {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -395,6 +656,13 @@ final class Strings
     // TODO: to UTF-8
     // function toUTF8
 
+    /**
+     * Removes accents from a string value.
+     *
+     * @param mixed $value The value to remove accents from.
+     *
+     * @return string The value with accents removed.
+     */
     public static function removeAccents(mixed $value) : string
     {
         $string = (string)$value;
@@ -607,6 +875,13 @@ final class Strings
         return $string;
     }
 
+    /**
+     * Sets or resets the binary-safe encoding for mbstring functions.
+     *
+     * @param bool $reset Indicates whether to reset the encoding. Default is false.
+     *
+     * @return void
+     */
     private static function __mbstring_binary_safe_encoding($reset = false)
     {
         static $encodings = [];
@@ -631,6 +906,13 @@ final class Strings
         }
     }
 
+    /**
+     * Determines if a given string appears to be UTF-8 encoded.
+     *
+     * @param string $str The string to check.
+     *
+     * @return bool True if the string appears to be UTF-8 encoded, false otherwise.
+     */
     private static function __seems_utf8($str)
     {
         self::__mbstring_binary_safe_encoding();
@@ -653,6 +935,11 @@ final class Strings
         return true;
     }
 
+    /**
+     * Resets the mbstring encoding to its default value.
+     *
+     * @return void
+     */
     private static function __reset_mbstring_encoding()
     {
         self::__mbstring_binary_safe_encoding(true);

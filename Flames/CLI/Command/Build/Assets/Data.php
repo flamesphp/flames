@@ -5,12 +5,20 @@ namespace Flames\CLI\Command\Build\Assets;
 use Flames\Collection\Arr;
 
 /**
- * @internal
+ * Class Data
+ *
+ * This class is responsible for mounting data for the given class.
  */
 class Data
 {
     private const __VERSION__ = 4;
 
+    /**
+     * Mounts data for the given class.
+     *
+     * @param string $class The class name.
+     * @return Arr The mounted data.
+     */
     public static function mountData(string $class) : Arr
     {
         $path = (ROOT_PATH . str_replace('\\', '/', $class) . '.php');
@@ -38,6 +46,12 @@ class Data
         return $data;
     }
 
+    /**
+     * Retrieves reflection data for the given class.
+     *
+     * @param string $class The class name.
+     * @return Arr The reflection data.
+     */
     private static function __getReflection(string $class) : Arr
     {
         $data = Arr([

@@ -9,5 +9,19 @@ namespace Flames\Browser;
  * that have undergone changes and provide relevant information about the clicks made.
  *
  */
-#[\Attribute]
-class Click {}
+#[\Attribute(\Attribute::TARGET_CLASS, \Attribute::TARGET_METHOD)]
+class Click
+{
+    /**
+     * Represents an attribute that signifies a click.
+     *
+     * This attribute can be used to mark methods
+     * that have undergone changes and provide relevant information about the clicks made.
+     *
+     * @param string $uid string file path.
+     */
+    public function __construct(string $uid)
+    {
+
+    }
+}

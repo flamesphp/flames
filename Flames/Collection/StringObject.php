@@ -10,6 +10,7 @@ namespace Flames\Collection
      */
     final class StringObject// implements \ArrayAccess, \Iterator
     {
+        // TODO: everything
 //        const string PAD_LEFT = 'STR_PAD_LEFT';
 //        const string PAD_RIGHT = 'STR_PAD_RIGHT';
 //        const string PAD_BOTH = 'STR_PAD_BOTH';

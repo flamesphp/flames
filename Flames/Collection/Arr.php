@@ -3,7 +3,8 @@
 namespace Flames\Collection;
 
 /**
- * Description for the class
+ * Represents an array object with additional utility methods.
+ *
  * @property int $length
  * @property int $count
  * @property int $first
@@ -11,6 +12,12 @@ namespace Flames\Collection;
  */
 final class Arr extends \ArrayObject
 {
+    /**
+     * Class constructor.
+     *
+     * @param mixed $value [optional] The initial value to set. Default value is null.
+     * @return void
+     */
     public function __construct(mixed $value = null)
     {
         if ($value === null || (is_array($value) === false && ($value instanceof Arr) === false)) {
@@ -20,6 +27,12 @@ final class Arr extends \ArrayObject
         parent::__construct($value, \ArrayObject::ARRAY_AS_PROPS);
     }
 
+    /**
+     * Retrieves a value at a specified key.
+     *
+     * @param mixed $key The key of the value to retrieve.
+     * @return mixed The value at the specified key.
+     */
     public function offsetGet(mixed $key) : mixed
     {
         $key = (string)$key;
@@ -34,6 +47,13 @@ final class Arr extends \ArrayObject
         return @parent::offsetGet($key);
     }
 
+    /**
+     * Set the value at the specified key.
+     *
+     * @param mixed $key The key to set the value at.
+     * @param mixed $value The value to be set.
+     * @return void
+     */
     public function offsetSet(mixed $key, mixed $value) : void
     {
         $key = (string)$key;
@@ -50,11 +70,22 @@ final class Arr extends \ArrayObject
         parent::offsetSet($key, $value);
     }
 
+    /**
+     * Returns the length of the array.
+     *
+     * @return int The length of the array.
+     */
     public function length() : int
     {
         return $this->count();
     }
 
+    /**
+     * Checks if the string contains the given value.
+     *
+     * @param mixed $value The value to search for.
+     * @return bool Returns true if the value is found, false otherwise.
+     */
     public function contains(mixed $value) : bool
     {
         foreach ($this as $_ => $_value) {
@@ -66,12 +97,24 @@ final class Arr extends \ArrayObject
         return false;
     }
 
+    /**
+     * Checks if the given key exists in the collection.
+     *
+     * @param mixed $key The key to check.
+     * @return bool True if the key exists, false otherwise.
+     */
     public function containsKey(mixed $key) : bool
     {
         $key = (string)$key;
         return $this->offsetExists($key);
     }
 
+    /**
+     * Returns the last numeric key from the array.
+     * If the array is empty or does not contain any numeric keys, NULL is returned.
+     *
+     * @return int|null The last numeric key of the array, or NULL if the array is empty or does not contain any numeric keys.
+     */
     public function getLastNumberKey() : int|null
     {
         $topKey = 0;
@@ -92,6 +135,13 @@ final class Arr extends \ArrayObject
         return $topKey;
     }
 
+    /**
+     * Adds a value to the array.
+     *
+     * @param mixed $value The value to add to the array.
+     * @param bool $canDuplicate Determines whether the value can be added multiple times. Defaults to true.
+     * @return Arr The updated array.
+     */
     public function add($value, $canDuplicate = true) : Arr
     {
         if ($canDuplicate === false && $this->contains($value)) {
@@ -102,6 +152,13 @@ final class Arr extends \ArrayObject
         return $this;
     }
 
+    /**
+     * Adds a key-value pair to the array.
+     *
+     * @param mixed $key The key to add.
+     * @param mixed $value The value to associate with the key.
+     * @return Arr The modified array.
+     */
     public function addKey(mixed $key, mixed $value) : Arr
     {
         $key = (string)$key;
@@ -109,6 +166,12 @@ final class Arr extends \ArrayObject
         return $this;
     }
 
+    /**
+     * Removes the element with the specified key from the array.
+     *
+     * @param mixed $key The key of the element to be removed.
+     * @return Arr The updated array after removing the element.
+     */
     protected function removeKey(mixed $key) : Arr
     {
         $key = (string)$key;
@@ -120,21 +183,43 @@ final class Arr extends \ArrayObject
         return $this;
     }
 
+    /**
+     * Sorts the array in ascending order.
+     *
+     * @return Arr The sorted array.
+     */
     public function sort() : Arr
     {
         $this->asort();
         return $this;
     }
 
+    /**
+     * Sorts the array by keys in ascending order.
+     *
+     * @return Arr The sorted array by keys.
+     */
     public function sortByKey() : Arr
     {
         $this->ksort();
         return $this;
     }
 
+    /**
+     * Sorts the array using the provided delegate.
+     *
+     * @param mixed $delegate The delegate used for sorting the array. The delegate should be a callable
+     *                        that accepts two parameters ($a, $b) representing two elements of the array,
+     *                        and returns a value indicating the comparison between the two elements.
+     *                        If the delegate returns a boolean value, `true` indicates that $a should be
+     *                        considered greater than $b, `false` indicates that $a should be considered
+     *                        smaller than $b, and `null` indicates that $a and $b are equal. Any other
+     *                        return value will be treated as `null`.
+     * @return Arr The sorted array.
+     */
     public function sortByDelegate(mixed $delegate) : Arr
     {
-        $this->uasort(function ($a, $b) use($delegate) {
+        $this->uasort(function (mixed $a, mixed $b) use($delegate) {
 
             $response = $delegate($a, $b);
 
@@ -156,6 +241,12 @@ final class Arr extends \ArrayObject
         return $this;
     }
 
+    /**
+     * Converts the object to an array.
+     *
+     * @param bool $convertChildrens Determines whether to recursively convert children objects to arrays. Default is true.
+     * @return array The converted array representation of the object.
+     */
     public function toArray(bool $convertChildrens = true)
     {
         $array = $this->getArrayCopy();
@@ -169,6 +260,13 @@ final class Arr extends \ArrayObject
         return $array;
     }
 
+    /**
+     * Searches for an element in the array that satisfies the given delegate.
+     *
+     * @param mixed $delegate The delegate to determine if an element meets the search criteria.
+     * @param bool $isKeyValue Optional. Indicates if the delegate accepts both key and value parameters. Default is false.
+     * @return mixed|null The first element that satisfies the delegate or null if no element is found.
+     */
     public function find(mixed $delegate, bool $isKeyValue = false) : mixed
     {
         if ($isKeyValue === false) {
@@ -191,6 +289,11 @@ final class Arr extends \ArrayObject
         return null;
     }
 
+    /**
+     * Retrieves the keys of the array.
+     *
+     * @return Arr An Arr object containing the keys of the array.
+     */
     public function getKeys() : Arr
     {
         $keys = array_keys((array)$this);
@@ -200,6 +303,11 @@ final class Arr extends \ArrayObject
         return Arr();
     }
 
+    /**
+     * Returns the last element of the array.
+     *
+     * @return mixed|null The last element of the array if it is not empty, otherwise null.
+     */
     public function getLast() : mixed
     {
         if ($this->count <= 0)  {
@@ -209,6 +317,13 @@ final class Arr extends \ArrayObject
         return ($this[($keys[$keys->count - 1])]);
     }
 
+    /**
+     * Returns the first element of the array.
+     *
+     * If the array is empty, null will be returned.
+     *
+     * @return mixed The first element of the array.
+     */
     public function getFirst() : mixed
     {
         if ($this->count <= 0) {
@@ -218,6 +333,13 @@ final class Arr extends \ArrayObject
         return ($this[($keys[0])]);
     }
 
+    /**
+     * Merges the given array with the current array.
+     *
+     * @param Arr|array|null $array The array to be merged. It can be an instance of Arr class, or a regular PHP array.
+     * @param bool $replace Whether to replace the existing values with the new values. Default is true.
+     * @return Arr The array after merging.
+     */
     public function merge(Arr|array $array = null, $replace = true)
     {
         $thisArray = $this->toArray();
@@ -230,5 +352,4 @@ final class Arr extends \ArrayObject
 
         return Arr($newArray);
     }
-
 }
