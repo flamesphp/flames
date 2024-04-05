@@ -6,6 +6,8 @@ use Exception;
 use Flames\Collection\Arr;
 
 /**
+ * Represents an HTML element.
+ *
  * Description for the class
  * @property string|null $uid
  * @property string|null $tag
@@ -25,6 +27,15 @@ class Element
     protected string|null $checked = null;
     protected Element\Event|null $event = null;
 
+    /**
+     * Class Constructor.
+     *
+     * @param string|null $uid The unique identifier for the instance. Optional, defaults to null.
+     *
+     * @return void
+     * @throws Exception If the method is called on the server module.
+     *
+     */
     public function __construct(string $uid = null)
     {
         if (Kernel::MODULE === 'SERVER') {
@@ -40,6 +51,15 @@ class Element
         }
     }
 
+    /**
+     * Magic getter method.
+     *
+     * @param string $key The key to retrieve the value for.
+     *
+     * @return mixed|null The value for the specified key, or null if the key does not exist.
+     *
+     * @throws Exception If the method is called on the server module.
+     */
     public function __get(string $key) : mixed
     {
         $this->sync();
@@ -73,6 +93,14 @@ class Element
         return null;
     }
 
+    /**
+     * Checks if the element has a specific class.
+     *
+     * @param string $class The class to check.
+     *
+     * @return bool True if the instance has the class, false otherwise.
+     *
+     */
     public function hasClass(string $class) : bool
     {
         $class = strtolower($class);
@@ -80,6 +108,14 @@ class Element
         return ($this->classes->contains($class));
     }
 
+    /**
+     * Adds a class to the element.
+     *
+     * @param string $class The class to be added.
+     *
+     * @return void
+     *
+     */
     public function addClass(string $class) : void
     {
         $class = strtolower($class);
@@ -97,6 +133,14 @@ class Element
         $this->sync();
     }
 
+    /**
+     * Remove a class from the element.
+     *
+     * @param string $class The class name to be removed.
+     *
+     * @return void
+     *
+     */
     public function removeClass(string $class) : void
     {
         $class = strtolower($class);
@@ -119,6 +163,13 @@ class Element
         $this->sync();
     }
 
+    /**
+     * Toggles a class on the element.
+     *
+     * @param string $class The class to be toggled.
+     *
+     * @return void
+     */
     public function toogleClass(string $class) : void
     {
         $class = strtolower($class);
@@ -130,6 +181,14 @@ class Element
         $this->addClass($class);
     }
 
+    /**
+     * Checks if the element has a specific attribute.
+     *
+     * @param string $attribute The attribute to check for.
+     *
+     * @return bool Returns true if the element has the specified attribute, otherwise false.
+     *
+     */
     public function hasAttribute(string $attribute) : bool
     {
         $attribute = strtolower($attribute);
@@ -137,6 +196,14 @@ class Element
         return ($this->attributes->containsKey($attribute));
     }
 
+    /**
+     * Get the value of a specific attribute.
+     *
+     * @param string $attribute The name of the attribute.
+     *
+     * @return string|null The value of the attribute, or null if it doesn't exist.
+     *
+     */
     public function getAttribute(string $attribute) : string|null
     {
         $attribute = strtolower($attribute);
@@ -147,6 +214,14 @@ class Element
         return null;
     }
 
+    /**
+     * Sets the value of an attribute.
+     *
+     * @param string $attribute The name of the attribute.
+     * @param string $value The value to set for the attribute.
+     *
+     * @return void
+     */
     public function setAttribute(string $attribute, string $value) : void
     {
         $attribute = strtolower($attribute);
@@ -154,6 +229,14 @@ class Element
         $this->sync();
     }
 
+    /**
+     * Removes an attribute from the element.
+     *
+     * @param string $attribute The name of the attribute to remove.
+     *
+     * @return void
+     *
+     */
     public function removeAttribute(string $attribute) : void
     {
         $attribute = strtolower($attribute);
@@ -161,6 +244,11 @@ class Element
         $this->sync();
     }
 
+    /**
+     * Destroys the element.
+     *
+     * @return void
+     */
     public function destroy()
     {
         $this->execFunc("remove()");
@@ -172,6 +260,15 @@ class Element
         $this->checked    = null;
     }
 
+    /**
+     * Synchronizes the data between the JavaScript element and the PHP object.
+     *
+     * This method retrieves the data from the JavaScript element with the specified UID
+     * and updates the corresponding properties in the PHP object.
+     *
+     * @return void
+     * @throws Exception when JavaScript engine is not found.
+     */
     public function sync()
     {
         $data = JS::eval("
@@ -211,6 +308,18 @@ class Element
         }
     }
 
+    /**
+     * Executes the specified JavaScript code on the element with the specified UID.
+     *
+     * This method uses the JS::eval() function to execute the JavaScript code on the
+     * element with the specified UID. The JavaScript code should be a valid code snippet
+     * that manipulates the element in some way.
+     *
+     * @param string $code The JavaScript code to execute.
+     *
+     * @return void
+     * @throws Exception when JavaScript engine is not found.
+     */
     protected function execFunc(string $code) : void
     {
         $data = JS::eval("
@@ -223,6 +332,13 @@ class Element
         ");
     }
 
+    /**
+     * Queries the DOM for an element matching the given query string.
+     *
+     * @param string $query The query string used to search for the element.
+     * @return Element|null Returns an instance of Element if an element is found, otherwise returns null.
+     * @throws Exception Throws an exception if the method is called on the server.
+     */
     public static function query(string $query) : Element|null
     {
         if (Kernel::MODULE === 'SERVER') {
@@ -256,5 +372,8 @@ class Element
         if (Kernel::MODULE === 'SERVER') {
             throw new Exception('Method only works on client.');
         }
+
+        // TODO: query all
+        return null;
     }
 }

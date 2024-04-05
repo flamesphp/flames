@@ -2,12 +2,25 @@
 
 namespace Flames\CLI;
 
+use Flames\Collection\Arr;
+
 /**
+ * Class Data
+ *
+ * The Data class is responsible for processing command line arguments and returning the data in a structured format.
+ *
  * @internal
  */
-class Data
+final class Data
 {
-    public static function getData(array $args = null)
+    /**
+     * Retrieves data from the given array of arguments or from $_SERVER['argv'] if no arguments are provided.
+     *
+     * @param array|null $args The array of arguments (default: null).
+     *
+     * @return Arr The data retrieved from the arguments.
+     */
+    public static function getData(array $args = null) : Arr
     {
         if ($args === null) {
             $args = $_SERVER['argv'];

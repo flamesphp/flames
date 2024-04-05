@@ -6,9 +6,13 @@ use Flames\Command;
 use Flames\Environment;
 
 /**
+ * Class Install
+ *
+ * This class is responsible for running the installation process.
+ *
  * @internal
  */
-class Install
+final class Install
 {
     protected bool $debug = false;
 
@@ -16,6 +20,12 @@ class Install
     protected bool $withCryptographyKeyGenerate = true;
     protected bool $withExample = true;
 
+    /**
+     * Constructor for the class.
+     *
+     * @param object $data The data object containing the options.
+     * @return void
+     */
     public function __construct($data)
     {
         $this->withKeyGenerate = (!$data->option->contains('nokey'));
@@ -23,6 +33,13 @@ class Install
         $this->withExample = (!$data->option->contains('noexample'));
     }
 
+    /**
+     * Executes the run method.
+     *
+     * @param bool $debug (optional) Determines if debugging is enabled. Default is false.
+     *
+     * @return bool Indicates the success or failure of the run method.
+     */
     public function run(bool $debug = false) : bool
     {
         $default = Environment::default();

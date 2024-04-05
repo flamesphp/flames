@@ -2,12 +2,20 @@
 
 namespace Flames;
 
-use Exception;
-
+/**
+ * Class Process
+ *
+ * The Process class represents a running process on the system.
+ */
 class Process
 {
     protected int $pid;
 
+    /**
+     * Constructor method for the class.
+     *
+     * @param string $command The command to be executed.
+     */
     public function __construct(string $command)
     {
         if (OS::isUnix() === true) {
@@ -30,12 +38,22 @@ class Process
         }
     }
 
+    /**
+     * Get the process ID.
+     *
+     * @return int|null The process ID if available, otherwise null.
+     */
     public function getPid() : int|null
     {
         return $this->pid;
     }
 
-    public function destroy()
+    /**
+     * Method to destroy the running process.
+     *
+     * @return void
+     */
+    public function destroy() : void
     {
         if (OS::isUnix() === true) {
             exec('kill -9 ' . $this->pid);

@@ -2,11 +2,22 @@
 
 namespace Flames;
 
+/**
+ * Class Connection
+ *
+ * The Connection class is responsible for retrieving the client's IP address.
+ */
 class Connection
 {
     protected static string|null $currentIp = null;
     protected static string|null $currentIpProxy = null;
 
+    /**
+     * Retrieves the client IP address.
+     *
+     * @param bool $parseProxy Determines whether to parse the proxy IP address (default: false)
+     * @return string|null The client IP address or null if it cannot be determined
+     */
     public static function getIp(bool $parseProxy = false) : string|null
     {
         if ($parseProxy === true) {

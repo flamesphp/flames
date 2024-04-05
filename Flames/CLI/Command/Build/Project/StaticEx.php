@@ -13,9 +13,13 @@ use Flames\Kernel\Route;
 use ZipArchive;
 
 /**
+ * Class StaticEx
+ *
+ * This class provides functionality for running a build process.
+ *
  * @internal
  */
-class StaticEx
+final class StaticEx
 {
     protected bool $debug = false;
     protected string $buildPath;
@@ -23,6 +27,13 @@ class StaticEx
 
     protected static bool $isRunningBuild = false;
 
+    /**
+     * Executes the build process.
+     *
+     * @param bool $debug Optional. Whether to enable debug mode. Defaults to false.
+     *
+     * @return bool Returns true if the build process was executed successfully, false otherwise.
+     */
     public function run(bool $debug = false) : bool
     {
         // Stack overflow protection
@@ -67,7 +78,12 @@ class StaticEx
         return true;
     }
 
-    protected function buildZip()
+    /**
+     * Builds a zip archive of the build files.
+     *
+     * @return void
+     */
+    protected function buildZip() : void
     {
         $buildZipPath = (ROOT_PATH . 'App/Client/Build/');
         if (is_dir($buildZipPath) === false) {
@@ -100,6 +116,15 @@ class StaticEx
         $zip->close();
     }
 
+    /**
+     * Builds the flames.js file.
+     *
+     * This method reads the contents of the client.js file and Flames.js file,
+     * and writes the contents to the .flames.js file in the build directory.
+     * It also creates a .flames directory in the build directory if it does not exist.
+     *
+     * @return void
+     */
     protected function buildFlames() : void
     {
         $buildStream  = fopen($this->buildPath . '.flames.js', 'w+');
@@ -128,6 +153,11 @@ class StaticEx
         }
     }
 
+    /**
+     * Builds the Flames Kernel for the build process.
+     *
+     * @return void
+     */
     protected function buildKernel() : void
     {
         $flamesKernelDir = ($this->buildPath . '.flames/kernel');
@@ -141,6 +171,11 @@ class StaticEx
         copy(ROOT_PATH . 'Flames/Kernel/Client/Engine/Flames/Kernel/Web.wasm', $this->buildPath . '.flames/kernel/web.wasm');
     }
 
+    /**
+     * Copies the public files from the App/Client/Public directory to the build directory.
+     *
+     * @return void
+     */
     protected function copyPublic() : void
     {
         $publicPath = (ROOT_PATH . 'App/Client/Public/');
@@ -166,6 +201,14 @@ class StaticEx
         }
     }
 
+    /**
+     * Recursively gets all the contents (files and directories) of a given directory.
+     *
+     * @param string $dir The directory to get the contents from.
+     * @param array &$results Optional. An array to store the results in. Defaults to an empty array.
+     *
+     * @return array An array containing the paths of all the contents in the given directory.
+     */
     protected function getDirContents($dir, &$results = array()) {
         $files = scandir($dir);
 
@@ -182,8 +225,14 @@ class StaticEx
         return $results;
     }
 
-
-    protected function saveResponse($metadata, $responseData) : void
+    /**
+     * Saves the response to the specified URLs.
+     *
+     * @param mixed $metadata The metadata associated with the response.
+     * @param mixed $responseData The response data to be saved.
+     * @return void
+     */
+    protected function saveResponse(mixed $metadata, mixed $responseData) : void
     {
         $url = $metadata->routeFormatted;
         if (str_ends_with($url, '/') === false) {
@@ -226,8 +275,25 @@ class StaticEx
         $this->saveHeader($metadata, $responseData, $urls);
     }
 
-    protected function saveHeader($metadata, $responseData, $urls) : void {}
+    /**
+     * Saves the header of the response to the specified URLs.
+     *
+     * @param mixed $metadata The metadata associated with the response.
+     * @param mixed $responseData The response data containing the header to be saved.
+     * @param array $urls The URLs where the header should be saved.
+     * @return void
+     */
+    protected function saveHeader($metadata, $responseData, $urls) : void
+    {
 
+    }
+
+    /**
+     * Retrieves the response for the given route data.
+     *
+     * @param mixed $routeData The route data.
+     * @return bool|Arr The response data if successful, otherwise false.
+     */
     public static function getResponse($routeData) : bool|Arr
     {
         Header::set('X-Powered-By', 'Flames');
@@ -271,6 +337,11 @@ class StaticEx
         return $data;
     }
 
+    /**
+     * Saves the inputs and sets default values for the $_GET, $_POST, $_REQUEST, $_COOKIE, $_SERVER variables.
+     *
+     * @return void
+     */
     protected function saveInputs() : void
     {
         $this->inputs = Arr([
@@ -307,7 +378,12 @@ class StaticEx
         Header::clear();
     }
 
-    protected function restoreInputs()
+    /**
+     * Restores the input values to their original state.
+     *
+     * @return void
+     */
+    protected function restoreInputs() : void
     {
         $_GET     = $this->inputs->get;
         $_POST    = $this->inputs->post;

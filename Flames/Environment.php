@@ -1,12 +1,17 @@
 <?php
 
+
 namespace Flames;
 
 use Flames\Collection\Arr;
 use Flames\Environment\Helpers;
 
 /**
- * Description for the class
+ * Class Environment
+ *
+ * The Environment class represents a configuration environment,
+ * allowing users to access and modify configuration data.
+ *
  * @property bool $DUMP_ENABLED
  * @property string $DUMP_IDE
  * @property string $DUMP_THEME
@@ -20,6 +25,15 @@ final class Environment
     protected bool $valid = true;
     protected string|null $path;
 
+    /**
+     * Class constructor.
+     *
+     * Initializes a new instance of the class.
+     *
+     * @param mixed $path The path to the file. Defaults to null.
+     *
+     * @return void
+     */
     public function __construct(mixed $path = null)
     {
         $path = (string)$path;
@@ -35,6 +49,15 @@ final class Environment
         }
     }
 
+    /**
+     * Magic getter method.
+     *
+     * Retrieves the value of the specified key from the environment array.
+     *
+     * @param mixed $key The key of the value to retrieve.
+     *
+     * @return mixed|null The value of the specified key if it exists, otherwise null.
+     */
     public function __get(mixed $key) : mixed
     {
         $key = (string)$key;
@@ -49,6 +72,16 @@ final class Environment
         return null;
     }
 
+    /**
+     * Magic method to set a value for a specific key.
+     *
+     * This method allows setting a value for a specific key in the environment array.
+     *
+     * @param mixed $key The key for which to set the value.
+     * @param mixed $value The value to set for the specified key.
+     *
+     * @return void
+     */
     public function __set(mixed $key, mixed $value) : void
     {
         $key = (string)$key;
@@ -57,24 +90,44 @@ final class Environment
         }
 
         $this->data[$key] = $value;
-        return;
     }
 
+    /**
+     * Returns the array of data elements.
+     *
+     * @return Arr The array of data elements.
+     */
     public function getAll() : Arr
     {
         return $this->data;
     }
 
+    /**
+     * Returns the data elements as an array.
+     *
+     * @return array The data elements as an array.
+     */
     public function toArray() : array
     {
         return (array)$this->data;
     }
 
+    /**
+     * Returns the default Environment object, or null if no default is set.
+     *
+     * @return Environment|null The default Environment object, or null if no default is set.
+     */
     public static function default() : Environment|null
     {
         return self::$dataDefault;
     }
 
+    /**
+     * Retrieves the value associated with the given key from the environment data.
+     *
+     * @param string $key The key of the value to retrieve.
+     * @return mixed|null The value associated with the key if found, or null if the key is empty or not found.
+     */
     public static function get($key) : mixed
     {
         $key = (string)$key;
@@ -89,6 +142,13 @@ final class Environment
         return null;
     }
 
+    /**
+     * Sets a key-value pair in the environment data array.
+     *
+     * @param mixed $key The key to set.
+     * @param mixed $value The value to set.
+     * @return void
+     */
     public static function set(mixed $key, mixed $value) : void
     {
         $key = (string)$key;
@@ -101,10 +161,16 @@ final class Environment
         }
 
         self::$dataGlobal[$key] = $value;
-        return;
     }
 
-    public function inject()
+    /**
+     * Injects the environment elements of the current object into the environment data container.
+     *
+     * This method iterates through the data elements of the current object and adds them to the environment data container.
+     *
+     * @return void
+     */
+    public function inject() : void
     {
         if (self::$dataGlobal === null) {
             self::$dataGlobal = Arr();
@@ -115,6 +181,13 @@ final class Environment
         }
     }
 
+    /**
+     * Save the data to the specified file path.
+     *
+     * It writes the updated content back to the file.
+     *
+     * @return void
+     */
     public function save() : void
     {
         $data = str_replace(["\r\n", "\r"], "\n", file_get_contents($this->path));
@@ -140,11 +213,21 @@ final class Environment
         @file_put_contents($this->path, $mount);
     }
 
+    /**
+     * Returns whether the object is valid or not.
+     *
+     * @return bool The validity status of the object.
+     */
     public function isValid() : bool
     {
         return $this->valid;
     }
 
+    /**
+     * This method is responsible for loading data from a file.
+     *
+     * @return void
+     */
     protected function load() : void
     {
         $basePath  = (ROOT_PATH . '.cache/environment/');

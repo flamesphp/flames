@@ -6,6 +6,11 @@ use Flames\Collection\Arr;
 use Flames\Cryptography\Hash;
 use Flames\Exception\Coroutine\Timeout;
 
+/**
+ * Class Coroutine
+ *
+ * The Coroutine class represents a set of coroutines that can be executed asynchronously.
+ */
 class Coroutine
 {
     protected const BASE_FOLDER = '.cache/coroutine/';
@@ -14,12 +19,25 @@ class Coroutine
     protected string $caller;
     protected array $coroutines = [];
 
+    /**
+     * Constructs a new instance of the class.
+     *
+     * @param int $timeout (Optional) The maximum execution time in milliseconds for each coroutine. Default is 0 (no timeout).
+     */
     public function __construct(int $timeout = 0)
     {
         $this->caller = self::__getCaller();
         $this->timeout = $timeout;
     }
 
+    /**
+     * Add a new coroutine to the list of coroutines.
+     *
+     * @param string $method The name of the method to be executed in the coroutine.
+     * @param mixed $args Optional. The arguments to be passed to the method. Default is null.
+     *
+     * @return void
+     */
     public function add(string $method, mixed $args = null)
     {
         $args = func_get_args();
@@ -37,6 +55,13 @@ class Coroutine
         ];
     }
 
+    /**
+     * Executes the coroutines and returns the results.
+     *
+     * @param bool $echoOutput (Optional) Whether to echo the output of the coroutines. Default is false.
+     * @return Arr The results returned from the coroutines.
+     * @throws Timeout If any coroutine exceeds the maximum execution time.
+     */
     public function run(bool $echoOutput = false) : Arr
     {
         $coroutinePath = (ROOT_PATH . self::BASE_FOLDER);
@@ -118,6 +143,13 @@ class Coroutine
         return $results;
     }
 
+    /**
+     * Retrieves the name of the calling function or method.
+     *
+     * @return string|null The name of the calling function or method, or null if not found.
+     *
+     * @see debug_backtrace()
+     */
     private static function __getCaller()
     {
         $lastFunc = null;

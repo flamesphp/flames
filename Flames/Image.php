@@ -1,13 +1,25 @@
 <?php
 
+/**
+ * Class Image
+ *
+ * The Image class represents an image and provides various methods for image manipulation.
+ *
+ * @package Flames
+ */
+
 namespace Flames;
 
 use Flames\Cryptography\Hash;
 use Flames\Exception\Unserialize;
 use Flames\Http\Client;
-use Flames\Http\Async\Request;
 use GdImage;
 
+/**
+ * Class Image
+ *
+ * This class represents an image object. It provides various methods for working with image files.
+ */
 class Image
 {
     protected const VERSION = 1;
@@ -18,6 +30,13 @@ class Image
     protected string|null $path;
     protected GdImage|null $image;
 
+    /**
+     * Constructor method for the class.
+     *
+     * @param string|null $path Path to the image file. (Optional)
+     *
+     * @return void
+     */
     public function __construct(string|null $path = null)
     {
         $this->path = $path;
@@ -31,6 +50,13 @@ class Image
         }
     }
 
+    /**
+     * Display the image in the specified format.
+     *
+     * @param string $format The format in which the image should be displayed. Defaults to "png".
+     *
+     * @return void
+     */
     public function show(string $format = self::FORMAT_PNG) : void
     {
         if ($this->image === null) {
@@ -52,6 +78,11 @@ class Image
         }
     }
 
+    /**
+     * Returns the image data as a string.
+     *
+     * @return string|null The image data as a string. Returns null if the image is not set.
+     */
     public function getString() : string|null
     {
         if ($this->image === null) {
@@ -66,6 +97,14 @@ class Image
         return $buffer;
     }
 
+    /**
+     * Crops the image to the specified dimensions.
+     *
+     * @param int $x The x-coordinate of the starting point of the crop.
+     * @param int $y The y-coordinate of the starting point of the crop.
+     * @param int $width The width of the cropped image.
+     * @param int $height The height of the cropped image.
+     */
     public function crop(int $x, int $y, int $width, int $height)
     {
         if ($this->image === null) {
@@ -75,6 +114,11 @@ class Image
         $this->image = imagecrop($this->image, ['x' => $x, 'y' => $y, 'width' => $width, 'height' => $height]);
     }
 
+    /**
+     * Returns the OCR (Optical Character Recognition) output as text.
+     *
+     * @return string|null The OCR output as text. Returns null if the OCR process fails or no text is detected.
+     */
     public function getText() : string|null
     {
         $tmpDir = (ROOT_PATH . '.cache/ocr-image/');
@@ -99,6 +143,13 @@ class Image
         return trim($ocrData);
     }
 
+    /**
+     * Saves the image to the specified path.
+     *
+     * @param string $path The path where the image will be saved.
+     * @param string $format The format in which the image will be saved. Defaults to "png".
+     * @return bool Returns true if the image is successfully saved, false otherwise.
+     */
     public function save(string $path, string $format = self::FORMAT_PNG)
     {
         ob_start();
@@ -134,6 +185,13 @@ class Image
         return false;
     }
 
+    /**
+     * Creates an Image object from a given URL.
+     *
+     * @param string $url The URL of the image to be fetched.
+     *
+     * @return Image|null The Image object created from the URL. Returns null if the image cannot be fetched or if the response status code is not 200.
+     */
     public static function fromUrl(string $url) : Image|null
     {
         $client = new Client(['defaults' => [
@@ -155,6 +213,12 @@ class Image
         return $image;
     }
 
+    /**
+     * Creates a new Image object from a string representation of an image.
+     *
+     * @param string $string The string representation of an image.
+     * @return Image|null The newly created Image object. Returns null if the string is not a valid image representation.
+     */
     public static function fromString(string $string) : Image|null
     {
         $gdImage = (@imagecreatefromstring($string));
@@ -167,6 +231,11 @@ class Image
         return $image;
     }
 
+    /**
+     * Serializes the object into an array.
+     *
+     * @return array The serialized object data.
+     */
     public function __serialize(): array
     {
         return [
@@ -176,6 +245,13 @@ class Image
         ];
     }
 
+    /**
+     * Unserializes the object from an array.
+     *
+     * @param array $data The array containing the serialized data.
+     *
+     * @throws Unserialize If the serialized data version is outdated.
+     */
     public function __unserialize(array $data): void
     {
         if ($data['version'] !== self::VERSION) {

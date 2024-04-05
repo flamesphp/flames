@@ -2,19 +2,67 @@
 
 namespace Flames\CLI;
 
-use Flames\CLI\Command\Coroutine;
-use Flames\CLI\Command\Install;
-use Flames\CLI\Command\Key\Generate as KeyGenerate;
-use Flames\CLI\Command\Cryptography\Key\Generate as CryptographyKeyGenerate;
-use Flames\CLI\Command\Build\Assets;
-use Flames\CLI\Command\Build\Project\StaticEx;
-use Flames\CLI\Data;
-use Flames\Collection\Arr;
+use /**
+ * Class Coroutine
+ *
+ * This class represents a command that starts a coroutine.
+ *
+ * @package Flames\CLI\Command
+ */
+    Flames\CLI\Command\Coroutine;
+use /**
+ * Class Install
+ *
+ * This class represents the install command for Flames CLI tool.
+ * It is responsible for executing the installation process.
+ */
+    Flames\CLI\Command\Install;
+use /**
+ * Class KeyGenerate
+ *
+ * The KeyGenerate class provides a CLI command to generate a new encryption key.
+ */
+    Flames\CLI\Command\Key\Generate as KeyGenerate;
+use /**
+ * Class CryptographyKeyGenerate
+ *
+ * This class represents the CLI command for generating a cryptographic key.
+ */
+    Flames\CLI\Command\Cryptography\Key\Generate as CryptographyKeyGenerate;
+use /**
+ * Class Assets
+ *
+ * This class represents the command to build assets for a project.
+ */
+    Flames\CLI\Command\Build\Assets;
+use /**
+ * Class StaticEx
+ *
+ * This class is responsible for building the static files of a project.
+ * It contains methods to generate CSS and JS files from the source code.
+ */
+    Flames\CLI\Command\Build\Project\StaticEx;
+use /**
+ * Class Data
+ *
+ * This class is responsible for handling and manipulating CLI data.
+ */
+    Flames\CLI\Data;
+use /**
+ * Class Arr
+ *
+ * A collection of static methods for performing various operations on arrays.
+ */
+    Flames\Collection\Arr;
 
 /**
+ * Class System
+ *
+ * Represents the system for executing commands.
+ *
  * @internal
  */
-class System
+final class System
 {
     protected static $commands = [
         'install'                   => Install::class,
@@ -28,6 +76,13 @@ class System
     protected Arr $data;
     protected bool $debug;
 
+    /**
+     * Constructor method for the class.
+     *
+     * @param Arr|null $data (optional) The data to be assigned to the object. If not provided, data will be fetched from Data::getData().
+     * @param bool $debug (optional) Indicates whether debugging is enabled or not. Default is true.
+     * @return void
+     */
     public function __construct(Arr $data = null, bool $debug = true)
     {
         $this->debug = $debug;
@@ -40,6 +95,11 @@ class System
         $this->data = $data;
     }
 
+    /**
+     * Run the command.
+     *
+     * @return bool Indicates if the command was executed successfully.
+     */
     public function run() : bool
     {
         if ($this->data->command === null || isset(self::$commands[$this->data->command]) === false) {
@@ -70,6 +130,12 @@ Initializing command ' . $this->data->command . '
         return $return;
     }
 
+    /**
+     * Dispatch the base command.
+     *
+     * Displays a logo and information about the command.
+     * Only executed if the debug mode is enabled.
+     */
     protected function dispatchBase()
     {
         if ($this->debug === true) {
@@ -91,6 +157,11 @@ Initializing command ' . $this->data->command . '
         }
     }
 
+    /**
+     * Dispatch helper method for executing commands when the specific command is not found or is null.
+     *
+     * @return void
+     */
     protected function dispatchHelper() : void
     {
         $this->dispatchBase();

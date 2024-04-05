@@ -5,21 +5,41 @@ namespace Flames;
 use Flames\Collection\Arr;
 use Flames\Collection\Strings;
 
+/**
+ * Class Router
+ *
+ * The Router class handles routing and matching of routes.
+ */
 class Router
 {
     protected Arr|null $routes = null;
 
+    /**
+     * Constructor for the class.
+     *
+     * @return void
+     */
     public function __construct()
     {
         $this->routes = Arr();
     }
 
-    public function add(mixed $method = 'GET', mixed $route = '/', mixed $controller = null, mixed $delegateString = 'onRequest')
+    /**
+     * Adds a new route to the list of routes.
+     *
+     * @param mixed $method The HTTP method for the route, default is 'GET'.
+     * @param mixed $route The URL route, default is '/'.
+     * @param mixed $controller The controller for the route.
+     * @param mixed $controllerMethod The controller method for the route, default is 'onRequest'.
+     *
+     * @return void
+     */
+    public function add(mixed $method = 'GET', mixed $route = '/', mixed $controller = null, mixed $controllerMethod = 'onRequest')
     {
         $route          = (string)$route;
         $method         = (string)$method;
         $controller     = (string)$controller;
-        $delegateString = (string)$delegateString;
+        $delegateString = (string)$controllerMethod;
 
         $routeData = Arr();
 
@@ -75,7 +95,12 @@ class Router
         $this->routes->add($routeData);
     }
 
-    public function getMatch()
+    /**
+     * Retrieves the match based on the current environment.
+     *
+     * @return Arr|null The match based on the current environment.
+     */
+    public function getMatch() : Arr|null
     {
         if (CLI::isCLI() === false) {
             return self::getMatchWeb();
@@ -84,7 +109,12 @@ class Router
         return $this->getMatchCLI();
     }
 
-    protected function getMatchWeb()
+    /**
+     * Retrieves the matched web route information.
+     *
+     * @return Arr|null The matched web route information, or null if no match is found.
+     */
+    protected function getMatchWeb() : Arr|null
     {
         // Mount router
         $router = new Router\Parser();
@@ -167,6 +197,11 @@ class Router
         ]);
     }
 
+    /**
+     * Retrieves the matched CLI route.
+     *
+     * @return Arr|null Returns the matched route as an Arr object if found, otherwise returns null.
+     */
     protected function getMatchCLI() : Arr|null
     {
         $args = $_SERVER['argv'];
@@ -196,6 +231,11 @@ class Router
         return null;
     }
 
+    /**
+     * Retrieves the metadata for the routes.
+     *
+     * @return Arr The metadata array.
+     */
     public function getMetadata() : Arr
     {
         return $this->routes;

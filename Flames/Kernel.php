@@ -4,13 +4,14 @@ namespace Flames;
 
 use Flames\Collection\Arr;
 use Flames\Controller\Response;
-use Flames\Kernel\Client\Build;
 use Flames\Kernel\Route;
 use Flames\Router\Client;
-use Flames\Router;
-use Flames\ErrorHandler;
 
 /**
+ * Class Kernel
+ *
+ * The Kernel class is responsible for handling the main execution flow of the application.
+ *
  * @internal
  */
 final class Kernel
@@ -21,6 +22,13 @@ final class Kernel
     protected static Router|null $defaultRouter = null;
     protected static ErrorHandler\Run|null $errorHandler = null;
 
+    /**
+     * Runs the application.
+     *
+     * This method sets up the application, dispatches events, and handles the execution flow of the application.
+     *
+     * @return void
+     */
     public static function run() : void
     {
         self::setup();
@@ -46,6 +54,11 @@ final class Kernel
         self::shutdown();
     }
 
+    /**
+     * Sets up the application by performing various initialization tasks.
+     *
+     * @return void
+     */
     protected static function setup() : void
     {
         ob_start();
@@ -67,13 +80,23 @@ final class Kernel
         self::setDumpper();
     }
 
+    /**
+     * Sets the environment for the application by injecting the environment variables.
+     *
+     * @return void
+     */
     protected static function setEnvironment() : void
     {
         $environment = new Environment();
         $environment->inject();
     }
 
-    protected static function loadPolyfill()
+    /**
+     * Loads polyfill functions based on the configuration.
+     *
+     * @return void
+     */
+    protected static function loadPolyfill() : void
     {
         $polyfill = Environment::default()->POLYFILL_FUNCTIONS;
         if ($polyfill !== null) {
@@ -88,6 +111,11 @@ final class Kernel
         }
     }
 
+    /**
+     * Sets up the error handler for the application.
+     *
+     * @return void
+     */
     protected static function setErrorHandler() : void
     {
         $environment = Environment::default();
@@ -100,12 +128,25 @@ final class Kernel
         }
     }
 
-
-    public static function getErrorHandler()
+    /**
+     * Returns the error handler instance.
+     *
+     * @return ErrorHandler\Run The error handler instance.
+     */
+    public static function getErrorHandler() : ErrorHandler\Run
     {
         return self::$errorHandler;
     }
 
+    /**
+     * Sets up the Dumpper for the application.
+     *
+     * This method configures the Dumpper based on the application's environment.
+     * If dump is enabled, it sets the Dumpper theme and editor, and registers the Dumpper.
+     * If dump is disabled, it uses the Plain Dumpper.
+     *
+     * @return void
+     */
     protected static function setDumpper() : void
     {
         $environment = Environment::default();
@@ -119,6 +160,11 @@ final class Kernel
         }
     }
 
+    /**
+     * Dispatches events for the application.
+     *
+     * @return bool Returns true if the events were successfully dispatched, false otherwise.
+     */
     protected static function dispatchEvents() : bool
     {
         Header::set('X-Powered-By', 'Flames');
@@ -146,6 +192,12 @@ final class Kernel
         return false;
     }
 
+    /**
+     * Dispatches the route and executes the corresponding controller action.
+     *
+     * @param object $routeData The data of the matched route.
+     * @return bool Whether the route dispatching was successful or not.
+     */
     protected static function dispatchRoute($routeData) : bool
     {
         $requestData = Route::mountRequestData($routeData, Connection::getIp());
@@ -174,13 +226,25 @@ final class Kernel
         return true;
     }
 
-    protected static function dispatchCLI()
+    /**
+     * Dispatches the command line interface (CLI)
+     *
+     * @return bool|null
+     */
+    protected static function dispatchCLI() : bool|null
     {
         $system = new CLI\System();
-        $system->run();
+        return $system->run();
     }
 
-    protected static function sendHeaders(Arr|null $headers, int $code)
+    /**
+     * Sets the HTTP headers for the response.
+     *
+     * @param Arr|null $headers An associative array of header names and values. If null, no additional headers will be set.
+     * @param int $code The HTTP status code to set.
+     * @return void
+     */
+    protected static function sendHeaders(Arr|null $headers, int $code) : void
     {
         Header::set('Code', $code);
 
@@ -193,7 +257,12 @@ final class Kernel
         Header::send();
     }
 
-    public static function shutdown()
+    /**
+     * Handles the shutdown of the application.
+     *
+     * @return void
+     */
+    public static function shutdown() : void
     {
         if (CLI::isCLI() === true && \Flames\CLI\Command\Coroutine::isCoroutineRunning() === true) {
             \Flames\CLI\Command\Coroutine::errorHandler();
@@ -203,6 +272,11 @@ final class Kernel
 //        dump($runTime);
     }
 
+    /**
+     * Returns the default router instance.
+     *
+     * @return Router|null The default router instance, or null if it has not been set.
+     */
     public static function getDefaultRouter() : Router|null
     {
         return self::$defaultRouter;

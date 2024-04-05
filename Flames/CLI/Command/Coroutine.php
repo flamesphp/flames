@@ -2,13 +2,16 @@
 
 namespace Flames\CLI\Command;
 
-use Flames\Command;
-use Flames\Environment;
-
 /**
+ * Class Coroutine
+ *
+ * This class represents a coroutine, which is a lightweight component
+ * that can be executed concurrently with other coroutines. It provides
+ * the functionality to run a serialized coroutine and handle errors.
+ *
  * @internal
  */
-class Coroutine
+final class Coroutine
 {
     protected static bool $isCoroutineRunning = false;
     protected static Coroutine|null $currentCoroutine = null;
@@ -19,6 +22,12 @@ class Coroutine
 
     protected array|null $coroutine = null;
 
+    /**
+     * Constructor to initialize the class object.
+     *
+     * @param mixed $data The input data object.
+     * @return void
+     */
     public function __construct($data)
     {
         $coroutinePath = (ROOT_PATH . self::BASE_FOLDER);
@@ -29,6 +38,13 @@ class Coroutine
         }
     }
 
+    /**
+     * Runs the coroutine.
+     *
+     * @param bool $debug (optional) Determines whether to enable debugging mode or not. Defaults to false.
+     *
+     * @return bool Returns true if the coroutine was executed successfully, false otherwise.
+     */
     public function run(bool $debug = false) : bool
     {
         if ($this->coroutine === null) {
@@ -67,11 +83,21 @@ class Coroutine
         return true;
     }
 
+    /**
+     * Checks if a coroutine is currently running.
+     *
+     * @return bool Returns true if a coroutine is currently running, false otherwise.
+     */
     public static function isCoroutineRunning() : bool
     {
         return self::$isCoroutineRunning;
     }
 
+    /**
+     * Handles errors that occur during the execution of a coroutine.
+     *
+     * @return bool Returns true if the error handling was executed successfully.
+     */
     public static function errorHandler() : bool
     {
         $buffer = ob_get_contents();

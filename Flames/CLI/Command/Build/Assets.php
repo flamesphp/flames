@@ -5,9 +5,13 @@ namespace Flames\CLI\Command\Build;
 use Flames\CLI\Command\Build\Assets\Data;
 
 /**
+ * Class Assets
+ *
+ * This class is responsible for handling the build assets data for the Flames CLI command.
+ *
  * @internal
  */
-class Assets
+final class Assets
 {
     const BASE_PATH = (ROOT_PATH . 'App/Client/Resource/');
 
@@ -39,6 +43,12 @@ class Assets
 
     protected bool $debug = false;
 
+    /**
+     * Run the application build.
+     *
+     * @param bool $debug (optional) Determines whether the application should run in debug mode. Defaults to false.
+     * @return bool Returns true if the application ran successfully, otherwise returns false.
+     */
     public function run(bool $debug = false) : bool
     {
         $this->debug = $debug;
@@ -54,6 +64,11 @@ class Assets
         return true;
     }
 
+    /**
+     * Create the base resource folder if it doesn't exist.
+     *
+     * @return void
+     */
     protected function createFolder() : void
     {
         if ($this->debug === true) {
@@ -70,6 +85,12 @@ class Assets
         }
     }
 
+    /**
+     * Injects the structure of the JavaScript system into the given stream.
+     *
+     * @param resource $stream The stream to inject the structure into.
+     * @return void
+     */
     protected function injectStructure($stream) : void
     {
         if ($this->debug === true) {
@@ -94,6 +115,12 @@ class Assets
         fputs($stream,"window.Flames = (window.Flames || {});Flames.Internal = (Flames.Internal || {});Flames.Internal.Build = (Flames.Internal.Build || {});Flames.Internal.Build.core = [];Flames.Internal.Build.client = [];Flames.Internal.Build.click = [];Flames.Internal.Build.change = [];Flames.Internal.Build.input = [];");
     }
 
+    /**
+     * Injects default files into the provided stream.
+     *
+     * @param resource $stream The stream to inject the files into.
+     * @return void
+     */
     protected function injectDefaultFiles($stream) : void
     {
         foreach (self::$defaultFiles as $defaultFile) {
@@ -119,6 +146,13 @@ class Assets
         }
     }
 
+    /**
+     * Injects client files into the specified stream.
+     *
+     * @param resource $stream The stream where the client files will be injected.
+     *
+     * @return void
+     */
     protected function injectClientFiles($stream) : void
     {
         $modules = ['Event', 'Component', 'Controller'];
@@ -156,6 +190,12 @@ class Assets
         }
     }
 
+    /**
+     * Verifies the attributes of a given file.
+     *
+     * @param string $file The file to verify attributes for.
+     * @return array
+     */
     protected function verifyAttributes(string $file)
     {
         $class = (str_replace('/', '\\', substr($file, strlen(ROOT_PATH), -4)));
@@ -186,6 +226,14 @@ class Assets
         return $attributes;
     }
 
+    /**
+     * Retrieves the contents of a directory recursively.
+     *
+     * @param string $dir The directory to retrieve contents from.
+     * @param array $results (Optional) An array reference to store the results. Defaults to an empty array.
+     *
+     * @return void
+     */
     protected function getDirContents($dir, &$results = array()) {
         $files = scandir($dir);
 
@@ -202,6 +250,13 @@ class Assets
         return $results;
     }
 
+    /**
+     * Finishes the stream by closing it.
+     *
+     * @param resource $stream The stream to be finished.
+     *
+     * @return void
+     */
     protected function finish($stream) : void
     {
         fputs($stream, "\n\n");

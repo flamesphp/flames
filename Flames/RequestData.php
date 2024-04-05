@@ -5,7 +5,10 @@ namespace Flames;
 use Flames\Collection\Arr;
 
 /**
- * Description for the class
+ *  Class RequestData
+ *
+ *  This class represents the data associated with a request.
+ *
  * @property string $method
  * @property string|null $url
  * @property string $controller
@@ -39,6 +42,26 @@ class RequestData
     protected Arr|null $headers;
     protected Arr|null $data;
 
+    /**
+     * Constructor for the class.
+     *
+     * @param string $method The HTTP request method.
+     * @param string|null $url The URL for the request.
+     * @param Arr $queries An array of query parameters.
+     * @param Arr $uries An array of URI parameters.
+     * @param Arr $multipart An array of multipart data.
+     * @param Arr $urlEncoded An array of url-encoded data.
+     * @param Arr|null $json An optional array of JSON data. Defaults to null.
+     * @param Arr $request An array representing the request.
+     * @param Arr $headers An array of headers for the request.
+     * @param string|null $host The host for the request. Defaults to null.
+     * @param string|null $port The port for the request. Defaults to null.
+     * @param string|null $ip The IP address for the request. Defaults to null.
+     * @param string|null $command The command for the request. Defaults to null.
+     * @param Arr|null $data An optional array of additional data. Defaults to null.
+     *
+     * @return null
+     */
     public function __construct(string $method, string|null $url, Arr $queries, Arr $uries, Arr $multipart, Arr $urlEncoded, Arr|null $json, Arr $request, Arr $headers, string|null $host, string|null $port, string|null $ip, string|null $command, Arr|null $data)
     {
         $this->method     = $method;
@@ -59,6 +82,13 @@ class RequestData
         return null;
     }
 
+    /**
+     * Magic method to retrieve a property value.
+     *
+     * @param string $key The name of the property.
+     *
+     * @return mixed The value of the property.
+     */
     public function __get(string $key) : mixed
     {
         $key = strtolower((string)$key);
@@ -94,5 +124,7 @@ class RequestData
         } elseif ($key === 'data') {
             return $this->data;
         }
+
+        return null;
     }
 }

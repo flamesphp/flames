@@ -7,12 +7,22 @@ use Flames\Cryptography\Hash;
 use Flames\Environment;
 
 /**
+ * Class Generate
+ *
+ * The Generate class is responsible for generating the cryptography key for the environment.
+ *
  * @internal
  */
-class Generate
+final class Generate
 {
     protected bool $debug = false;
 
+    /**
+     * Run the key generation.
+     *
+     * @param bool $debug Set to true if debug mode is enabled, false otherwise.
+     * @return bool Returns true if the application runs successfully, false otherwise.
+     */
     public function run(bool $debug = false) : bool
     {
         $environment = Environment::default();
