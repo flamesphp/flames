@@ -1,11 +1,11 @@
 <?php
 
-namespace Flames\Server;
+namespace Flames\OS;
 
 use Exception;
 use Flames\Collection\Arr;
 use Flames\Cryptography\Hash;
-use Flames\Server;
+use Flames\OS;
 
 class Mouse
 {
@@ -15,11 +15,11 @@ class Mouse
 
     public static function getPosition() : Arr
     {
-        if (Server::isUnix() === true) {
+        if (OS::isUnix() === true) {
             throw new Exception('Unix not supported yet.');
         }
 
-        $execPath = str_replace('/', '\\', (ROOT_PATH . 'Flames/Server/Mouse/GetMousePosition.ps1'));
+        $execPath = str_replace('/', '\\', (ROOT_PATH . 'Flames/OS/Mouse/GetMousePosition.ps1'));
         $data = (shell_exec('powershell.exe -File ' . $execPath));
         $split = explode(' ', $data);
 
@@ -31,16 +31,16 @@ class Mouse
 
     public static function setPosition(int $x, int $y, bool $leftClick = false)
     {
-        if (Server::isUnix() === true) {
+        if (OS::isUnix() === true) {
             throw new Exception('Unix not supported yet.');
         }
 
 
-        $tmpData = file_get_contents(str_replace('/', '\\', (ROOT_PATH . 'Flames/Server/Mouse/SetMousePosition.ps1')));
+        $tmpData = file_get_contents(str_replace('/', '\\', (ROOT_PATH . 'Flames/OS/Mouse/SetMousePosition.ps1')));
         $tmpData = str_replace(['$x', '$y'], [$x, $y], $tmpData);
 
         if ($leftClick === true) {
-            $tmpData .= ("\n" . file_get_contents(str_replace('/', '\\', (ROOT_PATH . 'Flames/Server/Mouse/LeftClickMouseJoin.ps1'))));
+            $tmpData .= ("\n" . file_get_contents(str_replace('/', '\\', (ROOT_PATH . 'Flames/OS/Mouse/LeftClickMouseJoin.ps1'))));
         }
 
         $tmpPath = str_replace('/', '\\', (ROOT_PATH . '.cache/powershell/' . Hash::getRandom() . '.ps1'));
@@ -55,7 +55,7 @@ class Mouse
 
     public static function click(string $type = 'left')
     {
-        if (Server::isUnix() === true) {
+        if (OS::isUnix() === true) {
             throw new Exception('Unix not supported yet.');
         }
 
@@ -63,7 +63,7 @@ class Mouse
             throw new Exception('Click ' . $type . ' not supported yet.');
         }
 
-        $execPath = str_replace('/', '\\', (ROOT_PATH . 'Flames/Server/Mouse/LeftClickMouse.ps1'));
+        $execPath = str_replace('/', '\\', (ROOT_PATH . 'Flames/OS/Mouse/LeftClickMouse.ps1'));
         shell_exec('powershell.exe -File ' . $execPath);
     }
 }

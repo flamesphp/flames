@@ -168,7 +168,7 @@ interface MessageInterface
      *
      * @return StreamInterface Returns the body as a stream.
      */
-    public function getBody(): StreamInterface;
+    public function getBody(): StreamInterface|string;
 
     /**
      * Return an instance with the specified message body.
