@@ -36,11 +36,11 @@ use /**
  */
 abstract class Repository
 {
-    private static bool $__setup = false;
-    private static Database\Driver|null $driver = null;
+    private static array $__setup = [];
+    private static array $driver  = [];
 
-    private static string $database;
-    private static string $model;
+    private static array $database = [];
+    private static array $model    = [];
 
     /**
      * Class constructor for static methods.
@@ -51,12 +51,14 @@ abstract class Repository
      */
     public static function __constructStatic(): void
     {
-        if (self::$__setup === true) {
+        $class = static::class;
+
+        if (isset(static::$__setup[$class]) === true && self::$__setup[$class] === true) {
             return;
         }
 
         self::__setup(Data::mountData(static::class));
-        self::$__setup = true;
+        self::$__setup[$class] = true;
     }
 
     /**
@@ -70,6 +72,8 @@ abstract class Repository
      */
     private static function __setup(Arr $data): void
     {
+        $class = static::class;
+
         if ($data->model === null || class_exists($data->model) === false) {
             throw new Exception('Repository ' . static::class . ' need a model.');
         }
@@ -81,8 +85,8 @@ abstract class Repository
             }
         }
 
-        self::$database = $data->database;
-        self::$model    = $data->model;
+        self::$database[$class] = $data->database;
+        self::$model[$class]    = $data->model;
     }
 
     /**
@@ -116,9 +120,11 @@ abstract class Repository
      */
     public static function getDriver(): Database\Driver|null
     {
-        if (self::$driver === null) {
-            self::$driver = self::$model::{'getDriver'}();
+        $class = static::class;
+
+        if (isset(self::$driver[$class]) === false || self::$driver[$class] === null) {
+            self::$driver[$class] = self::$model[$class]::{'getDriver'}();
         }
-        return self::$driver;
+        return self::$driver[$class];
     }
 }

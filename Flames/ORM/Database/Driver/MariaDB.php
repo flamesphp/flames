@@ -43,14 +43,6 @@ class MariaDB extends Driver
         $variables = $where['variables'];
         $query .= "\n)";
 
-
-        dump($options);
-
-        dump($query);
-        exit;
-
-        /////";
-
         $statement = $this->connection->prepare($query);
         $statement->execute($variables);
 

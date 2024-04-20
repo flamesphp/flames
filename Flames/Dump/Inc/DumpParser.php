@@ -72,6 +72,7 @@ class DumpParser
                 self::$_level = $revert['level'];
                 self::$_objects = $revert['objects'];
 
+
                 return $varData;
             }
             unset(self::$parsingAlternative[$parserClass]);
@@ -349,7 +350,7 @@ class DumpParser
         $variableData->size = count($castedArray);
 
         if (isset(self::$_objects[$hash])) {
-            $variableData->value = '*RECURSION*';
+//            $variableData->value = '*RECURSION*';
 
             return false;
         }

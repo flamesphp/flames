@@ -16,11 +16,11 @@ use Flames\ORM\Model\Data;
  */
 abstract class Model
 {
-    private static bool $__setup = false;
-    private static Database\Driver|null $driver = null;
-    private static string $database;
-    private static string $table;
-    private static Arr $column;
+    private static array $__setup  = [];
+    private static array $driver   = [];
+    private static array $database = [];
+    private static array $table    = [];
+    private static array $column   = [];
 
     private array|null $__changed = null;
 
@@ -33,15 +33,17 @@ abstract class Model
      */
     public function save() : void
     {
+        $class = static::class;
+
         $indexColumn = null;
-        foreach (self::$column as $column) {
+        foreach (self::$column[$class] as $column) {
             if ($column->primary === true || $column->autoIncrement === true) {
                 $indexColumn = $column;
                 break;
             }
         }
         if ($indexColumn === null) {
-            foreach (self::$column as $column) {
+            foreach (self::$column[$class] as $column) {
                 if ($column->unique === true) {
                     $indexColumn = $column;
                     break;
@@ -56,7 +58,7 @@ abstract class Model
         $data = $this->toArray();
 
         if ($data[$indexColumn->property] === null) {
-            $insert = self::$driver->insert($data);
+            $insert = self::$driver[$class]->insert($data);
             if ($insert !== true) {
                 foreach ($insert as $key => $value) {
                     $this->{$key} = $value;
@@ -80,7 +82,7 @@ abstract class Model
 
         $data[$indexColumn->property] = $this->{$indexColumn->property};
 
-        self::$driver->update($indexColumn->property, $data);
+        self::$driver[$class]->update($indexColumn->property, $data);
         $this->__changed = null;
     }
 
@@ -129,9 +131,10 @@ abstract class Model
      */
     public function toArray() : array
     {
+        $class = static::class;
         $data = [];
 
-        foreach (self::$column as $column) {
+        foreach (self::$column[$class] as $column) {
             try {
                 $data[$column->property] = $this->{$column->property};
             } catch (\Error $_) {
@@ -147,9 +150,14 @@ abstract class Model
      *
      * @return string The name of the database table associated with the class.
      */
-    public static function getTable() : string
+    public static function getTable() : string|null
     {
-        return self::$table;
+        $class = static::class;
+        if (isset(static::$table[$class]) === false) {
+            return null;
+        }
+
+        return self::$table[$class];
     }
 
     /**
@@ -159,9 +167,14 @@ abstract class Model
      *
      * @return string The name of the database.
      */
-    public static function getDatabase() : string
+    public static function getDatabase() : string|null
     {
-        return self::$database;
+        $class = static::class;
+        if (isset(static::$database[$class]) === false) {
+            return null;
+        }
+
+        return self::$database[$class];
     }
 
     // TODO: dynamic check migration on change table/database
@@ -193,12 +206,13 @@ abstract class Model
      */
     public static function __constructStatic(): void
     {
-        if (self::$__setup === true) {
+        $class = static::class;
+        if (isset(static::$__setup[$class]) === true && static::$__setup[$class] === true) {
             return;
         }
 
         self::__setup(Data::mountData(static::class));
-        self::$__setup = true;
+        self::$__setup[$class] = true;
     }
 
     /**
@@ -211,15 +225,16 @@ abstract class Model
      */
     private static function __setup(Arr $data): void
     {
-        self::$database = $data->database;
-        self::$table    = $data->table;
+        $class = static::class;
+        self::$database[$class] = $data->database;
+        self::$table[$class]    = $data->table;
 
         if ($data->column->length === 0) {
             throw new \Exception('Model ' . static::class . 'need at least one column.');
         }
 
-        self::$column = $data->column;
-        self::$driver = (new Database\RawConnection(self::$database))->getDriver($data);
+        self::$column[$class] = $data->column;
+        self::$driver[$class] = (new Database\RawConnection(self::$database[$class]))->getDriver($data);
     }
 
     /**
@@ -262,7 +277,9 @@ abstract class Model
      */
     public function __set(string $key, mixed $value)
     {
-        if (isset(self::$column[$key]) === true) {
+        $class = static::class;
+
+        if (isset(self::$column[$class][$key]) === true) {
             $this->{$key} = self::cast($key, $value);
 
             if ($this->__changed === null) {
@@ -301,7 +318,9 @@ abstract class Model
      */
     public static function cast(string $key, mixed $value = null) : mixed
     {
-        return self::$driver->cast($key, $value);
+        $class = static::class;
+
+        return self::$driver[$class]->cast($key, $value);
     }
 
     /**
@@ -316,9 +335,11 @@ abstract class Model
      */
     public static function getDriver(): Database\Driver|null
     {
-        if (self::$driver === null) {
+        $class = static::class;
+
+        if (isset(self::$driver[$class]) === false || self::$driver[$class] === null) {
             new static();
         }
-        return self::$driver;
+        return self::$driver[$class];
     }
 }

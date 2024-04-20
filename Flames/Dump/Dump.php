@@ -232,6 +232,7 @@ class Dump
 
     /** @var class-string<DumpParser>[] */
     public static $enabledParsers = array(
+        'DumpParsersFlamesModel' => true,
         'DumpParsersSmarty' => true,
         'DumpParsersSplFileInfo' => true,
         'DumpParsersClosure' => true,
@@ -252,7 +253,7 @@ class Dump
         'DumpParsersColor' => true,
         'DumpParsersJson' => true,
         'DumpParsersClassName' => true,
-        'DumpParsersMicrotime' => true,
+        'DumpParsersMicrotime' => true
     );
 
     public static function saveState($state = array())
