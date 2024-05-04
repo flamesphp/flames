@@ -1,6 +1,4 @@
 syntax: glob
-App/
-vendor/
 .cache/
 .docker/.data
 .idea/
