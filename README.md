@@ -32,6 +32,7 @@ Working in progress...
 
 #### Setup Docker
 * Run `docker-compose up -d` in your root folder
+* Run `git submodule add git@github.com:user/repo.git App` to setup your app repository *(optional)*
 * Run `php bin install` in your docker php container
 
 #### Setup Local
@@ -39,7 +40,9 @@ Working in progress...
 * Required PHP mbstring extension
 * Required Apache
 * Required MySQL
+* Run `git submodule add git@github.com:user/repo.git App` to setup your app repository *(optional)*
 * Run `php bin install` in your root folder
+
 
 # Important things
 * Continuous development, we are here to stay.
