@@ -7,7 +7,7 @@ use Flames\CLI\Command\Install;
 use Flames\CLI\Command\Key\Generate as KeyGenerate;
 use Flames\CLI\Command\Cryptography\Key\Generate as CryptographyKeyGenerate;
 use Flames\CLI\Command\Build\Assets;
-use Flames\CLI\Command\Build\Project\StaticEx;
+use Flames\CLI\Command\Build\App\StaticEx;
 use Flames\CLI\Data;
 use Flames\Collection\Arr;
 
@@ -25,7 +25,7 @@ final class System
         'key:generate'              => KeyGenerate::class,
         'cryptography:key:generate' => CryptographyKeyGenerate::class,
         'build:assets'              => Assets::class,
-        'build:project:static'      => StaticEx::class,
+        'build:app:static'          => StaticEx::class,
         'internal:coroutine'        => Coroutine::class
     ];
 
@@ -131,8 +131,8 @@ Available commands:
   * install --noexample               | install without example project
   * key:generate                      | create or update project unique key
   * build:assets                      | build clientside assets, like controllers, events, components and resource
-  * build:project:static              | build complete project as static html pages
-  * build:project:static --cloudflare | build complete project as static html pages for CloudFlare Pages
+  * build:app:static                  | build complete project as static html pages
+  * build:app:static --cloudflare     | build complete project as static html pages for CloudFlare Pages
 ';
             echo $buffer;
         }
