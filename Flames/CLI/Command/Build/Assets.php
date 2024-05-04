@@ -38,7 +38,7 @@ final class Assets
         'Flames/Event/Element/Click.php',
         'Flames/Event/Element/Change.php',
         'Flames/Event/Element/Input.php',
-        'Flames/Kernel/Client/Dispatch.php',
+        'Flames/Kernel/Client/Dispatch.php'
     ];
 
     protected bool $debug = false;
@@ -208,7 +208,6 @@ final class Assets
         ]);
 
         foreach ($data->methods as $method) {
-            dump($method);
             if ($method->type === 'click') {
                 $method->class = $class;
                 $attributes->click[] = $method;

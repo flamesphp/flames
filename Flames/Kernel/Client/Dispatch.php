@@ -72,6 +72,9 @@ final class Dispatch
     {
         if (isset(self::$instances[$class]) === true) {
             return self::$instances[$class];
+        } else {
+            self::$instances[$class] = new $class();
+            return self::$instances[$class];
         }
 
         return null;
