@@ -35,12 +35,13 @@ final class Kernel
 
         $dispatchCLI = false;
         if (self::dispatchEvents() === false) {
-
-            // TODO: 404
             if (CLI::isCLI() === true) {
                 self::dispatchCLI();
                 $dispatchCLI = true;
             } else {
+                if (self::renderDirectFile() === true) {
+                    return;
+                }
                 ErrorPage::dispatch404();
                 self::shutdown();
                 return;
@@ -69,7 +70,13 @@ final class Kernel
         require(ROOT_PATH . 'Flames/AutoLoad.php');
         AutoLoad::run();
 
-        mb_internal_encoding('UTF-8');
+        try {
+            mb_internal_encoding('UTF-8');
+        } catch (\Error $e) {
+            Required::file(ROOT_PATH . 'Flames/Kernel/Missing/Mbstring.php');
+            return;
+        }
+
         Required::file(ROOT_PATH . 'Flames/Kernel/Wrapper/Raw.php');
 
         self::setEnvironment();
@@ -235,6 +242,46 @@ final class Kernel
     {
         $system = new CLI\System();
         return $system->run();
+    }
+
+    /**
+     * Renders the requested file directly to the output buffer.
+     *
+     * @return bool Indicates whether the file was successfully rendered or not.
+     */
+    protected static function renderDirectFile() : bool
+    {
+        $uri = explode('?', $_SERVER['REQUEST_URI'])[0];
+
+        if (str_starts_with($uri, '/') === true) {
+            $uri = substr($uri, 1);
+        }
+        if (str_contains($uri, '\\') === true) {
+            $uri = str_replace('\\', '/', $uri);
+        }
+        while (str_contains($uri, '../') === true) {
+            $uri = str_replace('../', '', $uri);
+        }
+        while (str_contains($uri, '//') === true) {
+            $uri = str_replace('//', '/', $uri);
+        }
+
+        $path = (APP_PATH . 'Client/Public/' . $uri);
+
+        if (file_exists($path) === false || is_dir($path) === true) {
+            return false;
+        }
+
+        header('Content-Type: ' . mime_content_type($path));
+
+        $fileStream = fopen($path, 'r');
+        while(!feof($fileStream)) {
+            $buffer = fgets($fileStream, 128000); // 128 kb
+            echo $buffer;
+        }
+        fclose($fileStream);
+
+        return true;
     }
 
     /**
