@@ -3,3 +3,4 @@ syntax: glob
 .docker/.data
 .idea/
 .env
+.gitmodules
