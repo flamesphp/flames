@@ -75,4 +75,4 @@ RUN apt-get install -y tesseract-ocr
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
-WORKDIR /www
+WORKDIR /var/www/html
