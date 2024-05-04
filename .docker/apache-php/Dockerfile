@@ -5,7 +5,7 @@ USER root
 RUN apt-get update && a2enmod rewrite
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y apt-utils
+RUN apt-get install -y apt-utils
 RUN apt-get install -y vim
 RUN apt-get install -y git
 RUN apt-get install -y unzip
