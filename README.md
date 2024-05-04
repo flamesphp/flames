@@ -33,7 +33,7 @@ Working in progress...
 #### Setup Docker
 * Choose containers to use *(ex: Apache or NGINX+FPM in docker-compose.yml)*
 * Run `docker-compose up -d` in your root folder
-* Run `git submodule add git@github.com:user/repo.git App` to setup your app repository *(optional)*
+* Run `git submodule add git@github.com:{user}/{repo}.git App` to setup your app repository *(optional)*
 * Run `php bin install` in your docker php container
 
 #### Setup Local
@@ -52,7 +52,6 @@ Working in progress...
 
 # TODO
 * Performance goal: 10.000 database rows rendered in template engine at 10ms.
-* Support NGINX.
 * ORM support: PostgreSQL, Oracle Database, SQL Server, ElasticSearch, MongoDB, Redis Stack, Apache Cassandra, Amazon DynamoDB and SQLite.
 * Caching ORM models, with support: KeyDB Flash (KeyDB with RocksDB), KeyDB, Redis, Redis Stack, MemCached and FileStorage.
 * Profiler injection with requests, benchmarks, memory, etc.
