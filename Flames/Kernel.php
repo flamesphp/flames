@@ -271,7 +271,7 @@ final class Kernel
         if (file_exists($path) === false || is_dir($path) === true) {
             return false;
         }
-
+        
         header('Content-Type: ' . mime_content_type($path));
 
         $fileStream = fopen($path, 'r');
