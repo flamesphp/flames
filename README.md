@@ -31,6 +31,7 @@ Working in progress...
 * Flames will create .env, unique key and cryptography unique key.
 
 #### Setup Docker
+* Choose containers to use *(ex: Apache or NGINX+FPM in docker-compose.yml)*
 * Run `docker-compose up -d` in your root folder
 * Run `git submodule add git@github.com:user/repo.git App` to setup your app repository *(optional)*
 * Run `php bin install` in your docker php container
@@ -38,10 +39,10 @@ Working in progress...
 #### Setup Local
 * Required PHP 8.2/8.3
 * Required PHP mbstring extension
-* Required Apache
-* Required MySQL
-* Run `git submodule add git@github.com:user/repo.git App` to setup your app repository *(optional)*
+* Required Apache or NGINX+FPM *(optional, case NGINX config using .docker/nginx/default.conf)*
+* Run `git submodule add git@github.com:{user}/{repo}.git App` to setup your app repository *(optional)*
 * Run `php bin install` in your root folder
+* Run `php bin server {host}:{port}` *(optional, case not use Apache/NGINX)*
 
 
 # Important things
