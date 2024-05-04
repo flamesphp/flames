@@ -4,5 +4,4 @@ vendor/
 .cache/
 .docker/.data
 .idea/
-.idea/vcs.xml
 .env
