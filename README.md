@@ -1,4 +1,4 @@
-<p align="center"><a href="https://flamesphp.com" target="_blank"><img src="https://i.postimg.cc/4yDHVvC7/flames.png" width="400" alt="Laravel Logo"></a></p>
+<p align="center"><a href="https://flamesphp.com" target="_blank"><img src="https://i.ibb.co/5LBsG09/flames.png" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
 <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
