@@ -46,17 +46,9 @@ RUN docker-php-ext-install xsl
 RUN docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg --with-webp
 RUN docker-php-ext-install gd
 
-# PHP Extension ACPU
-RUN pecl install apcu
-RUN docker-php-ext-enable apcu
-
 # PHP Extension INTL
 RUN docker-php-ext-configure intl
 RUN docker-php-ext-install -j$(nproc) intl
-
-# PHP Extension IMAP
-RUN docker-php-ext-configure imap --with-kerberos --with-imap-ssl
-RUN docker-php-ext-install imap
 
 # PHP XDEBUG
 #RUN pecl install xdebug
@@ -69,7 +61,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 RUN apt-get install -y tesseract-ocr
 
 # PHP INI
-COPY php-ini-overrides.ini /usr/local/etc/php/conf.d/99-overrides.ini
+COPY php.ini /usr/local/etc/php/conf.d/z-flames.ini
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*

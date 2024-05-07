@@ -34,8 +34,9 @@ final class Kernel
         self::setup();
 
         $dispatchCLI = false;
+        $isCLI = CLI::isCLI();
         if (self::dispatchEvents() === false) {
-            if (CLI::isCLI() === true) {
+            if ($isCLI === true) {
                 self::dispatchCLI();
                 $dispatchCLI = true;
             } else {
@@ -48,7 +49,7 @@ final class Kernel
             }
         }
 
-        if ($dispatchCLI === false && CLI::isCLI() === true) {
+        if ($dispatchCLI === false && $isCLI === true) {
             self::dispatchCLI();
         }
 
@@ -81,6 +82,7 @@ final class Kernel
 
         self::setEnvironment();
         self::loadPolyfill();
+
         if (CLI::isCLI() === false) {
             self::setErrorHandler();
         }
@@ -107,15 +109,13 @@ final class Kernel
     {
         $polyfill = Environment::default()->POLYFILL_FUNCTIONS;
         if ($polyfill !== null) {
-            $polyfill = explode(',', Environment::default()->POLYFILL_FUNCTIONS);
-        } else {
-            $polyfill = [];
+            $polyfills = explode(',', Environment::default()->POLYFILL_FUNCTIONS);
+            foreach ($polyfills as $_polyfill) {
+                Required::_function($_polyfill);
+            }
         }
 
-        $polyfill[] = 'parse_raw_http_request';
-        foreach ($polyfill as $_polyfill) {
-            Required::_function($_polyfill);
-        }
+        Required::_function('parse_raw_http_request');
     }
 
     /**
