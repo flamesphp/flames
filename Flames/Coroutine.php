@@ -76,9 +76,14 @@ class Coroutine
             $coroutine['caller'] = $this->caller;
             file_put_contents($coroutinePath . $coroutine['hash'], serialize($coroutine));
 
+            $socketPath = ($coroutinePath . sha1($coroutine['hash']));
+            file_put_contents($socketPath, '');
+
             $coroutinesWaiting[] = [
                 'coroutine' => $coroutine,
-                'process'   => new Process('php bin internal:coroutine ' . $coroutine['hash'])
+                'process'   => new Process('php bin internal:coroutine ' . $coroutine['hash']),
+                'socket'    => fopen($socketPath, 'r'),
+                'data'      => null
             ];
         }
 
@@ -87,9 +92,15 @@ class Coroutine
 
         $startTime = microtime(true) * 1000;
         while (true) {
-            foreach ($coroutinesWaiting as $coroutineWaiting) {
-                if (in_array($coroutineWaiting['coroutine']['hash'], $coroutinesFinished) === false && file_exists($coroutinePath . sha1($coroutineWaiting['coroutine']['hash'])) === true) {
-                    $coroutinesFinished[] = $coroutineWaiting['coroutine']['hash'];
+            foreach ($coroutinesWaiting as &$coroutineWaiting) {
+                if (in_array($coroutineWaiting['coroutine']['hash'], $coroutinesFinished) === false) { //} && file_exists($coroutinePath . sha1($coroutineWaiting['coroutine']['hash'])) === true) {
+
+                    $data = stream_get_contents($coroutineWaiting['socket']);
+                    if ($data !== null && $data !== false && $data !== '') {
+                        $coroutineWaiting['data'] = $data;
+                        fclose($coroutineWaiting['socket']);
+                        $coroutinesFinished[] = $coroutineWaiting['coroutine']['hash'];
+                    }
                 }
             }
 
@@ -104,21 +115,23 @@ class Coroutine
             }
         }
 
-        foreach ($coroutinesWaiting as $coroutineWaiting) {
+        foreach ($coroutinesWaiting as &$coroutineWaiting) {
+
             $responsePath = ($coroutinePath . sha1($coroutineWaiting['coroutine']['hash']));
-            if (file_exists($responsePath) === false) {
-                foreach ($coroutinesWaiting as $coroutineWaiting) {
-                    unlink($coroutinePath . $coroutineWaiting['coroutine']['hash']);
+            if ($coroutineWaiting['data'] === null) {
+                foreach ($coroutinesWaiting as $_coroutineWaiting) {
+                    unlink($coroutinePath . $_coroutineWaiting['coroutine']['hash']);
                 }
                 throw new Timeout('Coroutine exceeds maximum execution time of ' . $this->timeout . 'ms.');
             }
-            $data = unserialize(file_get_contents($responsePath));
+
+            $data = unserialize($coroutineWaiting['data']);
             if ($data === false) {
                 $results[] = null;
             } else {
                 if ($data['error'] !== null) {
-                    foreach ($coroutinesWaiting as $coroutineWaiting) {
-                        unlink($coroutinePath . $coroutineWaiting['coroutine']['hash']);
+                    foreach ($coroutinesWaiting as &$_coroutineWaiting) {
+                        unlink($coroutinePath . $_coroutineWaiting['coroutine']['hash']);
                         if (file_exists($responsePath) === true) {
                             unlink($responsePath);
                         }
