@@ -26,10 +26,14 @@ class WSL
             return self::$isWSL;
         }
 
-        $hostname = strtolower(shell_exec('hostnamectl'));
-        if (str_contains($hostname, 'virtualization: wsl') === true) {
-            self::$isWSL = true;
-            return self::$isWSL;
+        $hostname = shell_exec('hostnamectl');
+        if ($hostname !== null) {
+            $hostname = strtolower($hostname);
+
+            if (str_contains($hostname, 'virtualization: wsl') === true) {
+                self::$isWSL = true;
+                return self::$isWSL;
+            }
         }
 
         self::$isWSL = self::detectWSL2($hostname);
@@ -52,7 +56,10 @@ class WSL
             return self::$isWSL2;
         }
 
-        $hostname = strtolower(shell_exec('hostnamectl'));
+        $hostname = shell_exec('hostnamectl');
+        if ($hostname !== null) {
+            $hostname = strtolower($hostname);
+        }
 
         self::$isWSL2 = self::detectWSL2($hostname);
         return self::$isWSL2;
@@ -63,8 +70,12 @@ class WSL
      *
      * @return bool Returns true if the code is running within a Windows Subsystem Linux v2, false otherwise.
      */
-    protected static function detectWSL2(string $hostname) : bool
+    protected static function detectWSL2(string|null $hostname) : bool
     {
+        if ($hostname === null) {
+            return false;
+        }
+
         $split = explode("\n", $hostname);
         foreach ($split as $line) {
             if (str_contains($line, 'kernel:') === true) {
