@@ -28,6 +28,16 @@ final class Arr extends \ArrayObject
     }
 
     /**
+     * Get the string representation of the object.
+     *
+     * @return string The string representation of the object
+     */
+    public function __toString(): string
+    {
+        return json_encode($this->toArray());
+    }
+
+    /**
      * Retrieves a value at a specified key.
      *
      * @param mixed $key The key of the value to retrieve.
