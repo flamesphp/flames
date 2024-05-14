@@ -207,6 +207,10 @@ final class Environment
             } elseif ($value === false) {
                 $value = 'false';
             }
+
+            if (str_contains($value, ' ')) {
+                $value = ('"' . $value . '"');
+            }
             $mount .= ($var . '=' . $value . "\n");
         }
 

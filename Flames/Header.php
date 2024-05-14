@@ -85,4 +85,10 @@ class Header
             header($key . ':' . $value);
         }
     }
+
+    public static function redirect(string $url)
+    {
+        header('Location: ' . $url);
+        return Arr(['redirect' => $url]);
+    }
 }
