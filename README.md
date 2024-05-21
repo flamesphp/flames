@@ -28,21 +28,21 @@ Working in progress...
 
 # Installation
 
-* Flames will create .env, unique key and cryptography unique key.
+* 1. Copy .env.dist to .env.
 
 #### Setup Docker
 * Choose containers to use *(optional, Apache or NGINX+FPM in docker-compose.yml, default to NGINX+FPM)*
-* Run `docker-compose up -d` in your root folder
-* Run `git submodule add git@github.com:{user}/{repo}.git App` to setup your app repository *(optional)*
-* Run `php bin install` in your docker php container
+* 2. Run `docker-compose up -d` in your root folder
+* 3. Run `git submodule add git@github.com:{user}/{repo}.git App` to setup your app repository *(optional)*
+* 4. Run `php bin install` in your docker php container
 
 #### Setup Local
 * Required PHP 8.2/8.3
 * Required PHP mbstring extension
 * Required Apache or NGINX+FPM *(optional, case NGINX+FPM do config using template .docker/nginx/default.conf)*
-* Run `git submodule add git@github.com:{user}/{repo}.git App` to setup your app repository *(optional)*
-* Run `php bin install` in your root folder
-* Run `php bin server {host}:{port}` *(optional, case not use Apache/NGINX)*
+* 2. Run `git submodule add git@github.com:{user}/{repo}.git App` to setup your app repository *(optional)*
+* 3. Run `php bin install` in your root folder
+* 4. Run `php bin server {host}:{port}` *(optional, case not use Apache/NGINX)*
 
 
 # Important things
