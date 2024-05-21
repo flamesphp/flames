@@ -12,6 +12,7 @@ of **PHP components**.
 ## Why should I migrate to the Flames?
 
 * Flames framework created for high performance and large number of accesses.
+* Only 1.12ms from kernel boot to call controller (17-18x faster then Laravel, closer from Slim).
 * You don't need to learn JS to develop your frontend, just run PHP natively in Flames.
 * ORM with automatic migrations turn database easy.
 * ORM with Models and Repositories.
@@ -21,6 +22,22 @@ of **PHP components**.
 * Templating engine based on TWIG running on backend and frontend.
 * Command for build PHP project as static website (to upload on S3, GitHub Pages, CloudFlare Pages or simple HTML-only server).
 * JetBrains PhpStorm and Visual Code plugins.
+
+## Benchmark
+
+### From kernel boot to call controller
+|                 | Request Time |  Queue Requests | 
+|-----------------|--------------|-----------------|
+| Pure PHP        |    0.53ms    |    1887 p/sec   |
+| Flames beta0.1  |    1.12ms    |     893 p/sec   |
+| Symfony 6.2     |    2.81ms    |     355 p/sec   |
+| CakePHP 4.4     |    4.14ms    |     241 p/sec   |
+| Lumen 10.0      |    4.46ms    |     224 p/sec   |
+| Laminas 2.0     |    5.13ms    |     194 p/sec   |
+| Fuel 1.9        |    5.31ms    |     188 p/sec   |
+| CodeIgniter 4.3 |   12.65ms    |      79 p/sec   |
+| Laravel 10.0    |   19.48ms    |      51 p/sec   |
+
 
 ## Release
 
