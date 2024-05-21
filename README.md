@@ -12,7 +12,7 @@ of **PHP components**.
 ## Why should I migrate to the Flames?
 
 * Flames framework created for high performance and large number of accesses.
-* Only 1.12ms from kernel boot to call controller (17-18x faster then Laravel, closer from Slim).
+* Only 1.12ms from kernel boot to call controller (17-18x faster than Laravel, closer from Slim).
 * You don't need to learn JS to develop your frontend, just run PHP natively in Flames.
 * ORM with automatic migrations turn database easy.
 * ORM with Models and Repositories.
