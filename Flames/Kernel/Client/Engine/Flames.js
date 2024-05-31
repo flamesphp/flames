@@ -210,10 +210,24 @@ const runFlames = () => {
 
     window.PHP = (window.PHP || {});
     window.PHP.internal = php;
-    window.PHP.eval = function(code) {
+    window.PHP.hook = {};
+    window.PHP.hook.evalHandler = (function(error, code, _try) {
+        if (_try < 10) {
+            _try = (_try + 1);
+            window.PHP.eval(code, _try);
+        } else {
+            console.error(error);
+        }
+    });
+
+    window.PHP.eval = function(code, _try) {
+        if (_try === undefined || _try === null) {
+            _try = 0;
+        }
+
         window.PHP.internal.run(code)
-            .then(exitCode => function() {} ) //console.log(exitCode))
-            .catch(error => console.error(error))
+            .then(exitCode => function() {} ) //console.log(exitCode)
+            .catch(error => window.PHP.hook.evalHandler(error, code, _try)) //console.error(error)
             .finally(() => {
                 php.flush();
                 if (stdout.includes('Parse error: syntax error') ||
