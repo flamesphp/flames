@@ -35,6 +35,7 @@ class StaticEx
             mkdir($this->buildPath, 0777, true);
         }
 
+        $this->cleanBuild();
         $this->copyPublic();
         $this->saveInputs();
 
@@ -135,6 +136,21 @@ class StaticEx
         copy(ROOT_PATH . 'Flames/Kernel/Client/Engine/Flames.wasm', $this->buildPath . '.flames.wasm');
     }
 
+    protected function cleanBuild() : void
+    {
+        $buildFiles = $this->getDirContents($this->buildPath);
+        foreach ($buildFiles as $buildFile) {
+            if (is_file($buildFile) === true) {
+                unlink($buildFile);
+            }
+        }
+        foreach ($buildFiles as $buildFile) {
+            if (is_dir($buildFile) === true) {
+                rmdir($buildFile);
+            }
+        }
+    }
+
     protected function copyPublic() : void
     {
         $publicPath = (ROOT_PATH . 'App/Client/Public/');
@@ -180,11 +196,16 @@ class StaticEx
     protected function saveResponse($metadata, $responseData) : void
     {
         $url = $metadata->routeFormatted;
+        if ($url === '404') {
+            $url = '/404';
+        }
+
         if (str_ends_with($url, '/') === false) {
             $url .= '/';
         }
 
         $urls = null;
+
         if ($url !== '/') {
             $urls = [$url . 'index.html', substr($url, 0, -1) . '.html'];
         } else {
