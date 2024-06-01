@@ -31,7 +31,9 @@ final class Kernel
      */
     public static function run() : void
     {
-        self::setup();
+        if (self::setup() === false) {
+            return;
+        }
 
         $dispatchCLI = false;
         $isCLI = CLI::isCLI();
@@ -61,7 +63,7 @@ final class Kernel
      *
      * @return void
      */
-    protected static function setup() : void
+    protected static function setup() : bool
     {
         ob_start();
         define('START_TIME', microtime(true));
@@ -75,7 +77,7 @@ final class Kernel
             mb_internal_encoding('UTF-8');
         } catch (\Error $e) {
             Required::file(ROOT_PATH . 'Flames/Kernel/Missing/Mbstring.php');
-            return;
+            return false;
         }
 
         Required::file(ROOT_PATH . 'Flames/Kernel/Wrapper/Raw.php');
@@ -87,6 +89,8 @@ final class Kernel
             self::setErrorHandler();
         }
         self::setDumpper();
+
+        return true;
     }
 
     /**
