@@ -19,8 +19,8 @@ function __shutdown__()
     Flames\Kernel::shutdown();
 }
 
-try {
-    register_primitive_type_handler('string', \Flames\Collection\Strings::class);
-} catch (\Error $e) {}
+//try {
+//    register_primitive_type_handler('string', \Flames\Collection\Strings::class);
+//} catch (\Error $e) {}
 
 register_shutdown_function('__shutdown__');
