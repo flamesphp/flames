@@ -36,28 +36,44 @@ services:
 #        extra_hosts:
 #            - "host.docker.internal:host-gateway"
 
-    # MySQL: Server
-    mysql:
-        container_name: ${APPLICATION_NAME}-mysql
-        image: mysql:5.7
-        volumes:
-            - ./.docker/.data/mysql:/var/lib/mysql:delegated
-            - ./.docker/mysql:/docker-entrypoint-initdb.d
+    # MariaDB: Server
+    mariadb:
+        image: mariadb:latest
+        container_name: ${APPLICATION_NAME}-mariadb
+        restart: always
         environment:
-            MYSQL_DATABASE: ${DATABASE_MYSQL_NAME}
-            MYSQL_USER: ${DATABASE_MYSQL_USER}
-            MYSQL_PASSWORD: ${DATABASE_MYSQL_PASSWORD}
-            MYSQL_ROOT_PASSWORD: ${DATABASE_MYSQL_PASSWORD}
+            MARIADB_USER: ${DATABASE_MARIADB_USER}
+            MARIADB_PASSWORD: ${DATABASE_MARIADB_PASSWORD}
+            MARIADB_ROOT_PASSWORD: ${DATABASE_MARIADB_PASSWORD}
+            MARIADB_DATABASE: ${DATABASE_MARIADB_NAME}
+        volumes:
+            - "./.docker/.data/mariadb/data:/var/lib/mysql/data/"
+            - "./.docker/.data/mariadb/logs:/var/lib/mysql/logs/"
         ports:
             - 3306:3306
-        command: mysqld --sql_mode="" --lower_case_table_names=1
 
-    # MySQL: PhpMyAdmin
+    # MySQL: Server
+#    mysql:
+#        container_name: ${APPLICATION_NAME}-mysql
+#        image: mysql:5.7
+#        volumes:
+#            - ./.docker/.data/mysql:/var/lib/mysql:delegated
+#            - ./.docker/mysql:/docker-entrypoint-initdb.d
+#        environment:
+#            MYSQL_DATABASE: ${DATABASE_MYSQL_NAME}
+#            MYSQL_USER: ${DATABASE_MYSQL_USER}
+#            MYSQL_PASSWORD: ${DATABASE_MYSQL_PASSWORD}
+#            MYSQL_ROOT_PASSWORD: ${DATABASE_MYSQL_PASSWORD}
+#        ports:
+#            - 3306:3306
+#        command: mysqld --sql_mode="" --lower_case_table_names=1
+
+    # MySQL/MariaDB: PhpMyAdmin
     pma:
         container_name: ${APPLICATION_NAME}-pma
         image: phpmyadmin/phpmyadmin
         environment:
-            PMA_HOSTS: "mysql"
+            PMA_HOSTS: "mariadb"
         ports:
             - 8080:80
 
