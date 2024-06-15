@@ -67,9 +67,9 @@ abstract class Controller
      * @param Arr|array|null $headers The additional headers to be included in the response. Default is null.
      * @return Response|string The error response or a string representation of it.
      */
-    public function error(Arr|array|string $data = null, int $code = 200, Arr|array|null $headers = null) : Response|string
+    public function error(Arr|array|string $data = null, int $code = 500, Arr|array|null $headers = null) : Response|string
     {
-        return $this->success($data, 500, $headers);
+        return $this->success($data, $code, $headers);
     }
 
     private static array $__setup = [];

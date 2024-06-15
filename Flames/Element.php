@@ -271,7 +271,7 @@ class Element
      */
     public function sync()
     {
-        $data = JS::eval("
+        $data = Js::eval("
             (function() {
                 var element = document.querySelector('[' + Flames.Internal.char + 'uid=\"" . $this->uid . "\"]');
                 if (element !== null) {
@@ -311,7 +311,7 @@ class Element
     /**
      * Executes the specified JavaScript code on the element with the specified UID.
      *
-     * This method uses the JS::eval() function to execute the JavaScript code on the
+     * This method uses the Js::eval() function to execute the JavaScript code on the
      * element with the specified UID. The JavaScript code should be a valid code snippet
      * that manipulates the element in some way.
      *
@@ -322,7 +322,7 @@ class Element
      */
     protected function execFunc(string $code) : void
     {
-        $data = JS::eval("
+        $data = Js::eval("
             (function() {
                 var element = document.querySelector('[Flames.Internal.char + 'uid'=\"" . $this->uid . "\"]');
                 if (element !== null) {
@@ -345,7 +345,7 @@ class Element
             throw new Exception('Method only works on client.');
         }
 
-        $uid = JS::eval("
+        $uid = Js::eval("
             (function() {
                 var element = document.querySelector('" . $query . "');
                 if (element !== null) {

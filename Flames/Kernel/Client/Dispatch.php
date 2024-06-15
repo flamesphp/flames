@@ -29,7 +29,7 @@ final class Dispatch
     }
     protected static function simulateGlobals() : void
     {
-        $location = JS::getWindow()->location;
+        $location = Js::getWindow()->location;
         $origin = $location->origin;
         $_SERVER['REQUEST_URI'] = explode('#', substr($location->href, strlen($origin)))[0];
     }

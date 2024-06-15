@@ -9,7 +9,7 @@
 namespace Flames\CLI\Command\Key;
 
 use Flames\Command;
-use Flames\Cryptography\Hash;
+use Flames\Crypto\Hash;
 use Flames\Environment;
 
 /**
@@ -33,11 +33,11 @@ final class Generate
     {
         $environment = Environment::default();
         if ($environment->isValid() === false) {
-            Command::run('install --nokey --nocryptographykey --noexample');
+            Command::run('install --nokey --nocryptokey --noexample');
             $environment = Environment::default();
         }
 
-        $environment->APPLICATION_KEY = Hash::getRandom();
+        $environment->APP_KEY = Hash::getRandom();
         $environment->save();
 
         return true;

@@ -89,6 +89,7 @@ final class Kernel
             self::setErrorHandler();
         }
         self::setDumpper();
+        self::setDate();
 
         return true;
     }
@@ -111,9 +112,9 @@ final class Kernel
      */
     protected static function loadPolyfill() : void
     {
-        $polyfill = Environment::default()->POLYFILL_FUNCTIONS;
+        $polyfill = Environment::get('POLYFILL_FUNCTIONS');
         if ($polyfill !== null) {
-            $polyfills = explode(',', Environment::default()->POLYFILL_FUNCTIONS);
+            $polyfills = explode(',', Environment::get('POLYFILL_FUNCTIONS'));
             foreach ($polyfills as $_polyfill) {
                 Required::_function($_polyfill);
             }
@@ -129,11 +130,10 @@ final class Kernel
      */
     protected static function setErrorHandler() : void
     {
-        $environment = Environment::default();
-        if ($environment->ERROR_HANDLER_ENABLED === true) {
+        if (Environment::get('ERROR_HANDLER_ENABLED') === true) {
             self::$errorHandler = new ErrorHandler\Run;
             $pageHandler = new ErrorHandler\Handler\PrettyPageHandler();
-            $pageHandler->setEditor($environment->ERROR_HANDLER_IDE);
+            $pageHandler->setEditor(Environment::get('ERROR_HANDLER_IDE'));
             self::$errorHandler->pushHandler($pageHandler);
             self::$errorHandler->register();
         }
@@ -160,14 +160,21 @@ final class Kernel
      */
     protected static function setDumpper() : void
     {
-        $environment = Environment::default();
-        if ($environment->DUMP_ENABLED === true) {
+        if (Environment::get('DUMP_ENABLED') === true) {
             Dump\Dump::$theme = Dump\Dump::THEME_SOLARIZED_DARK;
-            Dump\Dump::$editor = $environment->DUMP_IDE;
+            Dump\Dump::$editor = Environment::get('DUMP_IDE');
             Required::file(ROOT_PATH . 'Flames/Dump/Register.php');
         }
         else {
             Required::file(ROOT_PATH . 'Flames/Dump/Plain.php');
+        }
+    }
+
+    protected static function setDate(): void
+    {
+        $timezone = Environment::get('DATE_TIMEZONE');
+        if ($timezone !== null && $timezone !== '') {
+            \date_default_timezone_set($timezone);
         }
     }
 

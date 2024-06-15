@@ -10,7 +10,7 @@ function dump() : void
     $arg = func_get_args()[0];
 
     if ($arg instanceof \Flames\Element) {
-        \Flames\JS::eval('console.log(
+        \Flames\Js::eval('console.log(
             document.querySelector(\'[\' + Flames.Internal.char + \'uid="' . $arg->uid . '"]\'),
             \' | Called at ' . str_replace('\\', '\\\\', $debug[1]['class'] . ':' . $debug[0]['line'] . ' | ' . $link) . '\'
         );');
@@ -22,7 +22,7 @@ function dump() : void
     }
 
     $data = base64_encode(json_encode($arg));
-    \Flames\JS::eval('console.log(
+    \Flames\Js::eval('console.log(
         JSON.parse(atob(\'' . $data . '\')),
         \'       | Called at ' . str_replace('\\', '\\\\', $debug[1]['class'] . ':' . $debug[0]['line'] . ' | ' . $link) . '\'
     );');

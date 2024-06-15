@@ -73,7 +73,7 @@ class StaticEx
         }
 
         $zipName = '';
-        $appName = Environment::get('APPLICATION_NAME');
+        $appName = Environment::get('APP_NAME');
         if (!empty($appName)) {
             $zipName = (strtolower($appName) . '_');
         }

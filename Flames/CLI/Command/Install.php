@@ -17,7 +17,7 @@ final class Install
     protected bool $debug = false;
 
     protected bool $withKeyGenerate = true;
-    protected bool $withCryptographyKeyGenerate = true;
+    protected bool $withCryptoKeyGenerate = true;
     protected bool $withExample = true;
 
     /**
@@ -29,7 +29,7 @@ final class Install
     public function __construct($data)
     {
         $this->withKeyGenerate = (!$data->option->contains('nokey'));
-        $this->withCryptographyKeyGenerate = (!$data->option->contains('nocryptographykey'));
+        $this->withCryptoKeyGenerate = (!$data->option->contains('nocryptokey'));
         $this->withExample = (!$data->option->contains('noexample'));
     }
 
@@ -52,8 +52,8 @@ final class Install
         if ($this->withKeyGenerate === true) {
             Command::run('key:generate');
         }
-        if ($this->withCryptographyKeyGenerate === true) {
-            Command::run('cryptography:key:generate');
+        if ($this->withCryptoKeyGenerate === true) {
+            Command::run('crypto:key:generate');
         }
         if ($this->withExample === true) {
             // TODO: make example project

@@ -20,7 +20,7 @@ class Docker
             return self::$isDocker;
         }
 
-        if (OS::isUnix() === false) {
+        if (Os::isUnix() === false) {
             self::$isDocker = false;
             return self::$isDocker;
         }

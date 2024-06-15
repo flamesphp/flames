@@ -18,7 +18,7 @@ class Process
      */
     public function __construct(string $command)
     {
-        if (OS::isUnix() === true) {
+        if (Os::isUnix() === true) {
             $command = ($command . ' > /dev/null 2>&1 & echo $!');
             exec($command, $output);
 
@@ -55,7 +55,7 @@ class Process
      */
     public function destroy() : void
     {
-        if (OS::isUnix() === true) {
+        if (Os::isUnix() === true) {
             exec('kill -9 ' . $this->pid);
             return;
         }

@@ -3,7 +3,7 @@
 namespace Flames;
 
 use Flames\Collection\Arr;
-use Flames\Cryptography\Hash;
+use Flames\Crypto\Hash;
 use Flames\Exception\Coroutine\Timeout;
 
 /**

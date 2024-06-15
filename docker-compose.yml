@@ -1,7 +1,7 @@
 services:
     # NGINX: Server
     nginx:
-        container_name: ${APPLICATION_NAME}-nginx
+        container_name: ${APP_NAME}-nginx
         image: nginx:latest
         restart: always
         volumes:
@@ -15,7 +15,7 @@ services:
 
     # NGINX: PHP
     php-fpm:
-        container_name: ${APPLICATION_NAME}-php-fpm
+        container_name: ${APP_NAME}-php-fpm
         build: ./.docker/php-fpm
         volumes:
             - ./:/var/www/html/
@@ -24,7 +24,7 @@ services:
 
     # Apache: Server (with PHP)
 #    apache-php:
-#        container_name: ${APPLICATION_NAME}-apache-php
+#        container_name: ${APP_NAME}-apache-php
 #        build: ./.docker/apache-php
 #        restart: always
 #        volumes:
@@ -39,7 +39,7 @@ services:
     # MariaDB: Server
     mariadb:
         image: mariadb:latest
-        container_name: ${APPLICATION_NAME}-mariadb
+        container_name: ${APP_NAME}-mariadb
         restart: always
         environment:
             MARIADB_USER: ${DATABASE_MARIADB_USER}
@@ -54,7 +54,7 @@ services:
 
     # MySQL: Server
 #    mysql:
-#        container_name: ${APPLICATION_NAME}-mysql
+#        container_name: ${APP_NAME}-mysql
 #        image: mysql:5.7
 #        volumes:
 #            - ./.docker/.data/mysql:/var/lib/mysql:delegated
@@ -70,7 +70,7 @@ services:
 
     # MySQL/MariaDB: PhpMyAdmin
     pma:
-        container_name: ${APPLICATION_NAME}-pma
+        container_name: ${APP_NAME}-pma
         image: phpmyadmin/phpmyadmin
         environment:
             PMA_HOSTS: "mariadb"
@@ -79,7 +79,7 @@ services:
 
     # Redis: Server
     redis:
-        container_name: ${APPLICATION_NAME}-redis
+        container_name: ${APP_NAME}-redis
         image: redis:latest
         command: --loglevel verbose
         ports:
@@ -87,7 +87,7 @@ services:
 
     # Redis: PhpRedisAdmin
     phpredisadmin:
-        container_name: ${APPLICATION_NAME}-pra
+        container_name: ${APP_NAME}-pra
         image: erikdubbelboer/phpredisadmin
         environment:
             - ADMIN_USER=root

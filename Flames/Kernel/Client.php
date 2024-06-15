@@ -14,9 +14,9 @@ final class Client
     private static $getData = false;
     public static function __getData() {
         if (self::$getData === false) {
-            self::$data = unserialize(base64_decode(JS::getWindow()->eval('document.querySelector(\'flames\').innerHTML')));
+            self::$data = unserialize(base64_decode(Js::getWindow()->eval('document.querySelector(\'flames\').innerHTML')));
             self::$getData = true;
-            JS::getWindow()->eval('document.querySelector(\'flames\').remove();');
+            Js::getWindow()->eval('document.querySelector(\'flames\').remove();');
         }
         return self::$data;
     }

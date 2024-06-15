@@ -5,7 +5,7 @@ namespace Flames\CLI;
 use Flames\CLI\Command\Coroutine;
 use Flames\CLI\Command\Install;
 use Flames\CLI\Command\Key\Generate as KeyGenerate;
-use Flames\CLI\Command\Cryptography\Key\Generate as CryptographyKeyGenerate;
+use Flames\CLI\Command\Crypto\Key\Generate as CryptoKeyGenerate;
 use Flames\CLI\Command\Build\Assets;
 use Flames\CLI\Command\Build\App\StaticEx;
 use Flames\CLI\Command\Server;
@@ -24,7 +24,7 @@ final class System
     protected static $commands = [
         'install'                   => Install::class,
         'key:generate'              => KeyGenerate::class,
-        'cryptography:key:generate' => CryptographyKeyGenerate::class,
+        'crypto:key:generate'       => CryptoKeyGenerate::class,
         'server'                    => Server::class,
         'build:assets'              => Assets::class,
         'build:app:static'          => StaticEx::class,

@@ -10,7 +10,7 @@
 
 namespace Flames;
 
-use Flames\Cryptography\Hash;
+use Flames\Crypto\Hash;
 use Flames\Exception\Unserialize;
 use Flames\Http\Client;
 use GdImage;

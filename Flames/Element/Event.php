@@ -27,7 +27,7 @@ class Event
         self::$delegates[] = $delegate;
         $delegateId = (count(self::$delegates) -1);
 
-        JS::eval("
+        Js::eval("
             (function() {
                 var element = document.querySelector('[' + Flames.Internal.char + 'uid=\"" . $this->uid . "\"]');
                 if (element !== null) {
@@ -54,7 +54,7 @@ class Event
         self::$delegates[] = $delegate;
         $delegateId = (count(self::$delegates) -1);
 
-        JS::eval("
+        Js::eval("
             (function() {
                 var element = document.querySelector('[' + Flames.Internal.char + 'uid=\"" . $this->uid . "\"]');
                 if (element !== null) {
@@ -78,7 +78,7 @@ class Event
         self::$delegates[] = $delegate;
         $delegateId = (count(self::$delegates) -1);
 
-        JS::eval("
+        Js::eval("
             (function() {
                 var element = document.querySelector('[' + Flames.Internal.char + 'uid=\"" . $this->uid . "\"]');
                 if (element !== null) {

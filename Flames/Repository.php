@@ -2,31 +2,10 @@
 
 namespace Flames;
 
-use /**
- * Handles exceptions thrown during the execution of the code.
- *
- * @package MyPackage
- */
-    Exception;
-use /**
- * Class Arr
- *
- * This class provides utility methods to work with arrays.
- */
-    Flames\Collection\Arr;
-use /**
- * Class Database
- *
- * This class provides basic database operations using PDO in PHP
- */
-    Flames\ORM\Database;
-use /**
- * Class Data
- *
- * This class represents the data repository for the Flames ORM framework.
- * It provides methods to interact with the underlying data storage.
- */
-    Flames\ORM\Repository\Data;
+use Exception;
+use Flames\Collection\Arr;
+use Flames\Orm\Database;
+use Flames\Orm\Repository\Data;
 
 /**
  * Class Repository

@@ -4,8 +4,8 @@ namespace Flames;
 
 use Error;
 use Flames\Collection\Arr;
-use Flames\ORM\Database;
-use Flames\ORM\Model\Data;
+use Flames\Orm\Database;
+use Flames\Orm\Model\Data;
 
 /**
  * Class Model
@@ -278,7 +278,6 @@ abstract class Model
     public function __set(string $key, mixed $value)
     {
         $class = static::class;
-
         if (isset(self::$column[$class][$key]) === true) {
             $this->{$key} = self::cast($key, $value);
 
@@ -290,6 +289,11 @@ abstract class Model
                 $this->__changed[] = $key;
             }
         }
+    }
+
+    public function set(string $key, mixed $value): void
+    {
+        $this->__set($key, $value);
     }
 
     /**
@@ -307,6 +311,11 @@ abstract class Model
         }
 
         return null;
+    }
+
+    public function get(string $key)
+    {
+        return $this->__get($key);
     }
 
     /**

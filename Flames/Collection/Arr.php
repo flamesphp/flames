@@ -182,7 +182,7 @@ final class Arr extends \ArrayObject
      * @param mixed $key The key of the element to be removed.
      * @return Arr The updated array after removing the element.
      */
-    protected function removeKey(mixed $key) : Arr
+    public function removeKey(mixed $key) : Arr
     {
         $key = (string)$key;
 
