@@ -184,6 +184,20 @@ abstract class Driver
             $value = $value->setTimezone(new DateTimeZone('UTC'));
             return $value->format('Y-m-d H:i:s.u');
         }
+        elseif ($column->type === 'bool') {
+            if ($column->nullable === false && $value === null) {
+                return 0;
+            }
+
+            if ($value === true) {
+                return 1;
+            }
+            elseif ($value === false) {
+                return 0;
+            }
+
+            return null;
+        }
 
         return $value;
     }

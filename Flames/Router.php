@@ -59,21 +59,21 @@ class Router
 
         $routeParsed = ('' . $route);
 
-        while (Strings::indexOf($routeParsed,'{{') !== false) {
-            $initIndexOf  = Strings::indexOf($routeParsed,'{{');
-            $extract      = Strings::sub($routeParsed, $initIndexOf + 2);
-            $closeIndexOf = Strings::indexOf($extract, '}}');
+        while (Strings::indexOf($routeParsed,'{') !== false) {
+            $initIndexOf  = Strings::indexOf($routeParsed,'{');
+            $extract      = Strings::sub($routeParsed, $initIndexOf + 1);
+            $closeIndexOf = Strings::indexOf($extract, '}');
 
             if ($closeIndexOf === null) {
                 break;
             }
             $extract = Strings::sub($extract, 0, $closeIndexOf);
-            if (Strings::contains($extract, '{{') === true || Strings::contains($extract,'}}') === true) {
+            if (Strings::contains($extract, '{') === true || Strings::contains($extract,'}') === true) {
                 break;
             }
 
             $routeParsed = (Strings::sub($routeParsed, 0, $initIndexOf) .
-                Strings::sub($routeParsed, $initIndexOf + $closeIndexOf + 4));
+                Strings::sub($routeParsed, $initIndexOf + $closeIndexOf + 2));
             $routeData->parameters->add($extract);
         }
 
@@ -81,12 +81,12 @@ class Router
         if ($routeData->parameters->count > 0) {
             $routeCaseInsensitive = ('' . $routeData->routeFormatted);
             for ($i = 0; $i < $routeData->parameters->count; $i++) {
-                $routeCaseInsensitive = Strings::replace($routeCaseInsensitive, '{{' . $routeData->parameters[$i] . '}}', '{{%parameter' . $i . '%}}');
+                $routeCaseInsensitive = Strings::replace($routeCaseInsensitive, '{' . $routeData->parameters[$i] . '}', '{%parameter' . $i . '%}');
             }
 
             $routeCaseInsensitive = Strings::toLower($routeCaseInsensitive);
             for ($i = 0; $i < $routeData->parameters->count; $i++) {
-                $routeCaseInsensitive = Strings::replace($routeCaseInsensitive, '{{%parameter' . $i . '%}}', '{{' . $routeData->parameters[$i] . '}}');
+                $routeCaseInsensitive = Strings::replace($routeCaseInsensitive, '{%parameter' . $i . '%}', '{' . $routeData->parameters[$i] . '}');
             }
         } else  {
             $routeData->routeFormatted = Strings::toLower($routeData->routeFormatted);
@@ -130,7 +130,7 @@ class Router
             foreach ($route->parameters as $param) {
                 $paramItems->add($param);
                 $routeParsed = Strings::replace($routeParsed,
-                    '{{' . $param . '}}',
+                    '{' . $param . '}',
                     '[*:item' . $paramItems->count . 'item]');
             }
 
