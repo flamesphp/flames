@@ -1,8 +1,9 @@
 <?php
 
-namespace Flames\CLI\Command\Build;
+namespace Flames\Cli\Command\Build;
 
-use Flames\CLI\Command\Build\Assets\Data;
+use Flames\Cli\Command\Build\Assets\Data;
+use Flames\Environment;
 
 /**
  * Class Assets
@@ -22,9 +23,9 @@ final class Assets
         'Flames/Collection/Strings.php',
         'Flames/Collection/Arr.php',
         'Flames/Kernel/Wrapper/Raw.php',
-        'Flames/PHP.php',
-        'Flames/JS.php',
-        'Flames/CLI.php',
+        'Flames/Php.php',
+        'Flames/Js.php',
+        'Flames/Cli.php',
         'Flames/RequestData.php',
         'Flames/Kernel/Route.php',
         'Flames/Router.php',
@@ -59,6 +60,7 @@ final class Assets
         $this->injectStructure($stream);
         $this->injectDefaultFiles($stream).
         $this->injectClientFiles($stream).
+        $this->injectEnvironment($stream).
         $this->finish($stream);
 
         return true;
@@ -247,6 +249,19 @@ final class Assets
         }
 
         return $results;
+    }
+
+    protected function injectEnvironment($stream)
+    {
+        $localPath = Environment::get('DUMP_LOCAL_PATH');
+        if (str_ends_with($localPath, '\\') || str_ends_with($localPath, '/')) {
+            $localPath = substr($localPath, 0, -1);
+        }
+        if (str_contains($localPath, '\\') === true) {
+            $localPath = str_replace('\\', '\\\\', $localPath);
+        }
+        fputs($stream, "Flames.Internal.dumpLocalPath='" . $localPath . "';"
+        );
     }
 
     /**

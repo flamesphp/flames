@@ -5,7 +5,7 @@
  * and for running a local development server.
  */
 
-namespace Flames\PHP;
+namespace Flames\Php;
 
 class Server
 {

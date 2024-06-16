@@ -1,15 +1,15 @@
 <?php
 
-namespace Flames\CLI;
+namespace Flames\Cli;
 
-use Flames\CLI\Command\Coroutine;
-use Flames\CLI\Command\Install;
-use Flames\CLI\Command\Key\Generate as KeyGenerate;
-use Flames\CLI\Command\Crypto\Key\Generate as CryptoKeyGenerate;
-use Flames\CLI\Command\Build\Assets;
-use Flames\CLI\Command\Build\App\StaticEx;
-use Flames\CLI\Command\Server;
-use Flames\CLI\Data;
+use Flames\Cli\Command\Coroutine;
+use Flames\Cli\Command\Install;
+use Flames\Cli\Command\Key\Generate as KeyGenerate;
+use Flames\Cli\Command\Crypto\Key\Generate as CryptoKeyGenerate;
+use Flames\Cli\Command\Build\Assets;
+use Flames\Cli\Command\Build\App\StaticEx;
+use Flames\Cli\Command\Server;
+use Flames\Cli\Data;
 use Flames\Collection\Arr;
 
 /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace Flames\CLI\Command\Build\App;
+namespace Flames\Cli\Command\Build\App;
 
 use Flames\Collection\Arr;
 use Flames\Command;

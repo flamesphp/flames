@@ -1,6 +1,6 @@
 <?php
 
-namespace Flames\CLI\Command\Build\Assets;
+namespace Flames\Cli\Command\Build\Assets;
 
 use Flames\Collection\Arr;
 

@@ -8,7 +8,7 @@
 
 namespace Flames;
 
-use Flames\CLI\Command\Build\App\StaticEx;
+use Flames\Cli\Command\Build\App\StaticEx;
 
 /**
  * Class ErrorPage

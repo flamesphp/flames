@@ -2,7 +2,7 @@
 
 namespace Flames\Kernel;
 
-use Flames\CLI;
+use Flames\Cli;
 use Flames\Collection\Arr;
 use Flames\Connection;
 use Flames\JS;
@@ -16,7 +16,7 @@ class Route
 {
     public static function mountRequestData(Arr $routeData, string|null $ip = null) : RequestData
     {
-        $isCLI       = (CLI::isCLI() === true);
+        $isCLI       = (Cli::isCli() === true);
         $method      = null;
         $headers     = null;
         $contentType = null;

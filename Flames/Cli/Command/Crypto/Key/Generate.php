@@ -1,12 +1,6 @@
 <?php
 
-/**
- * Class Generate
- *
- * This class provides functionality for generating a new application key.
- */
-
-namespace Flames\CLI\Command\Key;
+namespace Flames\Cli\Command\Crypto\Key;
 
 use Flames\Command;
 use Flames\Crypto\Hash;
@@ -15,7 +9,7 @@ use Flames\Environment;
 /**
  * Class Generate
  *
- * The Generate class is responsible for generating the application key for the environment.
+ * The Generate class is responsible for generating the cryptography key for the environment.
  *
  * @internal
  */
@@ -37,7 +31,7 @@ final class Generate
             $environment = Environment::default();
         }
 
-        $environment->APP_KEY = Hash::getRandom();
+        $environment->CRYPTO_KEY = Hash::getRandom();
         $environment->save();
 
         return true;

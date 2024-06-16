@@ -36,7 +36,7 @@ final class Kernel
         }
 
         $dispatchCLI = false;
-        $isCLI = CLI::isCLI();
+        $isCLI = Cli::isCli();
         if (self::dispatchEvents() === false) {
             if ($isCLI === true) {
                 self::dispatchCLI();
@@ -85,7 +85,7 @@ final class Kernel
         self::setEnvironment();
         self::loadPolyfill();
 
-        if (CLI::isCLI() === false) {
+        if (Cli::isCli() === false) {
             self::setErrorHandler();
         }
         self::setDumpper();
@@ -191,7 +191,7 @@ final class Kernel
             return false;
         }
 
-        if (CLI::isCLI() === false && str_starts_with($_SERVER['REQUEST_URI'], '/.flames')) {
+        if (Cli::isCli() === false && str_starts_with($_SERVER['REQUEST_URI'], '/.flames')) {
             if (Client::run($_SERVER['REQUEST_URI']) !== false) {
                 return true;
             }
@@ -322,8 +322,8 @@ final class Kernel
      */
     public static function shutdown() : void
     {
-        if (CLI::isCLI() === true && \Flames\CLI\Command\Coroutine::isCoroutineRunning() === true) {
-            \Flames\CLI\Command\Coroutine::errorHandler();
+        if (Cli::isCli() === true && \Flames\Cli\Command\Coroutine::isCoroutineRunning() === true) {
+            \Flames\Cli\Command\Coroutine::errorHandler();
         }
 
 //        $runTime = microtime(true) - constant('START_TIME');

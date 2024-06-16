@@ -1,6 +1,6 @@
 <?php
 
-namespace Flames\CLI\Command;
+namespace Flames\Cli\Command;
 
 use Flames\Command;
 use Flames\Environment;

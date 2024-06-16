@@ -1,6 +1,6 @@
 <?php
 
-namespace Flames\CTE;
+namespace Flames\Cte;
 
 /**
  * Represents an attribute that signifies a View.

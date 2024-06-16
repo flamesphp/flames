@@ -2,8 +2,8 @@
 
 namespace Flames;
 
-use Flames\CLI\Data;
-use Flames\CLI\System;
+use Flames\Cli\Data;
+use Flames\Cli\System;
 
 /**
  * The Command class provides a static method to run a command.

@@ -59,7 +59,7 @@ class Data
             foreach($attributes as $attribute) {
                 $attributeName = $attribute->getName();
 
-                if ($attributeName === \Flames\CTE\View::class) {
+                if ($attributeName === \Flames\Cte\View::class) {
                     $arguments = $attribute->getArguments();
                     if (isset($arguments['path'])) {
                         $data->methods[$method->name] = Arr([

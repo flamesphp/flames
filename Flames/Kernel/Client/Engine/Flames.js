@@ -67,6 +67,16 @@ Flames.Internal.generateUid = (function(uid) {
 
 Flames.Internal.HttpResponse = [];
 
+Flames.Internal.dump = function(param1, param2) {
+    if (Flames.Internal.dumpLocalPath === undefined) {
+        param2 = param2.replace('{DUMP_LOCAL_PATH}', '');
+        console.log(param1, param2);
+    } else {
+        param2 = param2.replace('{DUMP_LOCAL_PATH}', Flames.Internal.dumpLocalPath);
+        console.log(param1, param2);
+    }
+};
+
 Flames.Internal.Http = (function(data) {
     var data = JSON.parse(data);
 

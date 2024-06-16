@@ -5,7 +5,7 @@ namespace Flames;
 /**
  * PHP class provides a utility method for evaluating arbitrary PHP code.
  */
-class PHP
+class Php
 {
     /**
      * Evaluates the given code and returns the result.

@@ -102,7 +102,7 @@ class Router
      */
     public function getMatch() : Arr|null
     {
-        if (CLI::isCLI() === false) {
+        if (Cli::isCli() === false) {
             return self::getMatchWeb();
         }
 
