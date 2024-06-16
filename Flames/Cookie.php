@@ -12,7 +12,7 @@ class Cookie
             $expire = (time() + 30758400);
         }
 
-        setcookie($key, $value, $expire);
+        setcookie($key, $value, $expire, '/');
     }
 
     public static function get(string $key): string|null

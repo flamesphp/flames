@@ -20,7 +20,7 @@ class Client
         $this->headers = Arr($headers);
     }
 
-    public function getStatusCode() : string
+    public function getStatusCode() : int
     {
         return $this->code;
     }

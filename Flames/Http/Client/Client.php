@@ -52,7 +52,7 @@ class Client
             $data['url'] = ($this->baseUri . $data['url']);
         }
 
-        Js::eval('Flames.Internal.Http(\'' . json_encode($data) . '\');');
+        Js::eval('Flames.Internal.Http(\'' . serialize($data) . '\');');
     }
 
 

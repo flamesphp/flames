@@ -31,6 +31,7 @@ final class Assets
         'Flames/Router.php',
         'Flames/Event/Route.php',
         'Flames/Router/Parser.php',
+        'Flames/Header/Client.php',
         'Flames/Element.php',
         'Flames/Element/Event.php',
         'Flames/Http/Client/Client.php',
@@ -137,6 +138,8 @@ final class Assets
                 $phpFile = str_replace(['namespace Flames\Http\Async\Response;', 'class Client'], ['namespace Flames\Http\Async;', 'class Response'], $phpFile);
             } elseif ($defaultFile === 'Flames/Connection/Client.php') {
                 $phpFile = str_replace(['namespace Flames\Connection;', 'class Client'], ['namespace Flames;', 'class Connection'], $phpFile);
+            } elseif ($defaultFile === 'Flames/Header/Client.php') {
+                $phpFile = str_replace(['namespace Flames\Header;', 'class Client'], ['namespace Flames;', 'class Header'], $phpFile);
             }
 
             if ($this->debug === true) {
