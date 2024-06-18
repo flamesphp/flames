@@ -17,9 +17,10 @@ of **PHP components**.
 * ORM with automatic migrations turn database easy.
 * ORM with Models and Repositories.
 * Server HTTP Client based on GuzzleHttp.
-* Client HTTP Client based on Axios.
+* Client HTTP Client based on Axios (PHP GuzzleHttp Axios wrapper).
 * Frontend PHP engine with Routes, Controllers and Elements wrapper.
 * Templating engine based on TWIG running on backend and frontend.
+* Async Coroutines running outside CLI without external extensions.
 * Command for build PHP project as static website (to upload on S3, GitHub Pages, CloudFlare Pages or simple HTML-only server).
 * JetBrains PhpStorm and Visual Code plugins.
 
