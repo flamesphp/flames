@@ -620,6 +620,19 @@ final class Strings
     }
 
     /**
+     * Removes all non-letter and non-number characters from a given value.
+     *
+     * @param mixed $value The value to remove non-letter and non-number characters from.
+     *
+     * @return string The value with all non-letter and non-number characters removed.
+     */
+    public static function getOnlyLettersAndNumbers(mixed $value) : string
+    {
+        $value = (string)$value;
+        return preg_replace('/[^a-zA-Z0-9]+/', '', $value);
+    }
+
+    /**
      * Limits the length of a given value.
      *
      * @param mixed $value The value to limit.

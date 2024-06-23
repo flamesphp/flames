@@ -52,6 +52,10 @@ class Client
             $data['url'] = ($this->baseUri . $data['url']);
         }
 
+        if (isset($data['header']['body']) === true) {
+            $data['header']['body'] = base64_encode($data['header']['body']);
+        }
+
         Js::eval('Flames.Internal.Http(\'' . serialize($data) . '\');');
     }
 

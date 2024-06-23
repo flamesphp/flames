@@ -82,6 +82,10 @@ Flames.Internal.dump = function(param1, param2) {
 
 Flames.Internal.Http = (function(data) {
     var data = Flames.Internal.unserialize(data);
+    if (data.header !== null && data.header !== undefined && data.header.body !== null && data.header.body !== undefined) {
+        data.header.body = atob(data.header.body);
+    }
+    
     var params = null;
 
     if (data.header.form_params !== undefined) {
@@ -303,6 +307,13 @@ const runFlames = () => {
         }
 
         console.log("%c  > Flames loaded successfully\n\r", 'color: #ffb158; font-size: 14px;');
+
+        var staticConstructLength = Flames.Internal.Build.staticConstruct.length;
+        for (var i = 0; i < staticConstructLength; i++) {
+            var staticConstruct = decodeURIComponent(Flames.Internal.Build.staticConstruct[i]);
+            window.PHP.eval('<?php \\' + staticConstruct + '::__constructStatic(); ?>');
+        }
+
         window.PHP.eval('<?php \\Flames\\Kernel\\Client\\Dispatch::run(); ?>');
     });
 }

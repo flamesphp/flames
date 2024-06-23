@@ -5,7 +5,7 @@ namespace Flames\Orm\Database\Driver;
 use Exception;
 use Flames\Collection\Arr;
 use Flames\Model;
-use Flames\ORM\Database\Driver;
+use Flames\Orm\Database\Driver;
 use PDOException;
 
 class MariaDB extends Driver

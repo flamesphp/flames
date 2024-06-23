@@ -11,7 +11,7 @@ use Flames\Collection\Arr;
  */
 class Data
 {
-    private const __VERSION__ = 4;
+    private const __VERSION__ = 5;
 
     /**
      * Mounts data for the given class.
@@ -55,9 +55,10 @@ class Data
     private static function __getReflection(string $class) : Arr
     {
         $data = Arr([
-            'version'  => self::__VERSION__,
-            'class'    => $class,
-            'methods'  => Arr()
+            'version'         => self::__VERSION__,
+            'class'           => $class,
+            'methods'         => Arr(),
+            'staticConstruct' => (method_exists($class, '__constructStatic') === true)
         ]);
 
         $reflection = new \ReflectionClass($class);

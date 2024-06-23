@@ -126,4 +126,27 @@ abstract class Controller
 
         return $lastFunc;
     }
+
+    public static function run(?string $method = 'onRequest', Arr|array $data = null)
+    {
+        $controllerClass = static::class;
+        $controller = new ($controllerClass);
+
+        if ($data instanceof Arr === true) {
+            $data = $data->toArray(false);
+        }
+
+        $request = RequestData::getBase();
+        if ($data !== null) {
+            foreach ($data as $key => $value) {
+                $request->request[$key] = $value;
+            }
+        }
+
+        if ($method === null) {
+            $method = 'onRequest';
+        }
+
+        return $controller->{$method}($request);
+    }
 }

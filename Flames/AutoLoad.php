@@ -52,7 +52,6 @@ final class AutoLoad
             $name = str_replace('\\', '/', $name);
             $path = (ROOT_PATH . $name . '.php');
             require $path;
-            return;
         }
 
         // Case App
@@ -62,9 +61,10 @@ final class AutoLoad
             require $path;
 
             if (method_exists($name, '__constructStatic') === true) {
-                ($name . '::__constructStatic')();
+                if (str_starts_with($name, 'App\Client') === false) {
+                    ($name . '::__constructStatic')();
+                }
             }
-            return;
         }
 
         elseif (self::$event === true) {

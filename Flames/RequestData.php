@@ -127,4 +127,24 @@ class RequestData
 
         return null;
     }
+
+    public static function getBase()
+    {
+        return new RequestData(
+            'GET',
+            '/',
+            Arr(),
+            Arr(),
+            Arr(),
+            Arr(),
+            Arr(),
+            Arr(),
+            Arr(),
+            $_SERVER['SERVER_NAME'],
+            $_SERVER['SERVER_PORT'],
+            Connection::getIp(),
+            null,
+            null
+        );
+    }
 }

@@ -4,8 +4,8 @@ namespace Flames\Orm\Database;
 
 use Flames\Collection\Arr;
 use Flames\Environment;
-use Flames\ORM\Database\Driver\MariaDB;
-use Flames\ORM\Database\Driver\MySQL;
+use Flames\Orm\Database\Driver\MariaDB;
+use Flames\Orm\Database\Driver\MySQL;
 use PDO;
 use PDOException;
 

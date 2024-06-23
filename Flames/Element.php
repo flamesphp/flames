@@ -23,7 +23,8 @@ class Element
     protected string|null $tag = null;
     protected Arr $attributes;
     protected Arr $classes;
-    protected string|null $value = null;
+    protected Arr $styles;
+    protected string|bool|null $value = null;
     protected string|null $checked = null;
     protected Element\Event|null $event = null;
 
@@ -44,6 +45,7 @@ class Element
 
         $this->attributes = Arr();
         $this->classes    = Arr();
+        $this->styles     = Arr();
 
         if ($uid !== null) {
             $this->uid = $uid;
@@ -91,6 +93,25 @@ class Element
         }
 
         return null;
+    }
+
+    /**
+     * Magic getter method.
+     *
+     * @param string $key The key to set the value for.
+     * @param string $key The value to set.
+     *
+     * @throws Exception If the method is called on the server module.
+     */
+    public function __set(string $key, mixed $value) : void
+    {
+        $value = (string)$value;
+
+        $key = strtolower($key);
+        if ($key === 'value') {
+            $this->execFunc("value =  '" . $value . "'");
+            $this->sync();
+        }
     }
 
     /**
@@ -230,6 +251,52 @@ class Element
     }
 
     /**
+     * Get the value of a specific style.
+     *
+     * @param string $style The name of the style.
+     *
+     * @return string|null The value of the style, or null if it doesn't exist.
+     *
+     */
+    public function getStyle(string $style) : string|null
+    {
+        $style = strtolower($style);
+        $this->sync();
+        if ($this->styles->containsKey($style)) {
+            return $this->styles[$style];
+        }
+        return null;
+    }
+
+    /**
+     * Sets the value of an style.
+     *
+     * @param string $style The name of the style.
+     * @param string $value The value to set for the style.
+     *
+     * @return void
+     */
+    public function setStyle(string $style, string $value) : void
+    {
+        $style = strtolower($style);
+
+        $split = explode('-', $style);
+        if (count($split) > 1) {
+            $style = $split[0];
+            for ($i = 1; $i < count($split); $i++) {
+                $part = $split[$i];
+                if (strlen($part) > 0) {
+                    $part[0] = strtoupper($part[0]);
+                    $style .= $part;
+                }
+            }
+        }
+
+        $this->execFunc("style." . $style . " = '" . $value . "'");
+        $this->sync();
+    }
+
+    /**
      * Removes an attribute from the element.
      *
      * @param string $attribute The name of the attribute to remove.
@@ -256,6 +323,7 @@ class Element
         $this->tag        = null;
         $this->attributes = Arr();
         $this->classes    = Arr();
+        $this->styles     = Arr();
         $this->value      = null;
         $this->checked    = null;
     }
@@ -293,7 +361,14 @@ class Element
                     data.checked = element.checked;
                     if (data.checked === undefined) {
                         data.checked = null;
+                    } else {
+                        if (data.tag === 'input') {
+                            if (element.getAttribute('type').toLowerCase() === 'checkbox') {
+                                data.value = data.checked;
+                            }
+                        }
                     }
+                    data.style = getComputedStyle(element);
                     return data;
                 }
             })();
@@ -303,6 +378,7 @@ class Element
             $this->tag        = $data->tag;
             $this->attributes = Arr((array)$data->attributes);
             $this->classes    = Arr((array)$data->classes);
+            $this->styles     = Arr((array)$data->style);
             $this->value      = $data->value;
             $this->checked    = $data->checked;
         }
@@ -324,7 +400,7 @@ class Element
     {
         $data = Js::eval("
             (function() {
-                var element = document.querySelector('[Flames.Internal.char + 'uid'=\"" . $this->uid . "\"]');
+                var element = document.querySelector('[' + Flames.Internal.char + 'uid=\"" . $this->uid . "\"]');
                 if (element !== null) {
                     element." . $code . ";
                 }
@@ -367,13 +443,53 @@ class Element
         }
     }
 
+    /**
+     * Queries the DOM for an element matching the given query string.
+     *
+     * @param string $query The query string used to search for the element.
+     * @return Arr<Element>|null
+     * @throws Exception Throws an exception if the method is called on the server.
+     */
     public static function queryAll(string $query) : Arr|null
     {
         if (Kernel::MODULE === 'SERVER') {
             throw new Exception('Method only works on client.');
         }
 
-        // TODO: query all
-        return null;
+        $uids = Js::eval("
+            (function() {
+                var elements = document.querySelectorAll('" . $query . "');
+                var elementsUids = '';
+                for (var i = 0; i < elements.length; i++) {
+                    var element = elements[i];
+                    if (element !== null) {
+                        if (element.getAttribute(Flames.Internal.char + 'uid') === null) {
+                            Flames.Internal.uid++;
+                            element.setAttribute(Flames.Internal.char + 'uid', Flames.Internal.generateUid(Flames.Internal.uid));
+                        }
+                      
+                        elementsUids += (',' + element.getAttribute(Flames.Internal.char + 'uid'));
+                    }
+                }
+                
+                if (elementsUids !== '') {
+                    elementsUids = elementsUids.substr(1);
+                }
+                
+                return elementsUids;
+            })();
+        ");
+
+        if ($uids === '') {
+            return null;
+        }
+
+        $elements = Arr();
+        $uids = explode(',', $uids);
+        foreach ($uids as $uid) {
+            $elements[] = new Element($uid);
+        }
+
+        return $elements;
     }
 }

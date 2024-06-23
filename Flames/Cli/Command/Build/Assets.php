@@ -21,6 +21,8 @@ final class Assets
         'Flames/Dump/Client.php',
         'Flames/Connection/Client.php',
         'Flames/Collection/Strings.php',
+        'Flames/Collection/Bools.php',
+        'Flames/Collection/Ints.php',
         'Flames/Collection/Arr.php',
         'Flames/Kernel/Wrapper/Raw.php',
         'Flames/Php.php',
@@ -29,11 +31,15 @@ final class Assets
         'Flames/RequestData.php',
         'Flames/Kernel/Route.php',
         'Flames/Router.php',
+        'Flames/Json.php',
         'Flames/Event/Route.php',
         'Flames/Router/Parser.php',
         'Flames/Header/Client.php',
+        'Flames/Coroutine/Timeout.php',
+        'Flames/Coroutine/Timeout/Event.php',
         'Flames/Element.php',
         'Flames/Element/Event.php',
+        'Flames/Money/Client.php',
         'Flames/Http/Client/Client.php',
         'Flames/Http/Async/Request/Client.php',
         'Flames/Http/Async/Response/Client.php',
@@ -100,7 +106,7 @@ final class Assets
             echo ("Inject structure javascript system\n");
         }
 
-        fputs($stream, '/*
+        fwrite($stream, '/*
     ███████╗██╗      █████╗ ███╗   ███╗███████╗███████╗
     ██╔════╝██║     ██╔══██╗████╗ ████║██╔════╝██╔════╝
     █████╗  ██║     ███████║██╔████╔██║█████╗  ███████╗
@@ -115,7 +121,7 @@ final class Assets
 */
 
 ');
-        fputs($stream,"window.Flames = (window.Flames || {});Flames.Internal = (Flames.Internal || {});Flames.Internal.Build = (Flames.Internal.Build || {});Flames.Internal.Build.core = [];Flames.Internal.Build.client = [];Flames.Internal.Build.click = [];Flames.Internal.Build.change = [];Flames.Internal.Build.input = [];");
+        fwrite($stream,"window.Flames = (window.Flames || {});Flames.Internal = (Flames.Internal || {});Flames.Internal.Build = (Flames.Internal.Build || {});Flames.Internal.Build.core = [];Flames.Internal.Build.client = [];Flames.Internal.Build.click = [];Flames.Internal.Build.staticConstruct = [];Flames.Internal.Build.change = [];Flames.Internal.Build.input = [];");
     }
 
     /**
@@ -140,13 +146,15 @@ final class Assets
                 $phpFile = str_replace(['namespace Flames\Connection;', 'class Client'], ['namespace Flames;', 'class Connection'], $phpFile);
             } elseif ($defaultFile === 'Flames/Header/Client.php') {
                 $phpFile = str_replace(['namespace Flames\Header;', 'class Client'], ['namespace Flames;', 'class Header'], $phpFile);
+            } elseif ($defaultFile === 'Flames/Money/Client.php') {
+                $phpFile = str_replace(['namespace Flames\Money;', 'class Client'], ['namespace Flames;', 'class Money'], $phpFile);
             }
 
             if ($this->debug === true) {
                 echo ('Compile ' . substr($defaultFile, 0, -4) . "");
             }
 
-            fputs($stream, ('Flames.Internal.Build.core[Flames.Internal.Build.core.length] = \'' .
+            fwrite($stream, ('Flames.Internal.Build.core[Flames.Internal.Build.core.length] = \'' .
                     base64_encode($phpFile)) . "';");
         }
     }
@@ -170,16 +178,24 @@ final class Assets
                         continue;
                     }
 
-                    if ($module === 'Controller') {
-                        $attributes = $this->verifyAttributes($file);
+                    if ($module === 'Controller' || $module === 'Component') {
+
+                        $class = (str_replace('/', '\\', substr($file, strlen(ROOT_PATH), -4)));
+                        $data = Data::mountData($class);
+                        $attributes = $this->verifyAttributes($data, $class);
+
                         foreach ($attributes->click as $trigger) {
-                            fputs($stream, ('Flames.Internal.Build.click[\'' . $trigger->uid . '\'] = [\'' . urlencode($trigger->class) . '\',\'' . $trigger->name . "'];"));
+                            fwrite($stream, ('Flames.Internal.Build.click[\'' . $trigger->uid . '\'] = [\'' . urlencode($trigger->class) . '\',\'' . $trigger->name . "'];"));
                         }
                         foreach ($attributes->change as $trigger) {
-                            fputs($stream, ('Flames.Internal.Build.change[\'' . $trigger->uid . '\'] = [\'' . urlencode($trigger->class) . '\',\'' . $trigger->name . "'];"));
+                            fwrite($stream, ('Flames.Internal.Build.change[\'' . $trigger->uid . '\'] = [\'' . urlencode($trigger->class) . '\',\'' . $trigger->name . "'];"));
                         }
                         foreach ($attributes->input as $trigger) {
-                            fputs($stream, ('Flames.Internal.Build.input[\'' . $trigger->uid . '\'] = [\'' . urlencode($trigger->class) . '\',\'' . $trigger->name . "'];"));
+                            fwrite($stream, ('Flames.Internal.Build.input[\'' . $trigger->uid . '\'] = [\'' . urlencode($trigger->class) . '\',\'' . $trigger->name . "'];"));
+                        }
+
+                        if ($data->staticConstruct === true) {
+                            fwrite($stream, ('Flames.Internal.Build.staticConstruct[Flames.Internal.Build.staticConstruct.length] = \'' . urlencode($class) . "';"));
                         }
                     }
 
@@ -187,10 +203,11 @@ final class Assets
                         echo ('Compile module ' . strtolower($module) . ': ' . substr($file, strlen(ROOT_PATH), -4) . "\n");
                     }
 
-                    fputs($stream, ('Flames.Internal.Build.client[Flames.Internal.Build.client.length] = [\'' .
+                    fwrite($stream, ('Flames.Internal.Build.client[Flames.Internal.Build.client.length] = [\'' .
                             substr($file, strlen(ROOT_PATH), -4) . '\', \'' .
-                            base64_encode(file_get_contents($file))) . "'];");
+                            base64_encode(@utf8_decode(file_get_contents($file)))) . "'];");
                 }
+
             }
         }
     }
@@ -198,18 +215,16 @@ final class Assets
     /**
      * Verifies the attributes of a given file.
      *
-     * @param string $file The file to verify attributes for.
+     * @param array $data The data to verify attributes for.
+     * @param string $class The class to verify attributes for.
      * @return array
      */
-    protected function verifyAttributes(string $file)
+    protected function verifyAttributes($data, string $class)
     {
-        $class = (str_replace('/', '\\', substr($file, strlen(ROOT_PATH), -4)));
-        $data = Data::mountData($class);
-
         $attributes = Arr([
             'click'  => Arr(),
             'change' => Arr(),
-            'input'  => Arr()
+            'input'  => Arr(),
         ]);
 
         foreach ($data->methods as $method) {
@@ -263,7 +278,7 @@ final class Assets
         if (str_contains($localPath, '\\') === true) {
             $localPath = str_replace('\\', '\\\\', $localPath);
         }
-        fputs($stream, "Flames.Internal.dumpLocalPath='" . $localPath . "';"
+        fwrite($stream, "Flames.Internal.dumpLocalPath='" . $localPath . "';"
         );
     }
 
@@ -276,7 +291,7 @@ final class Assets
      */
     protected function finish($stream) : void
     {
-        fputs($stream, "\n\n");
+        fwrite($stream, "\n\n");
         fclose($stream);
 
         if ($this->debug === true) {
