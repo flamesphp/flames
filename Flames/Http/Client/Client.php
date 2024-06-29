@@ -85,11 +85,26 @@ class Client
         throw new Exception('Function unsupported on client side, use request.');
     }
 
-    public static function callback(int $id, string $data)
+    public static function callback(int $id, string $status, string $body, string $header = null)
     {
         $delegate = self::$callbacks[$id];
 
-        $data = json_decode($data);
+        $data = (object)[
+            'status' => base64_decode($status),
+            'message' => null,
+            'body' => null,
+            'header' => null
+        ];
+
+        if ($data->status !== 'error') {
+            $data->body = base64_decode($body);
+            $data->header = json_decode(base64_decode($header));
+        } else {
+            $data->message = base64_decode($body);
+        }
+
+//        dump($data);
+//        exit;
 
         $body = null;
         $code = 200;

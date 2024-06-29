@@ -32,9 +32,10 @@ class Event
                 var element = document.querySelector('[' + Flames.Internal.char + 'uid=\"" . $this->uid . "\"]');
                 if (element !== null) {
                     element.addEventListener('click', function(event) {
-                        if (event.target.tagName === 'A') {
+                        if (element.tagName === 'A') {
                             event.preventDefault();
                         }
+
                         var id = $delegateId;
                         var uid = '$this->uid';
                         window.PHP.eval('<?php \\\\Flames\\\\Element\\\\Event::onClick(' + id + ',\'' + uid + '\'); ?>');

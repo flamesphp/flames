@@ -30,6 +30,7 @@ final class Assets
         'Flames/Cli.php',
         'Flames/RequestData.php',
         'Flames/Kernel/Route.php',
+        'Flames/Browser/Page.php',
         'Flames/Router.php',
         'Flames/Json.php',
         'Flames/Event/Route.php',

@@ -16,10 +16,21 @@ use Flames\Router;
  */
 final class Dispatch
 {
-    protected static $instances = [];
+    protected static $instances = null;
     public static function run() : void
     {
+        self::clean();
         self::setup();
+    }
+
+    protected static function clean()
+    {
+        if (self::$instances !== null) {
+            foreach (self::$instances as &$instance) {
+                unset($instance);
+            }
+        }
+        self::$instances = [];
     }
 
     protected static function setup() : void
@@ -36,6 +47,8 @@ final class Dispatch
 
     protected static function dispatchEvents() : bool
     {
+        \Flames\Kernel::__injector();
+
         if (class_exists('\\App\\Client\\Event\\Route') === true) {
             $route = new \App\Client\Event\Route();
             $router = $route->onRoute(new Router());
@@ -54,12 +67,15 @@ final class Dispatch
 
     protected static function dispatchRoute($routeData, $route) : bool
     {
+        dump($routeData);
         $requestData = Route::mountRequestData($routeData, Connection::getIp());
 
         $requestDataAllow = $route->onMatch($requestData);
         if ($requestDataAllow === false) {
             return false;
         }
+
+        dump($routeData->controller);
 
         $controller = new $routeData->controller();
         self::$instances[$routeData->controller] = $controller;

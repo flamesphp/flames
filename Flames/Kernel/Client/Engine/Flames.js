@@ -116,27 +116,28 @@ Flames.Internal.Http = (function(data) {
             }
         }
 
-        var response = //JSON.stringify(
+        var response =
         {
             status: _response.status,
             body: _response.data,
             header: headers
         }
 
-        window.PHP.eval('<?php Flames\\Http\\Client::callback(' + data.id + ', \'' + JSON.stringify(response) + '\'); ?>');
+        window.PHP.eval('<?php Flames\\Http\\Client::callback(' + data.id + ', \'' + btoa(response.status) + '\', \'' + btoa(response.body) + '\', \'' + btoa(JSON.stringify(response.header)) + '\'); ?>');
     }).catch(function (error) {
 
         if (error.response !== undefined && error.response !== null && error.response.data !== undefined && error.response.data !== null) {
             error.message = error.response.data;
         }
 
-        var response = JSON.stringify({
+        var response =
+        {
             status: 'error',
             message: error.message,
             header: []
-        });
+        };
 
-        window.PHP.eval('<?php Flames\\Http\\Client::callback(' + data.id + ', \'' + response + '\'); ?>');
+        window.PHP.eval('<?php Flames\\Http\\Client::callback(' + data.id + ', \'' + btoa(response.status) + '\', \'' + btoa(response.message) + '\'); ?>');
     });
 });
 
@@ -228,6 +229,14 @@ Flames.Internal.verifyFS = (function() {
 });
 Flames.Internal.verifyFS();
 
+Flames.Internal.executeStaticConstructor = function() {
+    var staticConstructLength = Flames.Internal.Build.staticConstruct.length;
+    for (var i = 0; i < staticConstructLength; i++) {
+        var staticConstruct = decodeURIComponent(Flames.Internal.Build.staticConstruct[i]);
+        window.PHP.eval('<?php \\' + staticConstruct + '::__constructStatic(); ?>');
+    }
+}
+
 window.php = function (code) {
     window.PHP.eval('<?php ' + code + ' ?>');
 }
@@ -308,11 +317,7 @@ const runFlames = () => {
 
         console.log("%c  > Flames loaded successfully\n\r", 'color: #ffb158; font-size: 14px;');
 
-        var staticConstructLength = Flames.Internal.Build.staticConstruct.length;
-        for (var i = 0; i < staticConstructLength; i++) {
-            var staticConstruct = decodeURIComponent(Flames.Internal.Build.staticConstruct[i]);
-            window.PHP.eval('<?php \\' + staticConstruct + '::__constructStatic(); ?>');
-        }
+        Flames.Internal.executeStaticConstructor();
 
         window.PHP.eval('<?php \\Flames\\Kernel\\Client\\Dispatch::run(); ?>');
     });
