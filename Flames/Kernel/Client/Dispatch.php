@@ -67,15 +67,12 @@ final class Dispatch
 
     protected static function dispatchRoute($routeData, $route) : bool
     {
-        dump($routeData);
         $requestData = Route::mountRequestData($routeData, Connection::getIp());
 
         $requestDataAllow = $route->onMatch($requestData);
         if ($requestDataAllow === false) {
             return false;
         }
-
-        dump($routeData->controller);
 
         $controller = new $routeData->controller();
         self::$instances[$routeData->controller] = $controller;
