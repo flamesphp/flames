@@ -103,9 +103,6 @@ class Client
             $data->message = base64_decode($body);
         }
 
-//        dump($data);
-//        exit;
-
         $body = null;
         $code = 200;
         $headers = null;
@@ -121,8 +118,10 @@ class Client
         }
 
         $_header = Arr();
-        foreach ($data->header as $header) {
-            $_header[$header[0]] = $header[1];
+        if ($data->header !== null) {
+            foreach ($data->header as $header) {
+                $_header[$header[0]] = $header[1];
+            }
         }
 
         $response = new Response($code, $body, $_header);

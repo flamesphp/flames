@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Flames\Http\Async;
+namespace Flames\Http\Psr7;
 
-use Flames\Http\Async\Exception\MalformedUriException;
-use Flames\Http\Psr\Http\Message\UriInterface;
+use Flames\Http\Psr7\Exception\MalformedUriException;
+use Psr\Http\Message\UriInterface;
 
 /**
  * PSR-7 URI implementation.
@@ -216,9 +216,9 @@ class Uri implements UriInterface, \JsonSerializable
      * - absolute-path references, e.g. '/path'
      * - relative-path references, e.g. 'subpath'
      *
-     * @see \Flames\Http\Psr7\Uri::isNetworkPathReference
-     * @see \Flames\Http\Psr7\Uri::isAbsolutePathReference
-     * @see \Flames\Http\Psr7\Uri::isRelativePathReference
+     * @see Uri::isNetworkPathReference
+     * @see Uri::isAbsolutePathReference
+     * @see Uri::isRelativePathReference
      * @see https://datatracker.ietf.org/doc/html/rfc3986#section-4
      */
     public static function isAbsolute(UriInterface $uri): bool
@@ -279,7 +279,7 @@ class Uri implements UriInterface, \JsonSerializable
      *
      * @see https://datatracker.ietf.org/doc/html/rfc3986#section-4.4
      */
-    public static function isSameDocumentReference(UriInterface $uri, UriInterface $base = null): bool
+    public static function isSameDocumentReference(UriInterface $uri, ?UriInterface $base = null): bool
     {
         if ($base !== null) {
             $uri = UriResolver::resolve($base, $uri);

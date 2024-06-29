@@ -182,6 +182,10 @@ class MariaDB extends Driver
                 $column->size = 11;
             }
         }
+//        elseif ($column->type === 'bool') {
+//            $column->type = 'tinyint';
+//            $column->size = 1;
+//        }
 
         return $column;
     }
@@ -530,7 +534,7 @@ SQL;
     {
         $query = $column->type;
 
-        if ($column->type === 'bigint' || $column->type === 'int' || $column->type === 'varchar') {
+        if ($column->type === 'bigint' || $column->type === 'int' || $column->type === 'varchar' || $column->type === 'tinyint') {
             $query .= ('(' . $column->size . ')');
         }
         if ($column->nullable === false) {

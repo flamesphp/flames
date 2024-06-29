@@ -276,8 +276,38 @@ class Element
      *
      * @return void
      */
-    public function setStyle(string $style, string $value) : void
+    public function setStyle(string $style, string $value, bool $important = false) : void
     {
+        if ($important === true) {
+            $cssText = (string)$this->execFunc("style.cssText");
+
+            $newCsss = [];
+
+            $csss = explode(';', $cssText);
+            foreach ($csss as $css) {
+                if ($css === '') {
+                    continue;
+                }
+                $_css = explode(':', $css);
+                $newCsss[strtolower(trim($_css[0]))] = trim($_css[1]);
+            }
+
+            if (str_ends_with($value, '!important') === false) {
+                $value .= ' !important';
+            }
+            $newCsss[strtolower($style)] = $value;
+
+            $mountCss = '';
+            foreach ($newCsss as $style => $value) {
+                $mountCss .= ($style . ': ' . $value . '; ');
+            }
+            if ($mountCss !== '') {
+                $mountCss = substr($mountCss, 0, -1);
+            }
+            $this->execFunc("style.cssText = '" . $mountCss . "'");
+            return;
+        }
+
         $style = strtolower($style);
 
         $split = explode('-', $style);
@@ -396,13 +426,13 @@ class Element
      * @return void
      * @throws Exception when JavaScript engine is not found.
      */
-    protected function execFunc(string $code) : void
+    protected function execFunc(string $code) : mixed
     {
-        $data = Js::eval("
+        return Js::eval("
             (function() {
                 var element = document.querySelector('[' + Flames.Internal.char + 'uid=\"" . $this->uid . "\"]');
                 if (element !== null) {
-                    element." . $code . ";
+                    return element." . $code . ";
                 }
             })();
         ");

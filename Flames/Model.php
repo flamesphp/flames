@@ -257,7 +257,9 @@ abstract class Model
 
         if (is_array($data) === true) {
             foreach ($data as $key => $value) {
-                $this->__set($key, $value);
+                try {
+                    $this->__set($key, $value);
+                } catch (\TypeError $_) {}
             }
         }
 
@@ -279,7 +281,9 @@ abstract class Model
     {
         $class = static::class;
         if (isset(self::$column[$class][$key]) === true) {
-            $this->{$key} = self::cast($key, $value);
+            try {
+                $this->{$key} = self::cast($key, $value);
+            } catch (\TypeError $_) {}
 
             if ($this->__changed === null) {
                 $this->__changed = [];
