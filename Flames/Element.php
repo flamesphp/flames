@@ -11,6 +11,7 @@ use Flames\Collection\Arr;
  * Description for the class
  * @property string|null $uid
  * @property string|null $tag
+ * @property Element|null $parent;
  * @property Arr $attributes
  * @property Arr $classes
  * @property string|null $value
@@ -27,6 +28,7 @@ class Element
     protected string|bool|null $value = null;
     protected string|null $checked = null;
     protected Element\Event|null $event = null;
+    protected Element|null $parent = null;
 
     /**
      * Class Constructor.
@@ -90,6 +92,9 @@ class Element
                 $this->event = new Element\Event($this->uid);
             }
             return $this->event;
+        }
+        elseif ($key === 'parent') {
+            return $this->getParent();
         }
 
         return null;
@@ -438,6 +443,44 @@ class Element
         ");
     }
 
+    public function getParent(): Element|null
+    {
+        $this->sync();
+
+        $uid = Js::eval("
+            (function() {
+               var element = document.querySelector('[' + Flames.Internal.char + 'uid=\"" . $this->uid . "\"]');
+                if (element !== null) {
+                    var parent = element.parentNode;
+                    if (parent === null) {
+                        return null;
+                    }
+                    
+                    if (parent.getAttribute(Flames.Internal.char + 'uid') === null) {
+                        Flames.Internal.uid++;
+                        parent.setAttribute(Flames.Internal.char + 'uid', Flames.Internal.generateUid(Flames.Internal.uid));
+                    }
+                    
+                    return parent.getAttribute(Flames.Internal.char + 'uid');
+                }
+            })();
+        ");
+
+        if (isset($uid) === true && $uid !== null && $uid !== '') {
+
+            if ($this->parent !== null) {
+                if ($this->parent->uid === $uid) {
+                    return $this->parent;
+                }
+            }
+
+            $this->parent = new Element($uid);
+            return $this->parent;
+        }
+
+        return null;
+    }
+
     /**
      * Queries the DOM for an element matching the given query string.
      *
@@ -465,12 +508,11 @@ class Element
             })();
         ");
 
-        if (isset($uid)) {
+        if (isset($uid) === true && $uid !== null && $uid !== '') {
             return new Element($uid);
         }
-        else {
-            return null;
-        }
+
+        return null;
     }
 
     /**
@@ -510,7 +552,7 @@ class Element
             })();
         ");
 
-        if ($uids === '') {
+        if (isset($uids) === false && $uids !== null && $uids !== '') {
             return null;
         }
 

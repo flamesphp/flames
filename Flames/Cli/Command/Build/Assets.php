@@ -44,6 +44,7 @@ final class Assets
         'Flames/Http/Client/Client.php',
         'Flames/Http/Async/Request/Client.php',
         'Flames/Http/Async/Response/Client.php',
+        'Flames/Http/Code.php',
         'Flames/Event/Element/Click.php',
         'Flames/Event/Element/Change.php',
         'Flames/Event/Element/Input.php',

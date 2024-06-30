@@ -193,6 +193,17 @@ final class Arr extends \ArrayObject
         return $this;
     }
 
+    public function remove(mixed $value) : Arr
+    {
+        foreach ($this as $key => $_value) {
+            if ($value === $_value) {
+                unset($this[$key]);
+            }
+        }
+
+        return $this;
+    }
+
     /**
      * Sorts the array in ascending order.
      *
