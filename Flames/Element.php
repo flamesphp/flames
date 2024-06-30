@@ -363,6 +363,11 @@ class Element
         $this->checked    = null;
     }
 
+    public function htmlInsertEnd(string $html)
+    {
+        $this->execFunc("insertAdjacentHTML('beforeend', decodeURIComponent('" . rawurlencode($html) . "'));");
+    }
+
     /**
      * Synchronizes the data between the JavaScript element and the PHP object.
      *
@@ -380,15 +385,6 @@ class Element
                 if (element !== null) {
                     var data = [];
                     data.tag = element.tagName.toLowerCase();
-                    data.attributes = {};
-                    var attributes = element.attributes;
-                    for (var i = 0; i < attributes.length; i++) {
-                        if (attributes[i].name === 'class' || attributes[i].name === Flames.Internal.char + 'uid') {
-                            continue;
-                        }
-                        data.attributes[attributes[i].name] = attributes[i].value;
-                    }
-                    data.classes = element.className.toLowerCase().split(' ');
                     data.value = element.value;
                     if (data.value === undefined) {
                         data.value = null;
@@ -403,19 +399,64 @@ class Element
                             }
                         }
                     }
-                    data.style = getComputedStyle(element);
+                    
+                    var attributes = element.attributes;
+                    data.attributes = '';
+                    for (var i = 0; i < attributes.length; i++) {
+                        if (attributes[i].name === 'class' || attributes[i].name === 'style' || attributes[i].name === Flames.Internal.char + 'uid') {
+                            continue;
+                        }
+                        data.attributes += encodeURIComponent(attributes[i].name) + '$' + encodeURIComponent(attributes[i].value) + '|';
+                    }
+                    
+                    data.classes = element.className.toLowerCase();  
+                    
+         
+    
+                    data.styles = '';
+                    
+                    var styles = getComputedStyle(document.querySelector('body'));
+                    for (key in styles) {
+                        if (styles.hasOwnProperty(key)) {
+                            if (key === undefined || styles[key] === undefined) {
+                                continue;
+                            }
+                            data.styles += encodeURIComponent(key) + '$' + encodeURIComponent(styles[key]) + '|';
+                        }
+                    }
+                       
                     return data;
                 }
             })();
         ");
 
         if (isset($data)) {
-            $this->tag        = $data->tag;
-            $this->attributes = Arr((array)$data->attributes);
-            $this->classes    = Arr((array)$data->classes);
-            $this->styles     = Arr((array)$data->style);
-            $this->value      = $data->value;
-            $this->checked    = $data->checked;
+            $this->tag = $data->tag;
+
+            $this->attributes = Arr();
+            $split = explode('|', $data->attributes);
+            foreach ($split as $part) {
+                if ($part === '') {
+                    continue;
+                }
+                $_attribute = explode('$', $part);
+                $this->attributes[rawurldecode($_attribute[0])] = rawurldecode($_attribute[1]);
+            }
+
+            $this->classes = Arr(explode(' ', $data->classes));
+
+            $this->styles = Arr();
+            $split = explode('|', $data->styles);
+            foreach ($split as $part) {
+                if ($part === '') {
+                    continue;
+                }
+                $_style = explode('$', $part);
+                $this->styles[rawurldecode($_style[0])] = rawurldecode($_style[1]);
+            }
+
+            $this->value = $data->value;
+            $this->checked = $data->checked;
         }
     }
 
