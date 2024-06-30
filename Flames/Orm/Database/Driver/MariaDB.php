@@ -43,6 +43,12 @@ class MariaDB extends Driver
         $variables = $where['variables'];
         $query .= "\n)";
 
+        foreach ($variables as $key => $variable) {
+            if ($variable === null) {
+                unset($variables[$key]);
+            }
+        }
+
         $statement = $this->connection->prepare($query);
         $statement->execute($variables);
 
@@ -242,7 +248,12 @@ class MariaDB extends Driver
 
             $variables['filter_' . $i] = $filter[2];
             $lastEnd = $filter[3];
-            $query .= ("\n\t`" . $this->data->column->{$filter[0]}->name . '` ' . $filter[1] . ' :filter_' . $i . ' ' . $filter[3]);
+
+            if ($filter[2] === null) {
+                $query .= ("\n\t`" . $this->data->column->{$filter[0]}->name . '` IS NULL ' . $filter[3]);
+            } else {
+                $query .= ("\n\t`" . $this->data->column->{$filter[0]}->name . '` ' . $filter[1] . ' :filter_' . $i . ' ' . $filter[3]);
+            }
         }
 
         $query = substr($query, 0, -(strlen($lastEnd) + 1));
