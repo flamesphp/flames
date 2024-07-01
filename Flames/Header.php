@@ -72,17 +72,23 @@ class Header
     public static function send()
     {
         if (array_key_exists('Code', self::$data) === true) {
-            http_response_code(self::$data['Code']);
+            try {
+                http_response_code(self::$data['Code']);
+            } catch (\Exception $_) {}
         }
         elseif (array_key_exists('code', self::$data) === true) {
-            http_response_code(self::$data['code']);
+            try {
+                http_response_code(self::$data['code']);
+            } catch (\Exception $_) {}
         }
 
         foreach (self::$data as $key => $value) {
             if (strtolower($key) === 'code') {
                 continue;
             }
-            header($key . ':' . $value);
+            try {
+                header($key . ':' . $value);
+            } catch (\Exception $_) {}
         }
     }
 
