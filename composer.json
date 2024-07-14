@@ -1,0 +1,17 @@
+{
+  "name": "flames/skeleton",
+  "description": "The Flames PHP Framework.",
+  "autoload": {
+    "psr-4": {
+      "Flames\\": "Flames/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Gabriel Morgado",
+      "email": "kazzxd1@gmail.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "require": {}
+}
