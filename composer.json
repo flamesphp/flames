@@ -1,5 +1,5 @@
 {
-  "name": "flames/skeleton",
+  "name": "flamesphp/flames",
   "description": "The Flames PHP Framework.",
   "autoload": {
     "psr-4": {
@@ -8,7 +8,7 @@
   },
   "authors": [
     {
-      "name": "Gabriel Morgado",
+      "name": "Gabriel 'Kazz' Morgado",
       "email": "kazzxd1@gmail.com"
     }
   ],
