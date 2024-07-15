@@ -82,8 +82,7 @@ final class ErrorPage
                 $_SERVER['REQUEST_URI'] = '404';
                 $match = $router->getMatch();
                 $_SERVER['REQUEST_URI'] = $currentUri;
-
-                $responseData = StaticEx::getResponse($match);
+                $responseData = (new StaticEx())->getResponse($match);
                 return $responseData->output;
             }
         }

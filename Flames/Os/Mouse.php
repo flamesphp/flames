@@ -46,7 +46,9 @@ class Mouse
         $tmpPath = str_replace('/', '\\', (ROOT_PATH . '.cache/powershell/' . Hash::getRandom() . '.ps1'));
         $tmpDir = dirname($tmpPath);
         if (is_dir($tmpDir) === false) {
+            $mask = umask(0);
             mkdir($tmpDir, 0777, true);
+            umask($mask);
         }
         @file_put_contents($tmpPath, $tmpData);
         shell_exec('powershell.exe -File ' . $tmpPath);

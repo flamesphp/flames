@@ -32,7 +32,9 @@ class Data
         $success = @file_put_contents($cachePath, serialize($data));
         if ($success === false) {
             if (is_dir($basePath) === false) {
+                $mask = umask(0);
                 mkdir($basePath, 0777, true);
+                umask($mask);
                 @file_put_contents($cachePath, serialize($data));
             }
         }

@@ -32,7 +32,9 @@ class StaticEx
 
         $this->buildPath = (ROOT_PATH . '.cache/build/');
         if (is_dir($this->buildPath) === false) {
+            $mask = umask(0);
             mkdir($this->buildPath, 0777, true);
+            umask($mask);
         }
 
         $this->cleanBuild();
@@ -69,7 +71,9 @@ class StaticEx
     {
         $buildZipPath = (APP_PATH . 'Client/Build/');
         if (is_dir($buildZipPath) === false) {
+            $mask = umask(0);
             mkdir($buildZipPath, 0777, true);
+            umask($mask);
         }
 
         $zipName = '';
@@ -122,7 +126,9 @@ class StaticEx
 
         $flamesDir = ($this->buildPath . '.flames');
         if (is_dir($flamesDir) === false) {
+            $mask = umask(0);
             mkdir($flamesDir, 0777, true);
+            umask($mask);
         }
     }
 
@@ -130,7 +136,9 @@ class StaticEx
     {
         $flamesKernelDir = ($this->buildPath . '.flames/kernel');
         if (is_dir($flamesKernelDir) === false) {
+            $mask = umask(0);
             mkdir($flamesKernelDir, 0777, true);
+            umask($mask);
         }
 
         copy(FLAMES_PATH . 'Kernel/Client/Engine/Flames.wasm', $this->buildPath . '.flames.wasm');
@@ -169,7 +177,9 @@ class StaticEx
             $buildDir  = dirname($buildFile);
 
             if (is_dir($buildDir) === false) {
+                $mask = umask(0);
                 mkdir($buildDir, 0777, true);
+                umask($mask);
             }
 
             copy($publicFile, $buildFile);
@@ -228,7 +238,9 @@ class StaticEx
             $path = $this->buildPath . $url;
             $dirPath = dirname($path);
             if (is_dir($dirPath) === false) {
+                $mask = umask(0);
                 mkdir($dirPath, 0777, true);
+                umask($mask);
             }
 
             $output = $responseData->output;
@@ -243,7 +255,7 @@ class StaticEx
 
     protected function saveHeader($metadata, $responseData, $urls) : void {}
 
-    protected function getResponse($routeData) : bool|Arr
+    public function getResponse($routeData) : bool|Arr
     {
         Header::set('X-Powered-By', 'Flames');
         if (Event::dispatch('Initialize', 'onInitialize') === false) {

@@ -123,7 +123,9 @@ class Image
     {
         $tmpDir = (ROOT_PATH . '.cache/ocr-image/');
         if (is_dir($tmpDir) === false) {
+            $mask = umask(0);
             mkdir($tmpDir, 0777, true);
+            umask($mask);
         }
 
         $imageHash = Hash::getRandom();
@@ -174,7 +176,9 @@ class Image
 
         $dir = dirname($path);
         if (is_dir($dir) === false) {
+            $mask = umask(0);
             mkdir($dir, 0777, true);
+            umask($mask);
         }
 
         try {

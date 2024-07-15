@@ -68,7 +68,9 @@ final class Assets
         try {
             $stream = fopen(self::BASE_PATH . 'client.js', 'w');
         } catch (\Exception $e) {
+            $mask = umask(0);
             @mkdir(self::BASE_PATH, 0777, true);
+            umask($mask);
             $stream = fopen(self::BASE_PATH . 'client.js', 'w');
         }
 
@@ -97,8 +99,9 @@ final class Assets
                 echo ('Creating base resource folder ' . self::BASE_PATH . "\n");
             }
 
+            $mask = umask(0);
             mkdir(self::BASE_PATH, 0777, true);
-            chmod(self::BASE_PATH, 0777);
+            umask($mask);
         }
     }
 

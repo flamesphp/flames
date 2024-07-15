@@ -17,7 +17,9 @@ class Image
 
         $tmpDir = (ROOT_PATH . '.cache\\os-image\\');
         if (is_dir($tmpDir) === false) {
+            $mask = umask(0);
             mkdir($tmpDir, 0777, true);
+            umask($mask);
         }
 
         chdir($tmpDir);

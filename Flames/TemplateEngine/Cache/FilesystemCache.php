@@ -45,7 +45,10 @@ class FilesystemCache implements CacheInterface
     {
         $dir = \dirname($key);
         if (!is_dir($dir)) {
-            if (false === @mkdir($dir, 0777, true)) {
+            $mask = umask(0);
+            $create = @mkdir($dir, 0777, true);
+            umask($mask);
+            if (false === $create) {
                 clearstatcache(true, $dir);
                 if (!is_dir($dir)) {
                     throw new \RuntimeException(sprintf('Unable to create the cache directory (%s).', $dir));
