@@ -67,20 +67,20 @@ final class Kernel
     {
         ob_start();
         define('START_TIME', microtime(true));
-        define('ROOT_PATH', realpath(__DIR__ . '/../') . '/');
+        define('ROOT_PATH', self::getRootPath());
         define('APP_PATH', ROOT_PATH . 'App/');
 
-        require(ROOT_PATH . 'Flames/AutoLoad.php');
+        require(FLAMES_PATH . 'AutoLoad.php');
         AutoLoad::run();
 
         try {
             mb_internal_encoding('UTF-8');
         } catch (\Error $e) {
-            Required::file(ROOT_PATH . 'Flames/Kernel/Missing/Mbstring.php');
+            Required::file(FLAMES_PATH . 'Kernel/Missing/Mbstring.php');
             return false;
         }
 
-        Required::file(ROOT_PATH . 'Flames/Kernel/Wrapper/Raw.php');
+        Required::file(FLAMES_PATH . 'Kernel/Wrapper/Raw.php');
 
         self::setEnvironment();
         self::loadPolyfill();
@@ -163,10 +163,10 @@ final class Kernel
         if (Environment::get('DUMP_ENABLED') === true) {
             Dump\Dump::$theme = Dump\Dump::THEME_SOLARIZED_DARK;
             Dump\Dump::$editor = Environment::get('DUMP_IDE');
-            Required::file(ROOT_PATH . 'Flames/Dump/Register.php');
+            Required::file(FLAMES_PATH . 'Dump/Register.php');
         }
         else {
-            Required::file(ROOT_PATH . 'Flames/Dump/Plain.php');
+            Required::file(FLAMES_PATH . 'Dump/Plain.php');
         }
     }
 
@@ -251,7 +251,7 @@ final class Kernel
      */
     protected static function dispatchCLI() : bool|null
     {
-        $system = new CLI\System();
+        $system = new Cli\System();
         return $system->run();
     }
 
@@ -338,5 +338,18 @@ final class Kernel
     public static function getDefaultRouter() : Router|null
     {
         return self::$defaultRouter;
+    }
+
+    protected static function getRootPath()
+    {
+        $path = (realpath(__DIR__ . '/../') . '/');
+        define('FLAMES_PATH', $path . 'Flames/');
+        if (str_ends_with($path, 'vendor/flamesphp/flames/') === true) {
+            define('FLAMES_COMPOSER', true);
+            return (realpath($path . '../../../') . '/');
+        } else {
+            define('FLAMES_COMPOSER', false);
+            return $path;
+        }
     }
 }

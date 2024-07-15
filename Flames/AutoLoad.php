@@ -26,7 +26,7 @@ final class AutoLoad
     public static function run(): void
     {
         // Verify if event load exists and register
-        $path = (ROOT_PATH . 'App/Server/Event/Load.php');
+        $path = (APP_PATH . 'Server/Event/Load.php');
         if (file_exists($path) === true) {
             self::$event = true;
         }
@@ -49,15 +49,14 @@ final class AutoLoad
     {
         // Case Flames Internal
         if (str_starts_with($name, 'Flames\\')) {
-            $name = str_replace('\\', '/', $name);
-            $path = (ROOT_PATH . $name . '.php');
+            $name = substr(str_replace('\\', '/', $name), 7);
+            $path = (FLAMES_PATH . $name . '.php');
             require $path;
         }
 
         // Case App
         elseif (str_starts_with($name, 'App\\')) {
-            $fileName = str_replace('\\', '/', $name);
-            $path = (ROOT_PATH . $fileName . '.php');
+            $path = (APP_PATH .  substr(str_replace('\\', '/', $name), 4) . '.php');
             require $path;
 
             if (method_exists($name, '__constructStatic') === true) {

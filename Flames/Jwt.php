@@ -31,12 +31,12 @@ class Jwt
 
     public function setPrivateKeyByPath(string $path): void
     {
-        $this->privateKey = file_get_contents(ROOT_PATH . 'App/Server/Config/' . $path);
+        $this->privateKey = file_get_contents(APP_PATH . 'Server/Config/' . $path);
     }
 
     public function setPublicKeyByPath(string $path): void
     {
-        $this->publicKey = file_get_contents(ROOT_PATH . 'App/Server/Config/' . $path);
+        $this->publicKey = file_get_contents(APP_PATH . 'Server/Config/' . $path);
     }
 
     public function encode(Arr|array $data)

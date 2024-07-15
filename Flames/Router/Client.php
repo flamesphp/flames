@@ -24,7 +24,7 @@ class Client
     {
         header('Content-Type: application/javascript; charset=utf-8');
 
-        $clientPath = (ROOT_PATH . 'App/Client/Resource/client.js');
+        $clientPath = (APP_PATH . 'Client/Resource/client.js');
         if (file_exists($clientPath) === true) {
             $fileStream = fopen($clientPath, 'r');
             while(!feof($fileStream)) {
@@ -37,7 +37,7 @@ class Client
 
         }
 
-        $fileStream = fopen(ROOT_PATH . 'Flames/Kernel/Client/Engine/Flames.js', 'r');
+        $fileStream = fopen(FLAMES_PATH . 'Kernel/Client/Engine/Flames.js', 'r');
         while(!feof($fileStream)) {
             $buffer = fgets($fileStream, 128000); // 128 kb
             echo $buffer;
@@ -53,7 +53,7 @@ class Client
     {
         header('Cache-Control: max-age=31536000');
         header('Content-Type: application/wasm');
-        $fileStream = fopen(ROOT_PATH . 'Flames/Kernel/Client/Engine/Flames.wasm', 'r');
+        $fileStream = fopen(FLAMES_PATH . 'Kernel/Client/Engine/Flames.wasm', 'r');
 
         while(!feof($fileStream)) {
             $buffer = fread($fileStream, 1024000); // 1 mb

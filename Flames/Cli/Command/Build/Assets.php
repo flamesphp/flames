@@ -14,41 +14,41 @@ use Flames\Environment;
  */
 final class Assets
 {
-    const BASE_PATH = (ROOT_PATH . 'App/Client/Resource/');
+    const BASE_PATH = (APP_PATH . 'Client/Resource/');
 
     protected static $defaultFiles = [
-        'Flames/Kernel/Client.php',
-        'Flames/Dump/Client.php',
-        'Flames/Connection/Client.php',
-        'Flames/Collection/Strings.php',
-        'Flames/Collection/Bools.php',
-        'Flames/Collection/Ints.php',
-        'Flames/Collection/Arr.php',
-        'Flames/Kernel/Wrapper/Raw.php',
-        'Flames/Php.php',
-        'Flames/Js.php',
-        'Flames/Cli.php',
-        'Flames/RequestData.php',
-        'Flames/Kernel/Route.php',
-        'Flames/Browser/Page.php',
-        'Flames/Router.php',
-        'Flames/Json.php',
-        'Flames/Event/Route.php',
-        'Flames/Router/Parser.php',
-        'Flames/Header/Client.php',
-        'Flames/Coroutine/Timeout.php',
-        'Flames/Coroutine/Timeout/Event.php',
-        'Flames/Element.php',
-        'Flames/Element/Event.php',
-        'Flames/Money/Client.php',
-        'Flames/Http/Client/Client.php',
-        'Flames/Http/Async/Request/Client.php',
-        'Flames/Http/Async/Response/Client.php',
-        'Flames/Http/Code.php',
-        'Flames/Event/Element/Click.php',
-        'Flames/Event/Element/Change.php',
-        'Flames/Event/Element/Input.php',
-        'Flames/Kernel/Client/Dispatch.php'
+        'Kernel/Client.php',
+        'Dump/Client.php',
+        'Connection/Client.php',
+        'Collection/Strings.php',
+        'Collection/Bools.php',
+        'Collection/Ints.php',
+        'Collection/Arr.php',
+        'Kernel/Wrapper/Raw.php',
+        'Php.php',
+        'Js.php',
+        'Cli.php',
+        'RequestData.php',
+        'Kernel/Route.php',
+        'Browser/Page.php',
+        'Router.php',
+        'Json.php',
+        'Event/Route.php',
+        'Router/Parser.php',
+        'Header/Client.php',
+        'Coroutine/Timeout.php',
+        'Coroutine/Timeout/Event.php',
+        'Element.php',
+        'Element/Event.php',
+        'Money/Client.php',
+        'Http/Client/Client.php',
+        'Http/Async/Request/Client.php',
+        'Http/Async/Response/Client.php',
+        'Http/Code.php',
+        'Event/Element/Click.php',
+        'Event/Element/Change.php',
+        'Event/Element/Input.php',
+        'Kernel/Client/Dispatch.php'
     ];
 
     protected bool $debug = false;
@@ -65,7 +65,13 @@ final class Assets
 
         $this->createFolder();
 
-        $stream = fopen(self::BASE_PATH . 'client.js', "w");
+        try {
+            $stream = fopen(self::BASE_PATH . 'client.js', 'w');
+        } catch (\Exception $e) {
+            @mkdir(self::BASE_PATH, 0777, true);
+            $stream = fopen(self::BASE_PATH . 'client.js', 'w');
+        }
+
         $this->injectStructure($stream);
         $this->injectDefaultFiles($stream).
         $this->injectClientFiles($stream).
@@ -135,20 +141,20 @@ final class Assets
     protected function injectDefaultFiles($stream) : void
     {
         foreach (self::$defaultFiles as $defaultFile) {
-            $phpFile = file_get_contents(ROOT_PATH . $defaultFile);
-            if ($defaultFile === 'Flames/Kernel/Client.php') {
+            $phpFile = file_get_contents(FLAMES_PATH . $defaultFile);
+            if ($defaultFile === 'Kernel/Client.php') {
                 $phpFile = str_replace(['namespace Flames\Kernel;', 'final class Client'], ['namespace Flames;', 'final class Kernel'], $phpFile);
-            } elseif ($defaultFile === 'Flames/Http/Client/Client.php') {
+            } elseif ($defaultFile === 'Http/Client/Client.php') {
                 $phpFile = str_replace('namespace Flames\Http\Client;', 'namespace Flames\Http;', $phpFile);
-            } elseif ($defaultFile === 'Flames/Http/Async/Request/Client.php') {
+            } elseif ($defaultFile === 'Http/Async/Request/Client.php') {
                 $phpFile = str_replace(['namespace Flames\Http\Async\Request;', 'class Client'], ['namespace Flames\Http\Async;', 'class Request'], $phpFile);
-            } elseif ($defaultFile === 'Flames/Http/Async/Response/Client.php') {
+            } elseif ($defaultFile === 'Http/Async/Response/Client.php') {
                 $phpFile = str_replace(['namespace Flames\Http\Async\Response;', 'class Client'], ['namespace Flames\Http\Async;', 'class Response'], $phpFile);
-            } elseif ($defaultFile === 'Flames/Connection/Client.php') {
+            } elseif ($defaultFile === 'Connection/Client.php') {
                 $phpFile = str_replace(['namespace Flames\Connection;', 'class Client'], ['namespace Flames;', 'class Connection'], $phpFile);
-            } elseif ($defaultFile === 'Flames/Header/Client.php') {
+            } elseif ($defaultFile === 'Header/Client.php') {
                 $phpFile = str_replace(['namespace Flames\Header;', 'class Client'], ['namespace Flames;', 'class Header'], $phpFile);
-            } elseif ($defaultFile === 'Flames/Money/Client.php') {
+            } elseif ($defaultFile === 'Money/Client.php') {
                 $phpFile = str_replace(['namespace Flames\Money;', 'class Client'], ['namespace Flames;', 'class Money'], $phpFile);
             }
 
@@ -172,7 +178,7 @@ final class Assets
     {
         $modules = ['Event', 'Component', 'Controller'];
         foreach ($modules as $module) {
-            $clientPath = (ROOT_PATH . 'App/Client/' . $module);
+            $clientPath = (APP_PATH . 'Client/' . $module);
             if (is_dir($clientPath) === true) {
                 $files = $this->getDirContents($clientPath);
                 foreach ($files as $file) {

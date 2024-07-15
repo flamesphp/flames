@@ -21,7 +21,7 @@ class Image
         }
 
         chdir($tmpDir);
-        $batPath = str_replace('/', '\\', (ROOT_PATH . 'Flames\OS\Screen\Image\Take.bat'));
+        $batPath = str_replace('/', '\\', (FLAMES_PATH . 'OS\Screen\Image\Take.bat'));
         $imageHash = Hash::getRandom();
         exec($batPath . ' ' . $imageHash . '.png');
         chdir(ROOT_PATH);

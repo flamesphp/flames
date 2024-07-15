@@ -63,7 +63,7 @@ class View
      */
     protected function renderFile(Arr|array $data = null)
     {
-        $loader = new TemplateEngine\Loader\FilesystemLoader(ROOT_PATH . 'App/Client/View/');
+        $loader = new TemplateEngine\Loader\FilesystemLoader(APP_PATH . 'Client/View/');
         $twig = new TemplateEngine\Environment($loader, [
 //            'cache' => (ROOT_PATH . '.cache/view-twig'),
         ]);
@@ -80,7 +80,7 @@ class View
      */
     public function addView(string $path) : void
     {
-        $fullPath = (ROOT_PATH . 'App/Client/View/' . $path);
+        $fullPath = (APP_PATH . 'Client/View/' . $path);
         if (file_exists($fullPath) === false) {
             throw new \Exception('View path ' . $fullPath . ' does not exists.');
         }

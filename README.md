@@ -48,13 +48,32 @@ Working in progress...
 
 * Copy .env.dist to .env.
 
-#### Setup Docker (or)
+#### Setup Docker with Composer
+* Clone (or download zip) our [skeleton repository](https://github.com/flamesphp/skeleton).
+* Choose containers to use *(optional, Apache or NGINX+FPM in docker-compose.yml, default to NGINX+FPM)*
+* Run `composer update` in your root folder
+* Run `docker-compose up -d` in your root folder
+* Run `php bin install` in your docker php container
+
+#### Setup Local with Composer
+* Clone (or download zip) our [skeleton repository](https://github.com/flamesphp/skeleton).
+* Required PHP 8.2/8.3
+* Required PHP mbstring extension
+* Required PHP Composer
+* Required Apache or NGINX+FPM *(optional, case NGINX+FPM do config using template .docker/nginx/default.conf)*
+* Run `composer update` in your root folder
+* Run `php bin install` in your root folder
+* Run `php bin server {host}:{port}` *(optional, case not use Apache/NGINX)*
+
+#### Setup Docker
+* Clone (or download zip) this repository.
 * Choose containers to use *(optional, Apache or NGINX+FPM in docker-compose.yml, default to NGINX+FPM)*
 * Run `docker-compose up -d` in your root folder
 * Run `git submodule add git@github.com:{user}/{repo}.git App` to setup your app repository *(optional)*
 * Run `php bin install` in your docker php container
 
 #### Setup Local
+* Clone (or download zip) this repository.
 * Required PHP 8.2/8.3
 * Required PHP mbstring extension
 * Required Apache or NGINX+FPM *(optional, case NGINX+FPM do config using template .docker/nginx/default.conf)*

@@ -24,7 +24,7 @@ final class Event
         $event = (string)$event;
         $action = (string)$action;
 
-        $path = (ROOT_PATH . 'App/Server/Event/' . $event . '.php');
+        $path = (APP_PATH . 'Server/Event/' . $event . '.php');
         if (file_exists($path) === true) {
             $instance = new ('\App\Server\Event\\' . $event)();
             if ($action === null)

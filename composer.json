@@ -1,11 +1,6 @@
 {
   "name": "flamesphp/flames",
   "description": "The Flames PHP Framework.",
-  "autoload": {
-    "psr-4": {
-      "Flames\\": "Flames/"
-    }
-  },
   "authors": [
     {
       "name": "Gabriel 'Kazz' Morgado",
@@ -13,5 +8,7 @@
     }
   ],
   "minimum-stability": "dev",
-  "require": {}
+  "require": {
+    "ext-zip": "*"
+  }
 }

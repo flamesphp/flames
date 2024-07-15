@@ -67,7 +67,7 @@ class StaticEx
 
     protected function buildZip()
     {
-        $buildZipPath = (ROOT_PATH . 'App/Client/Build/');
+        $buildZipPath = (APP_PATH . 'Client/Build/');
         if (is_dir($buildZipPath) === false) {
             mkdir($buildZipPath, 0777, true);
         }
@@ -102,7 +102,7 @@ class StaticEx
     {
         $buildStream  = fopen($this->buildPath . '.flames.js', 'w+');
 
-        $clientPath = (ROOT_PATH . 'App/Client/Resource/client.js');
+        $clientPath = (APP_PATH . 'Client/Resource/client.js');
         if (file_exists($clientPath) === true) {
             $fileStream = fopen($clientPath, 'r');
             while(!feof($fileStream)) {
@@ -112,7 +112,7 @@ class StaticEx
             fclose($fileStream);
         }
 
-        $fileStream = fopen(ROOT_PATH . 'Flames/Kernel/Client/Engine/Flames.js', 'r');
+        $fileStream = fopen(FLAMES_PATH . 'Kernel/Client/Engine/Flames.js', 'r');
         while(!feof($fileStream)) {
             $buffer = fgets($fileStream, 128000); // 128 kb
             fputs($buildStream, $buffer);
@@ -133,7 +133,7 @@ class StaticEx
             mkdir($flamesKernelDir, 0777, true);
         }
 
-        copy(ROOT_PATH . 'Flames/Kernel/Client/Engine/Flames.wasm', $this->buildPath . '.flames.wasm');
+        copy(FLAMES_PATH . 'Kernel/Client/Engine/Flames.wasm', $this->buildPath . '.flames.wasm');
     }
 
     protected function cleanBuild() : void
@@ -153,7 +153,7 @@ class StaticEx
 
     protected function copyPublic() : void
     {
-        $publicPath = (ROOT_PATH . 'App/Client/Public/');
+        $publicPath = (APP_PATH . 'Client/Public/');
         if (is_dir($publicPath) === false) {
             return;
         }

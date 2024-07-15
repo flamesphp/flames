@@ -34,7 +34,6 @@ abstract class Controller
      */
     public function success(Arr|array|string|null $data = null, int $code = 200, Arr|array|null $headers = null) : Response|string
     {
-
         if (is_string($data)) {
 
         } else {
