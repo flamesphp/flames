@@ -120,7 +120,12 @@ class View
             throw new \Error('Missing body html tag.');
         }
 
-        $scriptEngine = '<script src="/.flames.js" type="text/javascript"></script>';
+        $hash = Kernel::VERSION;
+        $clientResource = (APP_PATH . 'Client/Resource/client.js');
+        if (file_exists($clientResource) === true) {
+            $hash .= ('.' . filemtime($clientResource));
+        }
+        $scriptEngine = '<script src="/.flames.js?v=' . sha1(Environment::get('APP_KEY') . $hash) . '" type="text/javascript"></script>';
         if (str_contains($html, $scriptEngine) === false) {
             $html = str_replace($bodyCloseTag, "\t" . $scriptEngine . "\n\t" . $bodyCloseTag, $html);
         }

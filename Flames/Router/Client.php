@@ -1,6 +1,9 @@
 <?php
 
 namespace Flames\Router;
+use Flames\Command;
+use Flames\Environment;
+
 /***
  * @internal
  */
@@ -9,6 +12,7 @@ class Client
     public static function run(string $uri) : bool
     {
         $uri = substr($uri, 9);
+        $uri = explode('?', $uri)[0];
 
         if ($uri === 'js') {
             return self::dispatchFlames();
@@ -19,19 +23,23 @@ class Client
         elseif ($uri === 'png') {
             return self::dispatchFlamesPng();
         }
+        elseif ($uri === 'auto/style') {
+            return self::dispatchFlamesAutoStyle();
+        }
 
         return false;
     }
 
     protected static function dispatchFlames() : bool
     {
+        header('Cache-Control: max-age=31536000');
         header('Content-Type: application/javascript; charset=utf-8');
 
         $clientPath = (APP_PATH . 'Client/Resource/client.js');
         if (file_exists($clientPath) === true) {
             $fileStream = fopen($clientPath, 'r');
             while(!feof($fileStream)) {
-                $buffer = fgets($fileStream, 128000); // 128 kb
+                $buffer = fgets($fileStream, 1024000); // 128 kb
                 echo $buffer;
                 ob_flush();
                 flush();
@@ -42,7 +50,7 @@ class Client
 
         $fileStream = fopen(FLAMES_PATH . 'Kernel/Client/Engine/Flames.js', 'r');
         while(!feof($fileStream)) {
-            $buffer = fgets($fileStream, 128000); // 128 kb
+            $buffer = fgets($fileStream, 1024000); // 128 kb
             echo $buffer;
             ob_flush();
             flush();
@@ -82,5 +90,14 @@ class Client
         }
 
         return true;
+    }
+
+    protected static function dispatchFlamesAutoStyle()
+    {
+        if (Environment::get('AUTO_BUILD_CLIENT') !== true) {
+            return false;
+        }
+
+        Command::run('build:assets --auto');
     }
 }

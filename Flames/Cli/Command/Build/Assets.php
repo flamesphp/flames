@@ -2,6 +2,8 @@
 
 namespace Flames\Cli\Command\Build;
 
+use Flames\Cli;
+use Flames\Cli\Command\Build\Assets\Automate;
 use Flames\Cli\Command\Build\Assets\Data;
 use Flames\Environment;
 
@@ -52,7 +54,14 @@ final class Assets
     ];
 
     protected bool $debug = false;
+    protected bool $auto = false;
 
+    public function __construct($data)
+    {
+        if ($data->option->contains('auto') === true) {
+            $this->auto = true;
+        }
+    }
     /**
      * Run the application build.
      *
@@ -61,6 +70,14 @@ final class Assets
      */
     public function run(bool $debug = false) : bool
     {
+        // Skip build if re-request from client after timeout
+        if ($this->auto === true) {
+            if (Cli::isCli() === false && isset($_GET['timeout']) === true && $_GET['timeout'] === 'true') {
+                $this->verifyAuto();
+                return false;
+            }
+        }
+
         $this->debug = $debug;
 
         $this->createFolder();
@@ -79,6 +96,7 @@ final class Assets
         $this->injectClientFiles($stream).
         $this->injectEnvironment($stream).
         $this->finish($stream);
+        $this->verifyAuto();
 
         return true;
     }
@@ -162,7 +180,7 @@ final class Assets
             }
 
             if ($this->debug === true) {
-                echo ('Compile ' . substr($defaultFile, 0, -4) . "");
+                echo ('Compile ' . substr($defaultFile, 0, -4) . "\n");
             }
 
             fwrite($stream, ('Flames.Internal.Build.core[Flames.Internal.Build.core.length] = \'' .
@@ -289,8 +307,13 @@ final class Assets
         if (str_contains($localPath, '\\') === true) {
             $localPath = str_replace('\\', '\\\\', $localPath);
         }
-        fwrite($stream, "Flames.Internal.dumpLocalPath='" . $localPath . "';"
-        );
+        fwrite($stream, "Flames.Internal.dumpLocalPath='" . $localPath . "';");
+        $autoBuildClient = Environment::get('AUTO_BUILD_CLIENT');
+        if ($autoBuildClient === true) {
+            fwrite($stream, "Flames.Internal.autoBuildClient=true;");
+        } else {
+            fwrite($stream, "Flames.Internal.autoBuildClient=false;");
+        }
     }
 
     /**
@@ -307,6 +330,14 @@ final class Assets
 
         if ($this->debug === true) {
             echo ("\nAssets build successfully\n");
+        }
+    }
+
+    protected function verifyAuto()
+    {
+        if ($this->auto === true) {
+            $automate = new Automate();
+            $automate->run($this->debug);
         }
     }
 }

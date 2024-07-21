@@ -241,6 +241,38 @@ window.php = function (code) {
     window.PHP.eval('<?php ' + code + ' ?>');
 }
 
+Flames.Internal.runAutoBuild = function(timeout)
+{
+    var url = '/.flames/auto/style'
+    if (timeout === true) {
+        url += '?timeout=true';
+    }
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.timeout = 0;
+    xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 504 || xhr.status === 408) {
+                Flames.Internal.runAutoBuild(true);
+                return;
+            }
+
+            var data = JSON.parse(xhr.response);
+            document.querySelector('body').insertAdjacentHTML('beforeend',
+                '<div class="--flames-auto-build" style="position: absolute; transition: opacity 0.5s; opacity: 0; bottom: 0; z-index: 999999999999; color: #ffffff; right: 0px; width: auto; height: auto; background-color: #303030; margin: 10px; border-radius: 5px; padding: 5px;"><img src="/.flames.png" style="height: 20px"/><span style="opacity: 0.7;">[' + data.type + '] </span><span style="opacity: 0.8;">' + data.file + '</span><span style="opacity: 0.7;"> changed</span></div>'
+            );
+            window.setTimeout(function() {
+                document.querySelector('.--flames-auto-build').style.opacity = '1';
+                window.setTimeout(function() {
+                    window.location = window.location.href;
+                }, 750);
+            }, 10);
+        }
+    };
+
+    xhr.send(null);
+}
+
 const runFlames = () => {
     let stdout = '';
     let stderr = '';
@@ -321,6 +353,10 @@ const runFlames = () => {
 
         window.PHP.eval('<?php \\Flames\\Kernel\\Client\\Dispatch::run(); ?>');
     });
+
+    if (Flames.Internal.autoBuildClient === true) {
+        Flames.Internal.runAutoBuild();
+    }
 }
 
 runFlames();

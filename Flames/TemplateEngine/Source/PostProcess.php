@@ -13,10 +13,10 @@ final class PostProcess
             return $code;
         }
 
-        $engineBlock =  '{% engine %}';
-        if (str_contains($code, $engineBlock)) {
-            $code = str_replace($engineBlock, '<script src="/.flames.js" type="text/javascript"></script>', $code);
-        }
+//        $engineBlock =  '{% engine %}';
+//        if (str_contains($code, $engineBlock)) {
+//            $code = str_replace($engineBlock, '<script src="/.flames.js" type="text/javascript"></script>', $code);
+//        }
 
         return $code;
     }

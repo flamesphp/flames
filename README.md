@@ -23,6 +23,9 @@ of **PHP components**.
 * Async Coroutines running outside CLI without external extensions.
 * Command for build PHP project as static website (to upload on S3, GitHub Pages, CloudFlare Pages or simple HTML-only server).
 * JetBrains PhpStorm and Visual Code plugins.
+* Platform Engine (Windows Only), to do things that PHP can't (ex: get server mouse position, supporting automate server GUI apps (like Selenium, but for O.S.) using OCR's and [mouse/keyboard interceptor : under development]).
+* Automatic build client PHP files and refreshs pages (like Angular).
+* Automatic detect CSS/JS changed files and refreshs pages.
 
 ## Benchmark
 
@@ -88,11 +91,11 @@ Working in progress...
 * Want to be a contributor? Just do and create a pull request.
 
 # TODO
+* Automatic build SCSS/SASS and refreshs pages like Angular.
 * Performance goal: 10.000 database rows rendered in template engine at 10ms.
 * ORM support: PostgreSQL, Oracle Database, SQL Server, ElasticSearch, MongoDB, Redis Stack, Apache Cassandra, Amazon DynamoDB and SQLite.
 * Caching ORM models, with support: KeyDB Flash (KeyDB with RocksDB), KeyDB, Redis, Redis Stack, MemCached and FileStorage.
 * Profiler injection with requests, benchmarks, memory, etc.
-* Automatic build SCSS/SASS and refreshs pages like Angular.
 * Command for build JS/CSS minified bundles.
 * Command for build obfuscated PHP/JS files.
 * Caching generic, with support: KeyDB Flash (KeyDB with RocksDB), KeyDB, Redis, Redis Stack, MemCached and FileStorage.
@@ -103,7 +106,6 @@ Working in progress...
 * Plugins community with permissions support (like android).
 * Run JavaScript on backend for render templates using Vue.js, React ou AngularJS.
 * PHP VM inside PHP, allowing custom disabling functionalities.
-* Backend Python engine like V8JS  with native PHP, to do things that PHP can't (ex: get server mouse position, supporting automate server GUI apps using OCR's and mouse/keyboard interceptor).
 * P2P/TOR protocol support.
 * Database Admin supporting all types of database (include from cache) like PhpMyAdmin.
 
