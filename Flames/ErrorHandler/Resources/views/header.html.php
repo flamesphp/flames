@@ -89,7 +89,7 @@
     <button id="copy-button" class="rightButton clipboard" data-clipboard-text="<?php echo $tpl->escape($plain_exception) ?>" title="Copy exception details to clipboard">
       COPY
     </button>
-    <button id="hide-error" class="rightButton" title="Hide error message" onclick="document.getElementsByClassName('ErrorHandler')[0].style.display = 'none';">
+    <button id="hide-error" class="rightButton" title="Hide error message" onclick="document.getElementsByClassName('--flames-error-handler')[0].style.display = 'none';">
       HIDE
     </button>
   </div>

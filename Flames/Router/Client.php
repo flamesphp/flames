@@ -14,7 +14,10 @@ class Client
             return self::dispatchFlames();
         }
         elseif ($uri === 'wasm') {
-            return self::dispatchFlamesWASM();
+            return self::dispatchFlamesWasm();
+        }
+        elseif ($uri === 'png') {
+            return self::dispatchFlamesPng();
         }
 
         return false;
@@ -49,11 +52,27 @@ class Client
         return true;
     }
 
-    protected static function dispatchFlamesWASM()
+    protected static function dispatchFlamesWasm()
     {
         header('Cache-Control: max-age=31536000');
         header('Content-Type: application/wasm');
         $fileStream = fopen(FLAMES_PATH . 'Kernel/Client/Engine/Flames.wasm', 'r');
+
+        while(!feof($fileStream)) {
+            $buffer = fread($fileStream, 1024000); // 1 mb
+            echo $buffer;
+            ob_flush();
+            flush();
+        }
+
+        return true;
+    }
+
+    protected static function dispatchFlamesPng()
+    {
+        header('Cache-Control: max-age=31536000');
+        header('Content-Type: image/png');
+        $fileStream = fopen(FLAMES_PATH . 'Kernel/Client/Engine/Flames.png', 'r');
 
         while(!feof($fileStream)) {
             $buffer = fread($fileStream, 1024000); // 1 mb

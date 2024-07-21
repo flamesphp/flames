@@ -13,7 +13,7 @@ AddDefaultCharset UTF-8
     RewriteRule ^.gitignore(.*)$ /$1 [NC,L]
     RewriteRule ^.gitmodules(.*)$ /$1 [NC,L]
     RewriteRule ^license(.*)$ /$1 [NC,L]
-    RewriteRule ^readme.md(.*)$ /$1 [NC,L]
+    RewriteRule ^README.md(.*)$ /$1 [NC,L]
     RewriteRule ^.htaccess(.*)$ /$1 [NC,L]
     RewriteRule ^bin(.*)$ /$1 [NC,L]
     RewriteRule ^.docker/(.*)$ /$1 [NC,L]

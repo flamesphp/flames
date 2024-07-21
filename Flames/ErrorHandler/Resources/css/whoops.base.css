@@ -12,9 +12,9 @@ body {
     text-decoration: none;
   }
 
-.ErrorHandler.container {
+.--flames-error-handler.container {
     position: relative;
-    z-index: 9999999999;
+    z-index: 999000;
 }
 
 .panel {
