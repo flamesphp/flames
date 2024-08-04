@@ -120,16 +120,17 @@ class View
             throw new \Error('Missing body html tag.');
         }
 
+        $flamesEngine = '<script async src="https://cdn.jsdelivr.net/gh/flamesphp/cdn@latest/flames.js"></script>'; //TODO: change @lastest to kernel::version
+        $html = str_replace($bodyCloseTag, "\t" . $flamesEngine . "\n\t" . $bodyCloseTag, $html);
+
         $hash = Kernel::VERSION;
         $clientResource = (APP_PATH . 'Client/Resource/client.js');
         if (file_exists($clientResource) === true) {
             $hash .= ('.' . filemtime($clientResource));
         }
-        $scriptEngine = '<script src="/.flames.js?v=' . sha1(Environment::get('APP_KEY') . $hash) . '" type="text/javascript"></script>';
-        if (str_contains($html, $scriptEngine) === false) {
-            $html = str_replace($bodyCloseTag, "\t" . $scriptEngine . "\n\t" . $bodyCloseTag, $html);
-        }
 
+        $scriptEngine = '<script async src="/.flames.js?v=' . sha1(Environment::get('APP_KEY') . $hash) . '" type="text/javascript"></script>';
+        $html = str_replace($bodyCloseTag, "\t" . $scriptEngine . "\n\t" . $bodyCloseTag, $html);
 
         $html = str_replace($bodyCloseTag, "\t<flames hidden>" .
             base64_encode(serialize($data)) .

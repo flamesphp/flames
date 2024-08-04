@@ -3,6 +3,7 @@
 namespace Flames\Controller;
 
 use Flames\Collection\Arr;
+use Flames\Client\View;
 
 /**
  * @internal
@@ -61,7 +62,7 @@ class Data
             foreach($attributes as $attribute) {
                 $attributeName = $attribute->getName();
 
-                if ($attributeName === \Flames\Cte\View::class) {
+                if ($attributeName === View::class) {
                     $arguments = $attribute->getArguments();
                     if (isset($arguments['path'])) {
                         $data->methods[$method->name] = Arr([

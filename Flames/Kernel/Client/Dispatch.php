@@ -89,8 +89,6 @@ final class Dispatch
             self::$instances[$class] = new $class();
             return self::$instances[$class];
         }
-
-        return null;
     }
 
     public static function onClick(string $class, string $method, string $uid)
