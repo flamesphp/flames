@@ -67,6 +67,8 @@ final class Assets
     protected bool $debug = false;
     protected bool $auto = false;
 
+    protected bool $swfExtension = false;
+
     public function __construct($data)
     {
         if ($data->option->contains('auto') === true) {
@@ -145,19 +147,30 @@ final class Assets
             echo ("Inject structure javascript system\n");
         }
 
+        $this->swfExtension = false;
+        $extensions = Environment::get('CLIENT_EXTENSIONS');
+        if ($extensions !== null) {
+            $extensions = explode(',', strtolower($extensions));
+            if (in_array('swf', $extensions) === true) {
+                $this->swfExtension = true;
+            }
+        }
+
         $unsupported = @file_get_contents(ROOT_PATH . 'App/Client/Resource/Event/Unsupported.js');
         $engine = str_replace([
             '{{ environment }}',
-            '\'{{ autobuild }}\'',
+            '\'{{ autoBuild }}\'',
+            '\'{{ swfExtension }}\'',
             '\'{{ unsupported }}\';'
         ], [
             rawurlencode(Environment::get('ENVIRONMENT')),
             ((Environment::get('CLIENT_AUTOBUILD') === true) ? 'true' : 'false'),
+            (($this->swfExtension === true) ? 'true' : 'false'),
             ('(function(){' . $unsupported . '})();')
         ], file_get_contents(FLAMES_PATH . 'Kernel/Client/Engine/Flames.js'));
 
         fwrite($stream, $engine);
-        fwrite($stream, 'Flames.onReady=function(){');
+        fwrite($stream, 'window.Flames.onReady=function(){');
     }
 
     protected function injectExtensions($stream): void
@@ -168,10 +181,13 @@ final class Assets
 
         $extensions = Environment::get('CLIENT_EXTENSIONS');
         if ($extensions !== null) {
-            $extensions = explode(',', $extensions);
+            $extensions = explode(',', strtolower($extensions));
 
             $eval = '';
             foreach ($extensions as $extension) {
+                if ($extension === 'swf') {
+                    continue;
+                }
                 if ($eval !== '') {
                     $eval .= 'usleep(1);';
                 }
@@ -180,6 +196,21 @@ final class Assets
 
             if ($eval !== '') {
                 fwrite($stream, 'Flames.Internal.evalBase64(\'' . base64_encode($eval) . '\');');
+            }
+
+            if ($this->swfExtension === true) {
+                fwrite($stream, '
+                    var xmlhttp = new XMLHttpRequest();
+                    xmlhttp.open(\'GET\', \'https://cdn.jsdelivr.net/gh/flamesphp/cdn@latest/swf/swf.js\');
+                    xmlhttp.onreadystatechange = function()
+                    {
+                        if ((xmlhttp.status == 200) && (xmlhttp.readyState == 4))
+                        {
+                            eval(xmlhttp.responseText);
+                        }
+                    };
+                    xmlhttp.send();
+                ');
             }
         }
     }
@@ -241,7 +272,7 @@ final class Assets
         $clientFilesBufferMetadata = $this->mountVirtualClientFilesMetadata($virtualFilesBuffer);
         $virtualFilesBuffer = $clientFilesBufferMetadata['virtualFilesBuffer'];
 
-        fwrite($stream, 'Flames.Internal.eventTriggers = Flames.Internal.unserialize(atob(\'' . base64_encode(serialize($clientFilesBufferMetadata['events']->toArray())) . '\'));');
+        fwrite($stream, 'window.Flames.Internal.eventTriggers = Flames.Internal.unserialize(atob(\'' . base64_encode(serialize($clientFilesBufferMetadata['events']->toArray())) . '\'));');
 
         $virtualConstructsBuffer = 'private static $constructors = [';
         foreach ($clientFilesBufferMetadata['staticConstructors'] as $constructor) {
@@ -418,12 +449,12 @@ final class Assets
         if (str_contains($localPath, '\\') === true) {
             $localPath = str_replace('\\', '\\\\', $localPath);
         }
-        fwrite($stream, "Flames.Internal.dumpLocalPath='" . $localPath . "';");
+        fwrite($stream, "window.Flames.Internal.dumpLocalPath='" . $localPath . "';");
         $autoBuildClient = Environment::get('AUTO_BUILD_CLIENT');
         if ($autoBuildClient === true) {
-            fwrite($stream, "Flames.Internal.autoBuildClient=true;");
+            fwrite($stream, "window.Flames.Internal.autoBuildClient=true;");
         } else {
-            fwrite($stream, "Flames.Internal.autoBuildClient=false;");
+            fwrite($stream, "window.Flames.Internal.autoBuildClient=false;");
         }
     }
 

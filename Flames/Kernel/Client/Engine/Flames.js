@@ -1,14 +1,15 @@
 window.Flames = (window.Flames || {});
 
-Flames.onBoot = function() {
-    Flames.Internal.mockLog = {};
-    Flames.Internal.mockLog.log = function() {};
-    Flames.Internal.mockLog.error = function() {};
-    Flames.Internal.mockLog.warn = function() {};
-    Flames.Internal.log = false;
-    Flames.Internal.environment = decodeURIComponent('{{ environment }}');
-    Flames.Internal.autoBuild = '{{ autobuild }}';
-    Flames.Internal.onErrorListener = function(error, line, file, code, traceString, trace) {
+window.Flames.onBoot = function() {
+    window.Flames.Internal.mockLog = {};
+    window.Flames.Internal.mockLog.log = function() {};
+    window.Flames.Internal.mockLog.error = function() {};
+    window.Flames.Internal.mockLog.warn = function() {};
+    window.Flames.Internal.log = false;
+    window.Flames.Internal.environment = decodeURIComponent('{{ environment }}');
+    window.Flames.Internal.autoBuild = '{{ autoBuild }}';
+    window.Flames.Internal.swfExtension = '{{ swfExtension }}';
+    window.Flames.Internal.onErrorListener = function(error, line, file, code, traceString, trace) {
         console.error(error);
         console.error(line);
         console.error(file);
@@ -17,15 +18,15 @@ Flames.onBoot = function() {
         console.error(Flames.Internal.unserialize(trace));
     };
 
-    Flames.Internal.onSuccessListener = function(data) {
+    window.Flames.Internal.onSuccessListener = function(data) {
         if (Flames.Internal.log === false) {
             return;
         }
         console.log(data);
     };
 
-    Flames.Internal.dump = function(param1, param2) {
-        if (Flames.Internal.dumpLocalPath === undefined) {
+    window.Flames.Internal.dump = function(param1, param2) {
+        if (window.Flames.Internal.dumpLocalPath === undefined) {
             param2 = param2.replace('{DUMP_LOCAL_PATH}', '');
             dump(param1, param2);
         } else {
@@ -35,11 +36,11 @@ Flames.onBoot = function() {
     };
 
     window.dump = console.log;
-    Flames.Internal.char = 'ロ';
-    Flames.Internal.uid = 0;
-    Flames.Internal.hashidfy = new Flames.Internal.Hashid('', 14,'abcdefghijklmnopqrstuvwxyz0123456789','');
-    Flames.Internal.generateUid = (function() {
-        Flames.Internal.uid += 1;
+    window.Flames.Internal.char = 'ロ';
+    window.Flames.Internal.uid = 0;
+    window.Flames.Internal.hashidfy = new Flames.Internal.Hashid('', 14,'abcdefghijklmnopqrstuvwxyz0123456789','');
+    window.Flames.Internal.generateUid = (function() {
+        window.Flames.Internal.uid += 1;
         return Flames.Internal.hashidfy.encode([Flames.Internal.uid]);
     });
 
@@ -61,9 +62,9 @@ Flames.onBoot = function() {
         return array.toPhpSerialize();
     }
 
-    Flames.onReady();
+    window.Flames.onReady();
 }
 
-Flames.onUnsupported = function() {
+window.Flames.onUnsupported = function() {
     '{{ unsupported }}';
 };
