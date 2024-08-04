@@ -26,6 +26,7 @@ final class Assets
         Flames\Collection\Strings::class,
         Flames\Collection\Bools::class,
         Flames\Collection\Ints::class,
+        Flames\Collection\Floats::class,
         Flames\Collection\Arr::class,
         Flames\Php::class,
         Flames\Js::class,
@@ -102,10 +103,9 @@ final class Assets
         }
 
         $this->injectStructure($stream);
-        $this->injectExtensions($stream).
-        $this->injectDefaultFiles($stream).
-        $this->injectClientFiles($stream).
-        $this->injectEnvironment($stream).
+        $this->injectExtensions($stream);
+        $this->injectDefaultFiles($stream);
+        $this->injectClientFiles($stream);
         $this->finish($stream);
         $this->verifyAuto();
 
@@ -152,7 +152,7 @@ final class Assets
             '\'{{ autobuild }}\'',
             '\'{{ unsupported }}\';'
         ], [
-            urlencode(Environment::get('ENVIRONMENT')),
+            rawurlencode(Environment::get('ENVIRONMENT')),
             ((Environment::get('CLIENT_AUTOBUILD') === true) ? 'true' : 'false'),
             ('(function(){' . $unsupported . '})();')
         ], file_get_contents(FLAMES_PATH . 'Kernel/Client/Engine/Flames.js'));
@@ -179,7 +179,9 @@ final class Assets
                 $eval .= ('dl(\'' . $extension . '.so\');');
             }
 
-            fwrite($stream, 'Flames.Internal.evalBase64(\'' . base64_encode($eval) . '\');');
+            if ($eval !== '') {
+                fwrite($stream, 'Flames.Internal.evalBase64(\'' . base64_encode($eval) . '\');');
+            }
         }
     }
 
@@ -231,7 +233,46 @@ final class Assets
     {
         $virtual = $this->loadPhpFile(FLAMES_PATH . 'Kernel/Client/Virtual.php');
 
-        $virtualList = '';
+
+        $virtualFilesBuffer = '';
+        $virtualFilesBuffer = $this->mountVirtualDefaultFiles($virtualFilesBuffer);
+
+        $clientFilesBufferMetadata = $this->mountVirtualClientFilesMetadata($virtualFilesBuffer);
+        $virtualFilesBuffer = $clientFilesBufferMetadata['virtualFilesBuffer'];
+
+        fwrite($stream, 'Flames.Internal.eventTriggers = Flames.Internal.unserialize(atob(\'' . base64_encode(serialize($clientFilesBufferMetadata['events']->toArray())) . '\'));');
+
+        $virtualConstructsBuffer = 'private static $constructors = [';
+        foreach ($clientFilesBufferMetadata['staticConstructors'] as $constructor) {
+            $virtualConstructsBuffer .= ('\'' . $constructor . '\',');
+        }
+
+        $virtualFilesBuffer = ('private static $buffers = [' . $virtualFilesBuffer);
+        $virtual = str_replace(
+            [
+                'private static $buffers = [',
+                'private static $constructors = [',
+            ], [
+                $virtualFilesBuffer,
+                $virtualConstructsBuffer
+            ],
+            $virtual);
+
+        $virtual .= $this->parseMockFile(Flames\AutoLoad\Client::class, $this->loadPhpFile(FLAMES_PATH . 'AutoLoad/Client.php'));
+        fwrite($stream, 'Flames.Internal.evalBase64(\'' . base64_encode($virtual) . '\');');
+
+        $autorun = '
+        \Flames\AutoLoad::run();
+        function Arr(mixed $value=null):\Flames\Collection\Arr{if($value instanceof \Flames\Collection\Arr){return $value;}return new\Flames\Collection\Arr($value);}
+';
+        fwrite($stream, "var data = Flames.Internal.evalBase64('" . base64_encode($autorun). "');dump(data);");
+
+        fwrite($stream, '};');
+        exit;
+    }
+
+    protected function mountVirtualDefaultFiles($virtualFilesBuffer)
+    {
         foreach (self::$defaultFiles as $defaultFile) {
             $phpFile = $this->loadPhpFile(FLAMES_PATH . substr(str_replace('\\', '/', $defaultFile), 6) . '.php');
             if (in_array($defaultFile, self::$clientMocks) === true) {
@@ -239,37 +280,20 @@ final class Assets
             }
 
             if ($this->debug === true) {
-                echo ('Compile ' . substr($defaultFile, 0, -4) . ".php\n");
+                echo ('Compile ' . $defaultFile . ".php\n");
             }
 
-            $virtualList .= '\'' . sha1($defaultFile) . '\'=>\'' . base64_encode($phpFile) . '\',';
+            $virtualFilesBuffer .= '\'' . sha1($defaultFile) . '\'=>\'' . base64_encode($phpFile) . '\',';
         }
 
-        $virtualList = ('private static $buffers = [' . $virtualList);
-
-        $virtual = str_replace('private static $buffers = [', $virtualList, $virtual);
-        $virtual .= $this->parseMockFile(Flames\AutoLoad\Client::class, $this->loadPhpFile(FLAMES_PATH . 'AutoLoad/Client.php'));
-
-        fwrite($stream, 'Flames.Internal.evalBase64(\'' . base64_encode($virtual) . '\');');
-
-        $code = '
-        \Flames\AutoLoad::run();
-';
-        fwrite($stream, "var data = Flames.Internal.evalBase64('" . base64_encode($code). "');dump(data);");
-
-        fwrite($stream, '};');
-        exit;
+        return $virtualFilesBuffer;
     }
 
-    /**
-     * Injects client files into the specified stream.
-     *
-     * @param resource $stream The stream where the client files will be injected.
-     *
-     * @return void
-     */
-    protected function injectClientFiles($stream) : void
+    protected function mountVirtualClientFilesMetadata($virtualFilesBuffer)
     {
+        $staticConstructors = Arr();
+        $events = Arr();
+
         $modules = ['Event', 'Component', 'Controller'];
         foreach ($modules as $module) {
             $clientPath = (APP_PATH . 'Client/' . $module);
@@ -287,31 +311,36 @@ final class Assets
                         $attributes = $this->verifyAttributes($data, $class);
 
                         foreach ($attributes->click as $trigger) {
-                            fwrite($stream, ('Flames.Internal.Build.click[\'' . $trigger->uid . '\'] = [\'' . urlencode($trigger->class) . '\',\'' . $trigger->name . "'];"));
+                            $events[] = $trigger;
                         }
                         foreach ($attributes->change as $trigger) {
-                            fwrite($stream, ('Flames.Internal.Build.change[\'' . $trigger->uid . '\'] = [\'' . urlencode($trigger->class) . '\',\'' . $trigger->name . "'];"));
+                            $events[] = $trigger;
                         }
                         foreach ($attributes->input as $trigger) {
-                            fwrite($stream, ('Flames.Internal.Build.input[\'' . $trigger->uid . '\'] = [\'' . urlencode($trigger->class) . '\',\'' . $trigger->name . "'];"));
+                            $events[] = $trigger;
                         }
 
                         if ($data->staticConstruct === true) {
-                            fwrite($stream, ('Flames.Internal.Build.staticConstruct[Flames.Internal.Build.staticConstruct.length] = \'' . urlencode($class) . "';"));
+                            $staticConstructors[] = sha1($class);
                         }
                     }
 
+                    $class = str_replace('/', '\\', substr($file, strlen(ROOT_PATH), -4));
                     if ($this->debug === true) {
-                        echo ('Compile module ' . strtolower($module) . ': ' . substr($file, strlen(ROOT_PATH), -4) . "\n");
+                        echo ('Compile module ' . strtolower($module) . ': ' . $class . "\n");
                     }
 
-                    fwrite($stream, ('Flames.Internal.Build.client[Flames.Internal.Build.client.length] = [\'' .
-                            substr($file, strlen(ROOT_PATH), -4) . '\', \'' .
-                            base64_encode(@utf8_decode(file_get_contents($file)))) . "'];");
+                    $phpFile = $this->loadPhpFile($file);
+                    $virtualFilesBuffer .= '\'' . sha1($class) . '\'=>\'' . base64_encode($phpFile) . '\',';
                 }
-
             }
         }
+
+        $data = Arr();
+        $data->virtualFilesBuffer = $virtualFilesBuffer;
+        $data->staticConstructors = $staticConstructors;
+        $data->events = $events;
+        return $data;
     }
 
     /**
@@ -319,9 +348,9 @@ final class Assets
      *
      * @param array $data The data to verify attributes for.
      * @param string $class The class to verify attributes for.
-     * @return array
+     * @return Flames\Collection\Arr
      */
-    protected function verifyAttributes($data, string $class)
+    protected function verifyAttributes($data, string $class): Flames\Collection\Arr
     {
         $attributes = Arr([
             'click'  => Arr(),
