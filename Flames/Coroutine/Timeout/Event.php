@@ -2,8 +2,6 @@
 
 namespace Flames\Coroutine\Timeout;
 
-use Flames\JS;
-
 /**
  * @internal
  */

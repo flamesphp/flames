@@ -9,7 +9,7 @@ use Flames\Js;
  */
 final class Client
 {
-    public const VERSION = '1.0.18';
+    public const VERSION = 'alpha1.19';
     public const MODULE  = 'CLIENT';
 
     private static $data = null;
@@ -32,11 +32,5 @@ final class Client
     public static function __injector()
     {
         self::__getData();
-    }
-
-    public static function __loader()
-    {
-        Js::eval('Flames.Internal.executeStaticConstructor();');
-        \Flames\Kernel\Client\Dispatch::run();
     }
 }

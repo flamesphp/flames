@@ -6,7 +6,7 @@ use Flames\Element;
 use Flames\Event\Element\Click;
 use Flames\Event\Element\Change;
 use Flames\Event\Element\Input;
-use Flames\JS;
+use Flames\Js;
 
 /**
  * @internal

@@ -105,7 +105,6 @@ final class Assets
         $this->injectStructure($stream);
         $this->injectExtensions($stream);
         $this->injectDefaultFiles($stream);
-        $this->injectClientFiles($stream);
         $this->finish($stream);
         $this->verifyAuto();
 
@@ -231,7 +230,9 @@ final class Assets
      */
     protected function injectDefaultFiles($stream) : void
     {
-        $virtual = $this->loadPhpFile(FLAMES_PATH . 'Kernel/Client/Virtual.php');
+        $virtual = $this->loadPhpFile(FLAMES_PATH . 'Kernel/Client/Virtual.php') .
+            $this->loadPhpFile(FLAMES_PATH . 'Dump/Client.php');
+
 
 
         $virtualFilesBuffer = '';
@@ -263,7 +264,8 @@ final class Assets
 
         $autorun = '
         \Flames\AutoLoad::run();
-        function Arr(mixed $value=null):\Flames\Collection\Arr{if($value instanceof \Flames\Collection\Arr){return $value;}return new\Flames\Collection\Arr($value);}
+        function Arr(mixed $value=null):\Flames\Collection\Arr{if($value instanceof \Flames\Collection\Arr){return $value;}return new \Flames\Collection\Arr($value);}
+        \Flames\Kernel\Client\Dispatch::run();
 ';
         fwrite($stream, "var data = Flames.Internal.evalBase64('" . base64_encode($autorun). "');dump(data);");
 
@@ -277,6 +279,13 @@ final class Assets
             $phpFile = $this->loadPhpFile(FLAMES_PATH . substr(str_replace('\\', '/', $defaultFile), 6) . '.php');
             if (in_array($defaultFile, self::$clientMocks) === true) {
                 $phpFile = $this->parseMockFile($defaultFile, $phpFile);
+
+                $split = explode('\\', $defaultFile);
+                $defaultFile = '';
+                for ($i = 0; $i < count($split) - 1; $i++) {
+                    $defaultFile .= $split[$i] . '\\';
+                }
+                $defaultFile = substr($defaultFile, 0, -1);
             }
 
             if ($this->debug === true) {

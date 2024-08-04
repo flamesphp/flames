@@ -1,6 +1,10 @@
 window.Flames = (window.Flames || {});
 
 Flames.onBoot = function() {
+    Flames.Internal.mockLog = {};
+    Flames.Internal.mockLog.log = function() {};
+    Flames.Internal.mockLog.error = function() {};
+    Flames.Internal.mockLog.warn = function() {};
     Flames.Internal.log = false;
     Flames.Internal.environment = decodeURIComponent('{{ environment }}');
     Flames.Internal.autoBuild = '{{ autobuild }}';
@@ -18,6 +22,16 @@ Flames.onBoot = function() {
             return;
         }
         console.log(data);
+    };
+
+    Flames.Internal.dump = function(param1, param2) {
+        if (Flames.Internal.dumpLocalPath === undefined) {
+            param2 = param2.replace('{DUMP_LOCAL_PATH}', '');
+            dump(param1, param2);
+        } else {
+            param2 = param2.replace('{DUMP_LOCAL_PATH}', Flames.Internal.dumpLocalPath);
+            dump(param1, param2);
+        }
     };
 
     window.dump = console.log;

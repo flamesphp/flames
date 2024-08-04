@@ -4,7 +4,7 @@ namespace Flames\Http\Client;
 
 use Exception;
 use Flames\Collection\Arr;
-use Flames\JS;
+use Flames\Js;
 use Flames\Http\Async\Request;
 use Flames\Http\Async\Response;
 
