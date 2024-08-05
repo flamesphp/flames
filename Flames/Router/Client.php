@@ -11,7 +11,7 @@ class Client
 {
     public static function run(string $uri) : bool
     {
-        $uri = substr($uri, 9);
+        $uri = substr($uri, 8);
         $uri = explode('?', $uri)[0];
 
         if ($uri === 'js') {

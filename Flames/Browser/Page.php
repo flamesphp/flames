@@ -70,12 +70,7 @@ class Page
             }
         }
 
-        $body = str_replace('<script src="/.flames.js" type="text/javascript"></script>', '', $body);
-
         $currentBody = Js::getWindow()->document->body->innerHTML;
-//        dump($currentBody);
-//        exit;
-
         preg_match_all('#<script(.*?)<\/script>#is', $body, $matches);
         $scripts = $matches[0];
         foreach ($scripts as $script) {

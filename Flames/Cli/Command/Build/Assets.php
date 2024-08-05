@@ -202,13 +202,7 @@ final class Assets
                 fwrite($stream, '
                     var xmlhttp = new XMLHttpRequest();
                     xmlhttp.open(\'GET\', \'https://cdn.jsdelivr.net/gh/flamesphp/cdn@latest/swf/swf.js\');
-                    xmlhttp.onreadystatechange = function()
-                    {
-                        if ((xmlhttp.status == 200) && (xmlhttp.readyState == 4))
-                        {
-                            eval(xmlhttp.responseText);
-                        }
-                    };
+                    xmlhttp.onreadystatechange = function() { if ((xmlhttp.status == 200) && (xmlhttp.readyState == 4)) { eval(xmlhttp.responseText); }};
                     xmlhttp.send();
                 ');
             }
