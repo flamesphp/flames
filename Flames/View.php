@@ -127,22 +127,16 @@ class View
             $hash .= ('.' . filemtime($clientResource));
         }
 
-        $flamesEngine = '<script async flames src="https://cdn.jsdelivr.net/gh/flamesphp/cdn@latest/flames.js"';
-
-        $clientCdn = (string)Environment::get('CLIENT_CDN');
-        if ($clientCdn !== '') {
-            $flamesEngine .= (' cdn="' . $clientCdn . '"');
-        }
-        $flamesEngine .= (' version="' . sha1(Environment::get('APP_KEY') . $hash) . '"');
-        $flamesEngine .= '></script>'; //TODO: change @lastest to kernel::version
-
+        $token = base64_encode (
+            rawurlencode(Kernel::CDN_VERSION) . '|' .
+            rawurlencode((string)Environment::get('CLIENT_CDN')) . '|' .
+            sha1(Environment::get('APP_KEY') . $hash) . '|' .
+            serialize($data)
+        );
+        $flamesEngine = '<script async src="//cdn.jsdelivr.net/gh/flamesphp/cdn@' . Kernel::CDN_VERSION . '/flames.js"></script>';
         $html = str_replace($bodyCloseTag, "\t" . $flamesEngine . "\n\t" . $bodyCloseTag, $html);
-
-//        $scriptEngine = '<script async src="/flames.js?v=' . sha1(Environment::get('APP_KEY') . $hash) . '" type="text/javascript"></script>';
-//        $html = str_replace($bodyCloseTag, "\t" . $scriptEngine . "\n\t" . $bodyCloseTag, $html);
-
         $html = str_replace($bodyCloseTag, "\t<flames hidden>" .
-            base64_encode(serialize($data)) .
+            $token .
             "</flames>\n\t" . $bodyCloseTag, $html);
         return $html;
     }

@@ -16,8 +16,9 @@ use Flames\Router\Client;
  */
 final class Kernel
 {
-    public const VERSION = 'alpha1.19';
+    public const VERSION = 'v0.0.19-alpha';
     public const MODULE  = 'SERVER';
+    public const CDN_VERSION = 'v0.0.19-alpha';
 
     protected static Router|null $defaultRouter = null;
     protected static ErrorHandler\Run|null $errorHandler = null;
@@ -359,7 +360,7 @@ final class Kernel
     protected static function renderFavIcon(): bool
     {
         if (isset($_SERVER['REQUEST_URI']) === true && $_SERVER['REQUEST_URI'] === '/favicon.ico') {
-            header('Location: https://cdn.jsdelivr.net/gh/flamesphp/cdn@latest/img/favicon.ico');
+            header('Location: https://cdn.jsdelivr.net/gh/flamesphp/cdn@' . Kernel::CDN_VERSION . '/img/favicon.ico');
             return true;
         }
 
