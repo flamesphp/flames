@@ -43,9 +43,14 @@
         </style>
     </head>
     <body>
-        <div class="--flames-fullscreen-loading">
-            <img src="/.flames.png">
-        </div>
+    <?php
+        if(\Flames\Connection\HttpClient::isHttpClient() === false) {  ?>
+            <div class="--flames-fullscreen-loading">
+                <img src="/.flames.png">
+            </div>
+    <?php
+        }
+    ?>
         <div class="--flames-error-handler container">
             <div class="stack-container">
                 <?php $tpl->render($panel_left_outer) ?>

@@ -92,9 +92,13 @@ class Header
         }
     }
 
-    public static function redirect(string $url)
+    public static function redirect(string $url, $sendNow = false)
     {
-        header('Location: ' . $url);
-        return Arr(['redirect' => $url]);
+        if ($sendNow === true) {
+            header('Location: ' . $url);
+            exit;
+        }
+
+        return Arr(['flames.redirect' => $url]);;
     }
 }

@@ -116,7 +116,7 @@ class Dump
      * Default:
      *          7
      */
-    public static $maxLevels;
+    public static $maxLevels = 20;
 
     /**
      * @var string theme for rich view

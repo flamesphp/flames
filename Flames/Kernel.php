@@ -239,6 +239,15 @@ final class Kernel
         }
 
         self::sendHeaders($response->headers, $response->code);
+        if (str_starts_with($output, '{"flames.redirect":') === true) {
+            if (Cli::isCli() === false) {
+                $decode = json_decode($output);
+                header('Location: ' . $decode->{"flames.redirect"});
+                exit;
+            } else { // if autobuild
+                // TODO: transform page in html redirect on static build
+            }
+        }
         echo $output;
 
         return true;
