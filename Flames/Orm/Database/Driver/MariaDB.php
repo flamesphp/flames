@@ -57,7 +57,7 @@ class MariaDB extends Driver
             $modelData = [];
 
             foreach ($this->data->column as $column) {
-                $modelData[$column->property] = $row[$column->name];
+                $modelData[$column->property] = self::castPosDb($column->property, $row[$column->name]);
             }
 
             $models[] = new $this->data->class($modelData, true);
@@ -146,22 +146,36 @@ class MariaDB extends Driver
         }
 
         $column = $this->data->column->{$key};
-        if ($column->type === 'varchar' || $column->type === 'string' || $column->type === 'bigint' || $column->type === 'int' || $column->type === 'float' || $column->type === 'bool' || $column->type === 'boolean' || $column->type === 'datetime') {
+        if ($column->type === 'varchar' || $column->type === 'string' || $column->type === 'bigint' || $column->type === 'int' || $column->type === 'float' || $column->type === 'bool' || $column->type === 'boolean' || $column->type === 'datetime' || $column->type === 'text') {
             return parent::cast($key, $value);
         }
 
         return null;
     }
 
-    public function castDb(string $key, mixed $value = null) : mixed
+    public function castPreDb(string $key, mixed $value = null) : mixed
     {
         if (isset($this->data->column->{$key}) === false) {
             return null;
         }
 
         $column = $this->data->column->{$key};
-        if ($column->type === 'varchar' || $column->type === 'string' || $column->type === 'bigint' || $column->type === 'int' || $column->type === 'float' || $column->type === 'bool' || $column->type === 'boolean' || $column->type === 'datetime') {
-            return parent::castDb($key, $value);
+        if ($column->type === 'varchar' || $column->type === 'string' || $column->type === 'bigint' || $column->type === 'int' || $column->type === 'float' || $column->type === 'bool' || $column->type === 'boolean' || $column->type === 'datetime' || $column->type === 'text') {
+            return parent::castPreDb($key, $value);
+        }
+
+        return $value;
+    }
+
+    public function castPosDb(string $key, mixed $value = null) : mixed
+    {
+        if (isset($this->data->column->{$key}) === false) {
+            return null;
+        }
+
+        $column = $this->data->column->{$key};
+        if ($column->type === 'datetime') {
+            return parent::castPosDb($key, $value);
         }
 
         return $value;

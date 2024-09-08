@@ -283,7 +283,7 @@ abstract class Model
         if (isset(self::$column[$class][$key]) === true) {
             try {
                 $this->{$key} = self::cast($key, $value);
-            } catch (\TypeError $_) {}
+            } catch (\TypeError $e) {}
 
             if ($this->__changed === null) {
                 $this->__changed = [];
@@ -332,7 +332,6 @@ abstract class Model
     public static function cast(string $key, mixed $value = null) : mixed
     {
         $class = static::class;
-
         return self::$driver[$class]->cast($key, $value);
     }
 

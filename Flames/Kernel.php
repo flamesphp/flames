@@ -176,6 +176,7 @@ final class Kernel
         if ($timezone !== null && $timezone !== '') {
             \date_default_timezone_set($timezone);
         }
+        \date_default_timezone_set('UTC');
     }
 
     /**
