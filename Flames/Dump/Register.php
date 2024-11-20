@@ -19,7 +19,7 @@ function dump() : void
 
     $headers = (function_exists('getallheaders') ? getallheaders() : null);;
     if (isset($headers['User-Agent']) === true) {
-        if (str_starts_with($headers['User-Agent'], 'PostmanRuntime') === true) {
+        if (\Flames\Connection\HttpClient::isHttpClient() === true) {
             $buffer = str_replace('"_sage-parent"', '"_sage-parent _sage-show"', $buffer);
         }
     }
@@ -47,7 +47,7 @@ function dd()
 
     $headers = (function_exists('getallheaders') ? getallheaders() : null);;
     if (isset($headers['User-Agent']) === true) {
-        if (str_starts_with($headers['User-Agent'], 'PostmanRuntime') === true) {
+        if (\Flames\Connection\HttpClient::isHttpClient() === true) {
             $buffer = str_replace('"_sage-parent"', '"_sage-parent _sage-show"', $buffer);
         }
     }

@@ -512,7 +512,7 @@ final class Strings
      *
      * @return string The trimmed string.
      */
-    public static function trim(mixed $value, mixed $charList, bool $multibyte = false) : string
+    public static function trim(mixed $value, mixed $charList = null, bool $multibyte = false) : string
     {
         $value = (string)$value;
 

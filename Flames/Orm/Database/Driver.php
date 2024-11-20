@@ -5,6 +5,7 @@ namespace Flames\Orm\Database;
 use DateTimeZone;
 use Exception;
 use Flames\Collection\Arr;
+use Flames\Date\TimeZone;
 use Flames\DateTimeImmutable;
 use Flames\Model;
 use PDO;
@@ -170,10 +171,21 @@ abstract class Driver
             return null;
         }
 
+        elseif ($column->type === 'text') {
+            if ($value === null) {
+                if ($column->nullable === true) {
+                    return null;
+                }
+                return '';
+            }
+
+            return $value;
+        }
+
         return null;
     }
 
-    public function castDb(string $key, mixed $value = null) : mixed
+    public function castPreDb(string $key, mixed $value = null) : mixed
     {
         if (isset($this->data->column->{$key}) === false) {
             return null;
@@ -202,6 +214,21 @@ abstract class Driver
         return $value;
     }
 
+    public function castPosDb(string $key, mixed $value = null) : mixed
+    {
+        if (isset($this->data->column->{$key}) === false) {
+            return null;
+        }
+
+        $column = $this->data->column->{$key};
+        if ($column->type === 'datetime') {
+            $value = new \Flames\DateTimeImmutable($value, new DateTimeZone('UTC'));
+            $value = $value->setTimezone(TimeZone::getDefault());
+            return $value;
+        }
+
+        return $value;
+    }
     /**
      * @throws Exception
      */
@@ -234,7 +261,7 @@ abstract class Driver
     {
         $castData = [];
         foreach ($data as $key => $value) {
-            $castData[$key] = self::castDb($key, self::cast($key, $value));
+            $castData[$key] = self::castPreDb($key, self::cast($key, $value));
         }
         return $castData;
     }

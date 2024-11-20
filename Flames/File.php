@@ -1,5 +1,7 @@
 <?php
 
+namespace Flames;
+
 class File
 {
     /**
@@ -26,5 +28,74 @@ class File
         } catch (\Error $e) {
             return null;
         }
+    }
+
+    public static function putContents(string $path, string $contents): bool
+    {
+        $success = false;
+        try {
+            $success = file_put_contents($path, $contents);
+        } catch (\Exception $_) {}
+
+        if ($success === false) {
+            $dirPath = dirname($path);
+
+            if (is_dir($dirPath) === false) {
+                $mask = umask(0);
+                mkdir($dirPath, 0777, true);
+                umask($mask);
+            }
+
+            $success = file_put_contents($path, $contents);
+            if ($success === false) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public static function getContents(string $path): mixed
+    {
+        return file_get_contents($path);
+    }
+
+    public static function delete(string $path): bool
+    {
+        try {
+            return unlink($path);
+        } catch (\Exception $_) {}
+
+        if (file_exists($path) === false) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static function move(string $oldPath, string $newPath): bool
+    {
+        try {
+            return rename($oldPath, $newPath);
+        } catch (\Exception $_) {}
+
+        if (file_exists($newPath) === true) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static function copy(string $fromPath, string $toPath): bool
+    {
+        try {
+            return copy($fromPath, $toPath);
+        } catch (\Exception $_) {}
+
+        if (file_exists($toPath) === true) {
+            return true;
+        }
+
+        return false;
     }
 }
