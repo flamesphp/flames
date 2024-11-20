@@ -230,7 +230,7 @@ class MariaDB extends Driver
                     $_filters[] = [$filter[0], $filter[1], $filter[2], 'AND'];
                 }
                 elseif ($filterCount === 4) {
-                    $_filters[] = [$filter[0], $filter[1], $filter[2], $filter[3], $filter[4]];
+                    $_filters[] = [$filter[0], $filter[1], $filter[2], $filter[3]];
                 }
                 else {
                     throw new Exception('Invalid filter data.');
@@ -251,6 +251,7 @@ class MariaDB extends Driver
     {
         $query     = '';
         $variables = [];
+        $custom = [];
         $lastEnd   = null;
 
         $countFilters = count($filters);
@@ -266,11 +267,20 @@ class MariaDB extends Driver
             if ($filter[2] === null) {
                 $query .= ("\n\t`" . $this->data->column->{$filter[0]}->name . '` IS NULL ' . $filter[3]);
             } else {
-                $query .= ("\n\t`" . $this->data->column->{$filter[0]}->name . '` ' . $filter[1] . ' :filter_' . $i . ' ' . $filter[3]);
+                $filterParam = (':filter_' . $i);
+                if (mb_strtolower($filter[1]) === 'like') {
+                    $filterParam = (
+                        'CONCAT(\'%\', ' .
+                        $filterParam .
+                        ', \'%\')'
+                    );
+                }
+                $query .= ("\n\t`" . $this->data->column->{$filter[0]}->name . '` ' . $filter[1] . ' ' . $filterParam . ' ' . $filter[3]);
             }
         }
 
         $query = substr($query, 0, -(strlen($lastEnd) + 1));
+
         return ['query' => $query, 'variables' => $variables];
     }
 
