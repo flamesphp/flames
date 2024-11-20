@@ -535,25 +535,32 @@ class Element
             throw new Exception('Method only works on client.');
         }
 
-        $uid = Js::eval("
-            (function() {
-                var element = document.querySelector('" . $query . "');
-                if (element !== null) {
-                    if (element.getAttribute(Flames.Internal.char + 'uid') === null) {
-                        Flames.Internal.uid++;
-                        element.setAttribute(Flames.Internal.char + 'uid', Flames.Internal.generateUid(Flames.Internal.uid));
-                    }
-                    
-                    return element.getAttribute(Flames.Internal.char + 'uid');
-                }
-            })();
-        ");
+        $window = Js::getWindow();
 
-        if (isset($uid) === true && $uid !== null && $uid !== '') {
-            return new Element($uid);
-        }
-
+        $element = $window->document->querySelector($query);
+        dump($element);
+        dump($element !== null);
         return null;
+
+//        $uid = Js::eval("
+//            (function() {
+//                var element = document.querySelector('" . $query . "');
+//                if (element !== null) {
+//                    if (element.getAttribute(Flames.Internal.char + 'uid') === null) {
+//                        Flames.Internal.uid++;
+//                        element.setAttribute(Flames.Internal.char + 'uid', Flames.Internal.generateUid(Flames.Internal.uid));
+//                    }
+//
+//                    return element.getAttribute(Flames.Internal.char + 'uid');
+//                }
+//            })();
+//        ");
+//
+//        if (isset($uid) === true && $uid !== null && $uid !== '') {
+//            return new Element($uid);
+//        }
+//
+//        return null;
     }
 
     /**

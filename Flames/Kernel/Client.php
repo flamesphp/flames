@@ -16,7 +16,8 @@ final class Client
     private static $getData = false;
     public static function __getData() {
         if (self::$getData === false) {
-            $data = base64_decode(Js::getWindow()->eval('document.querySelector(\'flames\').innerHTML'));
+            $flamesElement = Js::getWindow()->document->querySelector('flames');
+            $data = base64_decode($flamesElement->innerHTML);
             try {
                 $data = substr($data, strpos($data, '|') + 1);
                 $data = substr($data, strpos($data, '|') + 1);
@@ -28,7 +29,7 @@ final class Client
             }
             self::$data = $data;
             self::$getData = true;
-            Js::eval('document.querySelector(\'flames\').remove();');
+            $flamesElement->remove();
         }
         return self::$data;
     }

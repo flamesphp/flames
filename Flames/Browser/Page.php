@@ -33,7 +33,8 @@ class Page
 
     protected static function processPage($uri, $html, $delegate = null)
     {
-        Js::eval("window.history.pushState('change', 'Title', '" . $uri . "');");
+        Js::getWindow()->history->pushState('change', 'Title', '" . $uri . "');
+
         $head = null;
         $headPos = strpos($html, '<head');
         if ($headPos !== false) {

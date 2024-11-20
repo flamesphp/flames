@@ -7,7 +7,9 @@ window.Flames.onBoot = function() {
     window.Flames.Internal.mockLog.warn = function() {};
     window.Flames.Internal.log = false;
     window.Flames.Internal.environment = decodeURIComponent('{{ environment }}');
+    window.Flames.Internal.dumpLocalPath = decodeURIComponent('{{ dumpLocalPath }}');
     window.Flames.Internal.autoBuild = '{{ autoBuild }}';
+    window.Flames.Internal.composer = '{{ composer }}';
     window.Flames.Internal.swfExtension = '{{ swfExtension }}';
     window.Flames.Internal.onErrorListener = function(error, line, file, code, traceString, trace) {
         console.error(error);

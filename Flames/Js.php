@@ -4,6 +4,7 @@ namespace Flames;
 
 use Exception;
 use Vrzno;
+use Flames\Js\Window;
 
 /**
  * Class Js
@@ -36,12 +37,16 @@ class Js
     /**
      * Returns the window object.
      *
-     * @return WindowNativeJS|null The window object if it exists, otherwise null.
+     * @return Window|null The window object if it exists, otherwise null.
      *
      * @throws Exception If the method is called on the server module.
      */
-    public static function getWindow() : Vrzno|null
+    public static function getWindow() : Window|Vrzno|null
     {
+        if (self::$window !== null) {
+            return self::$window;
+        }
+
         if (Kernel::MODULE === 'SERVER') {
             throw new Exception('Method only works on client.');
         } else {

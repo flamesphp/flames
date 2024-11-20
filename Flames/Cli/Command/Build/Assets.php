@@ -160,13 +160,17 @@ final class Assets
         $unsupported = @file_get_contents(ROOT_PATH . 'App/Client/Resource/Event/Unsupported.js');
         $engine = str_replace([
             '{{ environment }}',
+            '{{ dumpLocalPath }}',
             '\'{{ autoBuild }}\'',
             '\'{{ swfExtension }}\'',
+            '\'{{ composer }}\'',
             '\'{{ unsupported }}\';'
         ], [
             rawurlencode(Environment::get('ENVIRONMENT')),
+            rawurlencode(Environment::get('DUMP_LOCAL_PATH')),
             ((Environment::get('CLIENT_AUTOBUILD') === true) ? 'true' : 'false'),
             (($this->swfExtension === true) ? 'true' : 'false'),
+            ((FLAMES_COMPOSER === true) ? 'true' : 'false'),
             ('(function(){' . $unsupported . '})();')
         ], file_get_contents(FLAMES_PATH . 'Kernel/Client/Engine/Flames.js'));
 
