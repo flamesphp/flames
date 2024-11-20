@@ -1,8 +1,11 @@
 syntax: glob
-.cache/
-.docker/.data
+Application/
+.hg/
+.svn/
+.cvs/
 .idea/
-.env
-.gitmodules
-App/
-Service/
+.cache/
+.data/
+.tmp/
+.DS_Store
+.*/
