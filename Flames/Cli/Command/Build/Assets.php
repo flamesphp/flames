@@ -51,7 +51,8 @@ final class Assets
         Flames\Event\Element\Click::class,
         Flames\Event\Element\Change::class,
         Flames\Event\Element\Input::class,
-        Flames\Kernel\Client\Dispatch::class
+        Flames\Kernel\Client\Dispatch::class,
+        Flames\Js\Module::class
     ];
 
     protected static $clientMocks = [

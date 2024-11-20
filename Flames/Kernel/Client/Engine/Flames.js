@@ -41,6 +41,7 @@ window.Flames.onBoot = function() {
     window.Flames.Internal.char = 'ロ';
     window.Flames.Internal.uid = 0;
     window.Flames.Internal.hashidfy = new Flames.Internal.Hashid('', 14,'abcdefghijklmnopqrstuvwxyz0123456789','');
+    window.Flames.Internal.modules = [];
     window.Flames.Internal.generateUid = (function() {
         window.Flames.Internal.uid += 1;
         return Flames.Internal.hashidfy.encode([Flames.Internal.uid]);
@@ -62,6 +63,22 @@ window.Flames.onBoot = function() {
             }
         }
         return array.toPhpSerialize();
+    }
+
+    window.Flames.Internal.importModule = function(uri, hash) {
+        if (window.Flames.Internal.modules[hash] !== undefined && window.Flames.Internal.modules[hash] !== null) {
+            window.PHP.eval('<?php \\Flames\\Js\\Module::onLoad(\'' + hash + '\'); ?>');
+            return;
+        }
+
+        import(uri).then(function(module) {
+            window.Flames.Internal.modules[hash] = module;
+            Flames.Internal.evalBase64(btoa('\\Flames\\Js\\Module::onLoad(\'' + hash + '\');'));
+        });
+    }
+
+    window.Flames.Internal.getModuleByHash = function(hash) {
+        return window.Flames.Internal.modules[hash];
     }
 
     window.Flames.onReady();

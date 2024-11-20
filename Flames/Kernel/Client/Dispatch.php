@@ -138,25 +138,4 @@ final class Dispatch
             return self::$instances[$class];
         }
     }
-
-    public static function onClick(string $class, string $method, string $uid)
-    {
-        $click = new Click(Element::query($uid));
-        $instance = self::getInstance($class);
-        $instance->{$method}($click);
-    }
-
-    public static function onChange(string $class, string $method, string $uid)
-    {
-        $change = new Change(Element::query($uid));
-        $instance = self::getInstance($class);
-        $instance->{$method}($change);
-    }
-
-    public static function onInput(string $class, string $method, string $uid)
-    {
-        $input = new Input(Element::query($uid));
-        $instance = self::getInstance($class);
-        $instance->{$method}($input);
-    }
 }
