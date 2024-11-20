@@ -238,7 +238,7 @@ final class Arr extends \ArrayObject
      *                        return value will be treated as `null`.
      * @return Arr The sorted array.
      */
-    public function sortByDelegate(mixed $delegate) : Arr
+    public function sortByDelegate(\Closure $delegate) : Arr
     {
         $this->uasort(function (mixed $a, mixed $b) use($delegate) {
 
@@ -288,7 +288,7 @@ final class Arr extends \ArrayObject
      * @param bool $isKeyValue Optional. Indicates if the delegate accepts both key and value parameters. Default is false.
      * @return mixed|null The first element that satisfies the delegate or null if no element is found.
      */
-    public function find(mixed $delegate, bool $isKeyValue = false) : mixed
+    public function find(\Closure $delegate, bool $isKeyValue = false) : mixed
     {
         if ($isKeyValue === false) {
             foreach ($this as  $value) {

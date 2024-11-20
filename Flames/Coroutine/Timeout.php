@@ -10,6 +10,7 @@ use Flames\Kernel;
 
 class Timeout
 {
+    private static $delegatesData = [];
     protected array $uids = [];
 
     public function add($delegate, array|Arr $args = null, ?int $miliseconds = 1)
@@ -18,7 +19,7 @@ class Timeout
             throw new Exception('Method only works on client.');
         }
 
-        $uid = (count(Event::$delegatesData) + 1);
+        $uid = (count(self::$delegatesData) + 1);
 
         if ($miliseconds === null) {
             $miliseconds = 1;
@@ -30,7 +31,7 @@ class Timeout
             $args = [];
         }
 
-        Event::$delegatesData[$uid] = Arr([
+        self::$delegatesData[$uid] = Arr([
             'delegate' => $delegate,
             'args' => $args,
             'miliseconds' => $miliseconds
@@ -41,15 +42,18 @@ class Timeout
     public function run()
     {
         foreach ($this->uids as $uid) {
-            $delegateData = Event::$delegatesData[$uid];
+            $delegateData = self::$delegatesData[$uid];
 
-            Js::eval("
-                (function() {
-                    window.setTimeout(function() {
-                        window.PHP.eval('<?php \\\\Flames\\\\Coroutine\\\\Timeout\\\\Event::onDispatch(" . $uid . "); ?>');
-                    }, " . $delegateData->miliseconds . ");
-                })();
-            ");
+            $window = Js::getWindow();
+            $window->setTimeout(function() use ($delegateData) {
+                $delegate = $delegateData->delegate;
+                $args = $delegateData->args;
+                while (count($args) < 16) {
+                    $args[] = null;
+                }
+
+                $delegate($args[0], $args[1], $args[2], $args[3], $args[4], $args[5], $args[6], $args[7], $args[8], $args[9], $args[10], $args[11], $args[12], $args[13], $args[14], $args[15]);
+            }, $delegateData->miliseconds);
         }
     }
 }

@@ -41,7 +41,6 @@ final class Assets
         Flames\Router\Parser::class,
         Flames\Header\Client::class,
         Flames\Coroutine\Timeout::class,
-        Flames\Coroutine\Timeout\Event::class,
         Flames\Element::class,
         Flames\Element\Event::class,
         Flames\Money\Client::class,

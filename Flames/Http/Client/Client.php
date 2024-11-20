@@ -36,7 +36,7 @@ class Client
         return $this;
     }
 
-    public function then($delegate)
+    public function then(\Closure $delegate)
     {
         self::$lastId += 1;
         self::$callbacks[self::$lastId] = $delegate;
