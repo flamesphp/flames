@@ -5,7 +5,6 @@ namespace Flames;
 
 class Server
 {
-
     public static function getUri($withQueryString = false): string
     {
         if ($withQueryString === true) {

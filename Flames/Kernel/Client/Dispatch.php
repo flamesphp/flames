@@ -36,6 +36,7 @@ final class Dispatch
     protected static function setup() : void
     {
         self::simulateGlobals();
+        self::dispatchHooks();
         self::dispatchEvents();
     }
     protected static function simulateGlobals() : void
@@ -43,6 +44,53 @@ final class Dispatch
         $location = Js::getWindow()->location;
         $origin = $location->origin;
         $_SERVER['REQUEST_URI'] = explode('#', substr($location->href, strlen($origin)))[0];
+    }
+
+    protected static function dispatchHooks()
+    {
+        $window = Js::getWindow();
+        $elements = Element::queryAll('*');
+        foreach ($elements as $element) {
+
+            $clickUid = $element->getAttribute('@click');
+            if ($clickUid !== null) {
+                foreach ($window->Flames->Internal->eventTriggers as $eventTrigger) {
+                    if ($clickUid === $eventTrigger->uid && $eventTrigger->type === 'click') {
+                        $element->event->click(function($event) use ($eventTrigger) {
+                            $instance = self::getInstance($eventTrigger->class);
+                            $instance->{$eventTrigger->name}($event);
+                        });
+                        break;
+                    }
+                }
+            }
+
+            $changeUid = $element->getAttribute('@change');
+            if ($changeUid !== null) {
+                foreach ($window->Flames->Internal->eventTriggers as $eventTrigger) {
+                    if ($changeUid === $eventTrigger->uid && $eventTrigger->type === 'change') {
+                        $element->event->change(function($event) use ($eventTrigger) {
+                            $instance = self::getInstance($eventTrigger->class);
+                            $instance->{$eventTrigger->name}($event);
+                        });
+                        break;
+                    }
+                }
+            }
+
+            $inputUid = $element->getAttribute('@change');
+            if ($inputUid !== null) {
+                foreach ($window->Flames->Internal->eventTriggers as $eventTrigger) {
+                    if ($inputUid === $eventTrigger->uid && $eventTrigger->type === 'input') {
+                        $element->event->input(function($event) use ($eventTrigger) {
+                            $instance = self::getInstance($eventTrigger->class);
+                            $instance->{$eventTrigger->name}($event);
+                        });
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     protected static function dispatchEvents() : bool

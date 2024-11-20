@@ -296,7 +296,7 @@ final class Assets
         function Arr(mixed $value=null):\Flames\Collection\Arr{if($value instanceof \Flames\Collection\Arr){return $value;}return new \Flames\Collection\Arr($value);}
         \Flames\Kernel\Client\Dispatch::run();
 ';
-        fwrite($stream, "var data = Flames.Internal.evalBase64('" . base64_encode($autorun). "');dump(data);");
+        fwrite($stream, "var data=Flames.Internal.evalBase64('" . base64_encode($autorun). "');if (data!==null){dump(data);}");
 
         fwrite($stream, '};');
         exit;
