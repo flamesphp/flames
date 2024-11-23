@@ -1,10 +1,10 @@
 <?php
 
-namespace Flames\Os\Screen;
+namespace Flames\Os\Server\Screen;
 
 use Exception;
 use Flames\Crypto\Hash;
-use Flames\Os;
+use Flames\Server\Os;
 use Flames\Image as ImageEx;
 
 class Image
@@ -23,7 +23,7 @@ class Image
         }
 
         chdir($tmpDir);
-        $batPath = str_replace('/', '\\', (FLAMES_PATH . 'OS\Screen\Image\Take.bat'));
+        $batPath = str_replace('/', '\\', (FLAMES_PATH . 'Server\OS\Screen\Image\Take.bat'));
         $imageHash = Hash::getRandom();
         exec($batPath . ' ' . $imageHash . '.png');
         chdir(ROOT_PATH);

@@ -1,11 +1,11 @@
 <?php
 
-namespace Flames\Os;
+namespace Flames\Server\Os;
 
 use Exception;
 use Flames\Collection\Arr;
 use Flames\Crypto\Hash;
-use Flames\OS;
+use Flames\Server\OS;
 
 class Mouse
 {
@@ -19,7 +19,7 @@ class Mouse
             throw new Exception('Unix not supported yet.');
         }
 
-        $execPath = str_replace('/', '\\', (FLAMES_PATH . 'OS/Mouse/GetMousePosition.ps1'));
+        $execPath = str_replace('/', '\\', (FLAMES_PATH . 'Server/OS/Mouse/GetMousePosition.ps1'));
         $data = (shell_exec('powershell.exe -File ' . $execPath));
         $split = explode(' ', $data);
 
@@ -36,11 +36,11 @@ class Mouse
         }
 
 
-        $tmpData = file_get_contents(str_replace('/', '\\', (FLAMES_PATH . 'OS/Mouse/SetMousePosition.ps1')));
+        $tmpData = file_get_contents(str_replace('/', '\\', (FLAMES_PATH . 'Server/OS/Mouse/SetMousePosition.ps1')));
         $tmpData = str_replace(['$x', '$y'], [$x, $y], $tmpData);
 
         if ($leftClick === true) {
-            $tmpData .= ("\n" . file_get_contents(str_replace('/', '\\', (FLAMES_PATH . 'OS/Mouse/LeftClickMouseJoin.ps1'))));
+            $tmpData .= ("\n" . file_get_contents(str_replace('/', '\\', (FLAMES_PATH . 'Server/OS/Mouse/LeftClickMouseJoin.ps1'))));
         }
 
         $tmpPath = str_replace('/', '\\', (ROOT_PATH . '.cache/powershell/' . Hash::getRandom() . '.ps1'));
@@ -65,7 +65,7 @@ class Mouse
             throw new Exception('Click ' . $type . ' not supported yet.');
         }
 
-        $execPath = str_replace('/', '\\', (FLAMES_PATH . 'OS/Mouse/LeftClickMouse.ps1'));
+        $execPath = str_replace('/', '\\', (FLAMES_PATH . 'Server/OS/Mouse/LeftClickMouse.ps1'));
         shell_exec('powershell.exe -File ' . $execPath);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Flames\Process;
 
-use Flames\Os;
+use Flames\Server\Os;
 
 /**
  * Class Wsl

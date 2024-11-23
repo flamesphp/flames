@@ -52,7 +52,11 @@ final class Assets
         Flames\Event\Element\Change::class,
         Flames\Event\Element\Input::class,
         Flames\Kernel\Client\Dispatch::class,
-        Flames\Js\Module::class
+        Flames\Js\Module::class,
+        Flames\Client\Os::class,
+        Flames\Client\Platform::class,
+        Flames\Client\Browser::class,
+        Flames\Client\UserAgentParser::class,
     ];
 
     protected static $clientMocks = [
