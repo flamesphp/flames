@@ -222,7 +222,7 @@ END OF TERMS AND CONDITIONS
 
 Flames depends on third-party libraries with compatible licenses.
 
-| Library                                               | License                   | Authors                                                                                                        |
+| Library                                                    | License                   | Authors                                                                                                        |
 |------------------------------------------------------------|---------------------------|---------------------------------------------------------------------------------------------------------------------|
 | [PhpWasm](https://github.com/seanmorris/php-wasm)          | [Apache-2](#Apache-2)     | Sean Morris and Oraoto                                                                                              |
 | [Twig](https://github.com/twigphp/Twig)                    | [BSD-3-Clause](#BSD-3-Clause) | Twig Team                                                                                                           |
@@ -230,6 +230,7 @@ Flames depends on third-party libraries with compatible licenses.
 | [AltoRouter](https://github.com/dannyvankooten/AltoRouter) | [MIT](#MIT)               | Danny van Kooten                                                                                                    |
 | [Ruffle](https://github.com/ruffle-rs/ruffle)              | [MIT](#MIT)               | Ruffle LLC and Ruffle contributors                                                                                  |
 | [Eruda](https://github.com/liriliri/eruda)                 | [MIT](#MIT)               | Liriliri                                                                                                            |
+| [PhpUserAgent](https://github.com/donatj/PhpUserAgent)          | [MIT](#MIT)               | Jesse G. Donat                                                                                                            |
 
 
 
