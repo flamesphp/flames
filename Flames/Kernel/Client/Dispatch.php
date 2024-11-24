@@ -48,8 +48,6 @@ final class Dispatch
 
     protected static function dispatchHooks()
     {
-        dump('dispatch hooks');
-
         $window = Js::getWindow();
         $elements = Element::queryAll('*');
         foreach ($elements as $element) {

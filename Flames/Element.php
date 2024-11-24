@@ -11,7 +11,6 @@ use Flames\Element\Shadow;
  * Represents an HTML element.
  *
  * Description for the class
- * @property string|null $uid
  * @property string|null $tag
  * @property string|null $html
  * @property string|null $value
@@ -39,10 +38,6 @@ class Element
         }
     }
 
-    private function setUid(string $uid): void
-    {
-        $this->uid = $uid;
-    }
 
     private function setElementNative($element): void
     {
@@ -61,10 +56,7 @@ class Element
     public function __get(string $key) : mixed
     {
         $key = strtolower($key);
-        if ($key === 'uid') {
-            return $this->uid;
-        }
-        elseif ($key === 'value') {
+        if ($key === 'value') {
             return $this->getValue();
         }
         elseif ($key === 'html') {
@@ -512,17 +504,7 @@ class Element
             return null;
         }
 
-        $window = Js::getWindow();
-
-        $uid = $element->getAttribute($window->Flames->Internal->char . 'uid');
-        if ($uid === null) {
-            $window->Flames->Internal->uid = ($window->Flames->Internal->uid + 1);
-            $uid = $window->Flames->Internal->generateUid($window->Flames->Internal->uid);
-            $element->setAttribute($window->Flames->Internal->char . 'uid', $uid);
-        }
-
         $_element = new Element();
-        $_element->setUid($uid);
         $_element->setElementNative($element);
         return $_element;
     }
@@ -561,15 +543,7 @@ class Element
             return null;
         }
 
-        $uid = $element->getAttribute($window->Flames->Internal->char . 'uid');
-        if ($uid === null) {
-            $window->Flames->Internal->uid = ($window->Flames->Internal->uid + 1);
-            $uid = $window->Flames->Internal->generateUid($window->Flames->Internal->uid);
-            $element->setAttribute($window->Flames->Internal->char . 'uid', $uid);
-        }
-
         $_element = new Element();
-        $_element->setUid($uid);
         $_element->setElementNative($element);
         return $_element;
     }
@@ -596,7 +570,9 @@ class Element
         }
 
         foreach ($elementsUids as $elementUid) {
-            $elements[] = self::fromUid($elementUid);
+            $element = self::fromUid($elementUid);
+            $element->removeAttribute($window->Flames->Internal->char . 'uid');
+            $elements[] = $element;
         }
 
         return $elements;
@@ -607,15 +583,6 @@ class Element
         $_element = new Element();
         $_element->setElementNative($element);
 
-        $window = Js::getWindow();
-        $uid = $element->getAttribute($window->Flames->Internal->char . 'uid');
-        if ($uid === null) {
-            $window->Flames->Internal->uid = ($window->Flames->Internal->uid + 1);
-            $uid = $window->Flames->Internal->generateUid($window->Flames->Internal->uid);
-            $element->setAttribute($window->Flames->Internal->char . 'uid', $uid);
-        }
-
-        $_element->setUid($uid);
         return $_element;
     }
 
