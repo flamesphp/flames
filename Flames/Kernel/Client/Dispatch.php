@@ -7,7 +7,7 @@ use Flames\Element;
 use Flames\Event\Element\Click;
 use Flames\Event\Element\Change;
 use Flames\Event\Element\Input;
-use Flames\JS;
+use Flames\Js;
 use Flames\Kernel\Route;
 use Flames\Router;
 
@@ -36,6 +36,7 @@ final class Dispatch
     protected static function setup() : void
     {
         self::simulateGlobals();
+        self::dispatchHooks();
         self::dispatchEvents();
     }
     protected static function simulateGlobals() : void
@@ -45,9 +46,61 @@ final class Dispatch
         $_SERVER['REQUEST_URI'] = explode('#', substr($location->href, strlen($origin)))[0];
     }
 
+    protected static function dispatchHooks()
+    {
+        $window = Js::getWindow();
+        $elements = Element::queryAll('*');
+        foreach ($elements as $element) {
+
+            $clickUid = $element->getAttribute('@click');
+            if ($clickUid !== null) {
+                foreach ($window->Flames->Internal->eventTriggers as $eventTrigger) {
+                    if ($clickUid === $eventTrigger->uid && $eventTrigger->type === 'click') {
+                        $element->event->click(function($event) use ($eventTrigger) {
+                            $instance = self::getInstance($eventTrigger->class);
+                            $instance->{$eventTrigger->name}($event);
+                        });
+                        break;
+                    }
+                }
+            }
+
+            $changeUid = $element->getAttribute('@change');
+            if ($changeUid !== null) {
+                foreach ($window->Flames->Internal->eventTriggers as $eventTrigger) {
+                    if ($changeUid === $eventTrigger->uid && $eventTrigger->type === 'change') {
+                        $element->event->change(function($event) use ($eventTrigger) {
+                            $instance = self::getInstance($eventTrigger->class);
+                            $instance->{$eventTrigger->name}($event);
+                        });
+                        break;
+                    }
+                }
+            }
+
+            $inputUid = $element->getAttribute('@input');
+            if ($inputUid !== null) {
+                foreach ($window->Flames->Internal->eventTriggers as $eventTrigger) {
+                    if ($inputUid === $eventTrigger->uid && $eventTrigger->type === 'input') {
+                        $element->event->input(function($event) use ($eventTrigger) {
+                            $instance = self::getInstance($eventTrigger->class);
+                            $instance->{$eventTrigger->name}($event);
+                        });
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
     protected static function dispatchEvents() : bool
     {
         \Flames\Kernel::__injector();
+
+        if (class_exists('\\App\\Client\\Event\\Ready') === true) {
+            $ready = new \App\Client\Event\Ready();
+            $ready->onReady();
+        }
 
         if (class_exists('\\App\\Client\\Event\\Route') === true) {
             $route = new \App\Client\Event\Route();
@@ -89,28 +142,5 @@ final class Dispatch
             self::$instances[$class] = new $class();
             return self::$instances[$class];
         }
-
-        return null;
-    }
-
-    public static function onClick(string $class, string $method, string $uid)
-    {
-        $click = new Click(Element::query($uid));
-        $instance = self::getInstance($class);
-        $instance->{$method}($click);
-    }
-
-    public static function onChange(string $class, string $method, string $uid)
-    {
-        $change = new Change(Element::query($uid));
-        $instance = self::getInstance($class);
-        $instance->{$method}($change);
-    }
-
-    public static function onInput(string $class, string $method, string $uid)
-    {
-        $input = new Input(Element::query($uid));
-        $instance = self::getInstance($class);
-        $instance->{$method}($input);
     }
 }

@@ -71,7 +71,7 @@ class Client
 
     public static function redirect(string $url)
     {
-        Js::eval('window.location = "' . $url . '";');
+        Js::getWindow()->location = $url;
         return Arr(['redirect' => $url]);
     }
 }

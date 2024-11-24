@@ -3,6 +3,7 @@
 namespace Flames\Cli\Command\Build\Assets;
 
 use Flames\Collection\Arr;
+use Flames\Client\Event;
 
 /**
  * Class Data
@@ -75,7 +76,7 @@ class Data
             foreach($attributes as $attribute) {
                 $attributeName = $attribute->getName();
 
-                if ($attributeName === \Flames\Browser\Click::class) {
+                if ($attributeName === Event\Click::class) {
                     $arguments = $attribute->getArguments();
                     if (isset($arguments['uid'])) {
                         $data->methods[$method->name] = Arr([
@@ -85,7 +86,7 @@ class Data
                         ]);
                     }
                 }
-                elseif ($attributeName === \Flames\Browser\Change::class) {
+                elseif ($attributeName === Event\Change::class) {
                     $arguments = $attribute->getArguments();
                     if (isset($arguments['uid'])) {
                         $data->methods[$method->name] = Arr([
@@ -95,7 +96,7 @@ class Data
                         ]);
                     }
                 }
-                elseif ($attributeName === \Flames\Browser\Input::class) {
+                elseif ($attributeName === Event\Input::class) {
                     $arguments = $attribute->getArguments();
                     if (isset($arguments['uid'])) {
                         $data->methods[$method->name] = Arr([

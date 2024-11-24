@@ -7,6 +7,8 @@ use Flames\Element;
 /**
  * Description for the class
  * @property Element|null $target
+ * @property string|bool|null $value
+ * @property bool $checked
  */
 class Change
 {
@@ -23,6 +25,12 @@ class Change
 
         if ($key === 'target') {
             return $this->target;
+        }
+        elseif ($key === 'value') {
+            return $this->target->value;
+        }
+        elseif ($key === 'checked') {
+            return $this->target->checked;
         }
 
         return null;

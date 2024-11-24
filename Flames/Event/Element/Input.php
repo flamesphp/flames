@@ -7,6 +7,7 @@ use Flames\Element;
 /**
  * Description for the class
  * @property Element|null $target
+ * @property string|bool|null $value
  */
 class Input
 {
@@ -23,6 +24,9 @@ class Input
 
         if ($key === 'target') {
             return $this->target;
+        }
+        elseif ($key === 'value') {
+            return $this->target->value;
         }
 
         return null;

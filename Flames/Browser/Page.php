@@ -33,7 +33,8 @@ class Page
 
     protected static function processPage($uri, $html, $delegate = null)
     {
-        Js::eval("window.history.pushState('change', 'Title', '" . $uri . "');");
+        Js::getWindow()->history->pushState('change', 'Title', '" . $uri . "');
+
         $head = null;
         $headPos = strpos($html, '<head');
         if ($headPos !== false) {
@@ -70,12 +71,7 @@ class Page
             }
         }
 
-        $body = str_replace('<script src="/.flames.js" type="text/javascript"></script>', '', $body);
-
         $currentBody = Js::getWindow()->document->body->innerHTML;
-//        dump($currentBody);
-//        exit;
-
         preg_match_all('#<script(.*?)<\/script>#is', $body, $matches);
         $scripts = $matches[0];
         foreach ($scripts as $script) {

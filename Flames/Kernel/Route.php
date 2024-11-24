@@ -5,7 +5,7 @@ namespace Flames\Kernel;
 use Flames\Cli;
 use Flames\Collection\Arr;
 use Flames\Connection;
-use Flames\JS;
+use Flames\Js;
 use Flames\RequestData;
 use Flames\Required;
 

@@ -4,6 +4,7 @@ namespace Flames;
 
 use Exception;
 use Flames\Collection\Arr;
+use Flames\Collection\Strings;
 
 /**
  * Represents an HTML element.
@@ -11,48 +12,40 @@ use Flames\Collection\Arr;
  * Description for the class
  * @property string|null $uid
  * @property string|null $tag
- * @property Element|null $parent;
- * @property Arr $attributes
- * @property Arr $classes
+ * @property string|null $html
  * @property string|null $value
  * @property string|null $checked
+ * @property Element|null $parent
  * @property Element\Event|null $event
  */
 class Element
 {
-    protected string|null $uid = null;
-    protected string|null $tag = null;
-    protected Arr $attributes;
-    protected Arr $classes;
-    protected Arr $styles;
-    protected string|bool|null $value = null;
-    protected string|null $checked = null;
-    protected Element\Event|null $event = null;
-    protected Element|null $parent = null;
+    private string|null $uid = null;
+    private $element = null;
+    private Element\Event|null $event = null;
 
     /**
      * Class Constructor.
-     *
-     * @param string|null $uid The unique identifier for the instance. Optional, defaults to null.
      *
      * @return void
      * @throws Exception If the method is called on the server module.
      *
      */
-    public function __construct(string $uid = null)
+    public function __construct()
     {
         if (Kernel::MODULE === 'SERVER') {
             throw new Exception('Method only works on client.');
         }
+    }
 
-        $this->attributes = Arr();
-        $this->classes    = Arr();
-        $this->styles     = Arr();
+    private function setUid(string $uid): void
+    {
+        $this->uid = $uid;
+    }
 
-        if ($uid !== null) {
-            $this->uid = $uid;
-            $this->sync();
-        }
+    private function setElementNative($element): void
+    {
+        $this->element = $element;
     }
 
     /**
@@ -66,35 +59,33 @@ class Element
      */
     public function __get(string $key) : mixed
     {
-        $this->sync();
-
         $key = strtolower($key);
         if ($key === 'uid') {
             return $this->uid;
         }
-        elseif ($key === 'tag') {
-            return $this->tag;
-        }
-        elseif ($key === 'attributes') {
-            return $this->attributes;
-        }
-        elseif ($key === 'classes') {
-            return $this->classes;
-        }
         elseif ($key === 'value') {
-            return $this->value;
+            return $this->getValue();
+        }
+        elseif ($key === 'html') {
+            return $this->getHtml();
+        }
+        elseif ($key === 'tag') {
+            return Strings::toLower($this->element->tagName);
         }
         elseif ($key === 'checked') {
-            return $this->checked;
+            return $this->getChecked();
         }
         elseif ($key === 'event') {
-            if ($this->event === null) {
-                $this->event = new Element\Event($this->uid);
+            if ($this->event === null && $this->element !== null) {
+                $this->event = new Element\Event($this->element);
             }
             return $this->event;
         }
         elseif ($key === 'parent') {
             return $this->getParent();
+        }
+        elseif ($key === 'element') {
+            return $this->element;
         }
 
         return null;
@@ -110,12 +101,12 @@ class Element
      */
     public function __set(string $key, mixed $value) : void
     {
-        $value = (string)$value;
-
         $key = strtolower($key);
         if ($key === 'value') {
-            $this->execFunc("value =  '" . $value . "'");
-            $this->sync();
+            $this->setValue($value);
+        }
+        elseif ($key === 'html') {
+            $this->setHtml((string)$value);
         }
     }
 
@@ -129,9 +120,18 @@ class Element
      */
     public function hasClass(string $class) : bool
     {
+        if ($this->element === null) {
+            return false;
+        }
+
         $class = strtolower($class);
-        $this->sync();
-        return ($this->classes->contains($class));
+
+        $classes = strtolower($this->getAttribute('class'));
+        if ($classes === null) {
+            return false;
+        }
+
+        return in_array($class, explode(' ', $classes));
     }
 
     /**
@@ -144,19 +144,24 @@ class Element
      */
     public function addClass(string $class) : void
     {
+        if ($this->element === null) {
+            return;
+        }
+
         $class = strtolower($class);
         if ($this->hasClass($class) === true) {
             return;
         }
 
-        $classes = '';
-        foreach ($this->classes as $_class) {
-            $classes .= ($_class . ' ');
+        $classes = $this->getAttribute('class');
+        if ($classes === null) {
+            $classes = '';
         }
-        $classes .= $class;
 
-        $this->execFunc("className =  '" . $classes . "'");
-        $this->sync();
+        $classes = explode(' ', strtolower($classes));
+        $classes[] = $class;
+        $classes = implode(' ', $classes);
+        $this->setAttribute('class', $classes);
     }
 
     /**
@@ -169,24 +174,30 @@ class Element
      */
     public function removeClass(string $class) : void
     {
+        if ($this->element === null) {
+            return;
+        }
+
         $class = strtolower($class);
         if ($this->hasClass($class) === false) {
             return;
         }
 
-        $classes = '';
-        foreach ($this->classes as $_class) {
-            if ($_class === $class) {
-                continue;
-            }
-            $classes .= ($_class . ' ');
-        }
-        if ($classes !== '') {
-            $classes = substr($classes, 0, -1);
+        $classes = $this->getAttribute('class');
+        if ($classes === null) {
+            $classes = '';
         }
 
-        $this->execFunc("className =  '" . $classes . "'");
-        $this->sync();
+        $classes = explode(' ', strtolower($classes));
+
+        $_classes = [];
+        foreach ($classes as $_class) {
+            if ($_class !== $class) {
+                $_classes[] = $_class;
+            }
+        }
+        $classes = implode(' ', $_classes);
+        $this->setAttribute('class', $classes);
     }
 
     /**
@@ -198,6 +209,10 @@ class Element
      */
     public function toogleClass(string $class) : void
     {
+        if ($this->element === null) {
+            return;
+        }
+
         $class = strtolower($class);
         if ($this->hasClass($class) === true) {
             $this->removeClass($class);
@@ -217,9 +232,7 @@ class Element
      */
     public function hasAttribute(string $attribute) : bool
     {
-        $attribute = strtolower($attribute);
-        $this->sync();
-        return ($this->attributes->containsKey($attribute));
+        return ($this->getAttribute($attribute) !== null);
     }
 
     /**
@@ -232,12 +245,12 @@ class Element
      */
     public function getAttribute(string $attribute) : string|null
     {
-        $attribute = strtolower($attribute);
-        $this->sync();
-        if ($this->attributes->containsKey($attribute)) {
-            return $this->attributes[$attribute];
+        if ($this->element === null) {
+            return null;
         }
-        return null;
+
+        $attribute = strtolower($attribute);
+        return $this->element->getAttribute($attribute);
     }
 
     /**
@@ -250,9 +263,12 @@ class Element
      */
     public function setAttribute(string $attribute, string $value) : void
     {
+        if ($this->element === null) {
+            return;
+        }
+
         $attribute = strtolower($attribute);
-        $this->execFunc("setAttribute('" . $attribute . "', '" . $value . "')");
-        $this->sync();
+        $this->element->setAttribute($attribute, $value);
     }
 
     /**
@@ -265,12 +281,46 @@ class Element
      */
     public function getStyle(string $style) : string|null
     {
-        $style = strtolower($style);
-        $this->sync();
-        if ($this->styles->containsKey($style)) {
-            return $this->styles[$style];
+        if ($this->element === null) {
+            return null;
         }
-        return null;
+
+        $value = $this->element->style->{$style};
+
+        if ($value === null) {
+            $style = $this->translateStyleCssToCammel($style);
+            $value = $this->element->style->{$style};
+        }
+
+        return $value;
+    }
+
+    private function translateStyleCssToCammel(string $style)
+    {
+        $style = strtolower($style);
+
+        while (Strings::startsWith($style, '-')) {
+            $style = Strings::sub($style, 1);
+        }
+        $split = explode('-', $style);
+        $splitCount = count($split);
+        if ($splitCount === 1) {
+            return $split[0];
+        }
+
+        $style = '';
+        for ($i = 0; $i < $splitCount; $i++) {
+            if ($i === 0) {
+                $style .= $split[$i];
+                continue;
+            }
+
+            $_style = $split[$i];
+            $_style[0] = strtoUpper($_style[0]);
+            $style .= $_style;
+        }
+
+        return $style;
     }
 
     /**
@@ -283,8 +333,12 @@ class Element
      */
     public function setStyle(string $style, string $value, bool $important = false) : void
     {
+        if ($this->element === null) {
+            return;
+        }
+
         if ($important === true) {
-            $cssText = (string)$this->execFunc("style.cssText");
+            $cssText = $this->element->style->cssText;
 
             $newCsss = [];
 
@@ -309,26 +363,17 @@ class Element
             if ($mountCss !== '') {
                 $mountCss = substr($mountCss, 0, -1);
             }
-            $this->execFunc("style.cssText = '" . $mountCss . "'");
+
+            $this->element->style->cssText = $mountCss;
             return;
         }
 
-        $style = strtolower($style);
 
-        $split = explode('-', $style);
-        if (count($split) > 1) {
-            $style = $split[0];
-            for ($i = 1; $i < count($split); $i++) {
-                $part = $split[$i];
-                if (strlen($part) > 0) {
-                    $part[0] = strtoupper($part[0]);
-                    $style .= $part;
-                }
-            }
+        if (Strings::contains($style, '-') === true) {
+            $style = $this->translateStyleCssToCammel($style);
         }
 
-        $this->execFunc("style." . $style . " = '" . $value . "'");
-        $this->sync();
+        $this->element->style->{$style} = $value;
     }
 
     /**
@@ -342,8 +387,11 @@ class Element
     public function removeAttribute(string $attribute) : void
     {
         $attribute = strtolower($attribute);
-        $this->execFunc("removeAttribute('" . $attribute . "')");
-        $this->sync();
+        if ($this->element === null) {
+            return;
+        }
+
+        $this->element->removeAttribute($attribute);
     }
 
     /**
@@ -353,173 +401,126 @@ class Element
      */
     public function destroy()
     {
-        $this->execFunc("remove()");
-        $this->uid        = null;
-        $this->tag        = null;
-        $this->attributes = Arr();
-        $this->classes    = Arr();
-        $this->styles     = Arr();
-        $this->value      = null;
-        $this->checked    = null;
+        if ($this->element !== null) {
+            $this->element->remove();
+        }
+
+        $this->uid = null;
+        $this->element = null;
     }
 
     public function htmlInsertEnd(string $html)
     {
-        $this->execFunc("insertAdjacentHTML('beforeend', decodeURIComponent('" . rawurlencode($html) . "'));");
+        if ($this->element === null) {
+            return;
+        }
+
+        $this->element->insertAdjacentHTML('beforeend', $html);
     }
 
-    /**
-     * Synchronizes the data between the JavaScript element and the PHP object.
-     *
-     * This method retrieves the data from the JavaScript element with the specified UID
-     * and updates the corresponding properties in the PHP object.
-     *
-     * @return void
-     * @throws Exception when JavaScript engine is not found.
-     */
-    public function sync()
+    public function getHtml(): null|string
     {
-        $data = Js::eval("
-            (function() {
-                var element = document.querySelector('[' + Flames.Internal.char + 'uid=\"" . $this->uid . "\"]');
-                if (element !== null) {
-                    var data = [];
-                    data.tag = element.tagName.toLowerCase();
-                    data.value = element.value;
-                    if (data.value === undefined) {
-                        data.value = null;
-                    }
-                    data.checked = element.checked;
-                    if (data.checked === undefined) {
-                        data.checked = null;
-                    } else {
-                        if (data.tag === 'input') {
-                            if (element.getAttribute('type').toLowerCase() === 'checkbox') {
-                                data.value = data.checked;
-                            }
-                        }
-                    }
-                    
-                    var attributes = element.attributes;
-                    data.attributes = '';
-                    for (var i = 0; i < attributes.length; i++) {
-                        if (attributes[i].name === 'class' || attributes[i].name === 'style' || attributes[i].name === Flames.Internal.char + 'uid') {
-                            continue;
-                        }
-                        data.attributes += encodeURIComponent(attributes[i].name) + '$' + encodeURIComponent(attributes[i].value) + '|';
-                    }
-                    
-                    data.classes = element.className.toLowerCase();  
-                    
-         
-    
-                    data.styles = '';
-                    
-                    var styles = getComputedStyle(document.querySelector('body'));
-                    for (key in styles) {
-                        if (styles.hasOwnProperty(key)) {
-                            if (key === undefined || styles[key] === undefined) {
-                                continue;
-                            }
-                            data.styles += encodeURIComponent(key) + '$' + encodeURIComponent(styles[key]) + '|';
-                        }
-                    }
-                       
-                    return data;
-                }
-            })();
-        ");
+        if ($this->element === null) {
+            return null;
+        }
 
-        if (isset($data)) {
-            $this->tag = $data->tag;
+        return $this->element->innerHTML;
+    }
 
-            $this->attributes = Arr();
-            $split = explode('|', $data->attributes);
-            foreach ($split as $part) {
-                if ($part === '') {
-                    continue;
-                }
-                $_attribute = explode('$', $part);
-                $this->attributes[rawurldecode($_attribute[0])] = rawurldecode($_attribute[1]);
+    public function setHtml(string $html): void
+    {
+        if ($this->element === null) {
+            return;
+        }
+
+        $this->element->innerHTML = $html;
+    }
+
+    public function getValue(): null|string|bool
+    {
+        if ($this->element === null) {
+            return null;
+        }
+
+        $tag = $this->tag;
+        if ($tag === 'textarea') {
+            return $this->element->value;
+        }
+        elseif ($tag === 'input') {
+            $type = $this->getAttribute('type');
+            if ($type !== null && strtolower($type) === 'checkbox') {
+                return $this->element->checked;
             }
 
-            $this->classes = Arr(explode(' ', $data->classes));
+            return $this->element->value;
+        }
 
-            $this->styles = Arr();
-            $split = explode('|', $data->styles);
-            foreach ($split as $part) {
-                if ($part === '') {
-                    continue;
-                }
-                $_style = explode('$', $part);
-                $this->styles[rawurldecode($_style[0])] = rawurldecode($_style[1]);
+        return null;
+    }
+
+    public function setValue(mixed $value): void
+    {
+        if ($this->element === null) {
+            return;
+        }
+
+        $tag = $this->tag;
+        if ($tag === 'textarea') {
+            $this->element->value = $value;
+        }
+        elseif ($tag === 'input') {
+            $type = $this->getAttribute('type');
+            if ($type !== null && strtolower($type) === 'checkbox') {
+                $this->element->checked = ($value === true);
+                return;
             }
 
-            $this->value = $data->value;
-            $this->checked = $data->checked;
+            $this->element->value = $value;
         }
     }
 
-    /**
-     * Executes the specified JavaScript code on the element with the specified UID.
-     *
-     * This method uses the Js::eval() function to execute the JavaScript code on the
-     * element with the specified UID. The JavaScript code should be a valid code snippet
-     * that manipulates the element in some way.
-     *
-     * @param string $code The JavaScript code to execute.
-     *
-     * @return void
-     * @throws Exception when JavaScript engine is not found.
-     */
-    protected function execFunc(string $code) : mixed
+    public function getChecked(): null|string|bool
     {
-        return Js::eval("
-            (function() {
-                var element = document.querySelector('[' + Flames.Internal.char + 'uid=\"" . $this->uid . "\"]');
-                if (element !== null) {
-                    return element." . $code . ";
-                }
-            })();
-        ");
+        if ($this->element === null) {
+            return null;
+        }
+
+        return $this->element->checked;
+    }
+
+    public function setChecked(bool $value): void
+    {
+        if ($this->element === null) {
+            return;
+        }
+
+        $this->element->checked = ($value === true);
     }
 
     public function getParent(): Element|null
     {
-        $this->sync();
-
-        $uid = Js::eval("
-            (function() {
-               var element = document.querySelector('[' + Flames.Internal.char + 'uid=\"" . $this->uid . "\"]');
-                if (element !== null) {
-                    var parent = element.parentNode;
-                    if (parent === null) {
-                        return null;
-                    }
-                    
-                    if (parent.getAttribute(Flames.Internal.char + 'uid') === null) {
-                        Flames.Internal.uid++;
-                        parent.setAttribute(Flames.Internal.char + 'uid', Flames.Internal.generateUid(Flames.Internal.uid));
-                    }
-                    
-                    return parent.getAttribute(Flames.Internal.char + 'uid');
-                }
-            })();
-        ");
-
-        if (isset($uid) === true && $uid !== null && $uid !== '') {
-
-            if ($this->parent !== null) {
-                if ($this->parent->uid === $uid) {
-                    return $this->parent;
-                }
-            }
-
-            $this->parent = new Element($uid);
-            return $this->parent;
+        if ($this->element === null) {
+            return null;
         }
 
-        return null;
+        $element = $this->element->parentNode;
+        if ($element === null) {
+            return null;
+        }
+
+        $window = Js::getWindow();
+
+        $uid = $element->getAttribute($window->Flames->Internal->char . 'uid');
+        if ($uid === null) {
+            $window->Flames->Internal->uid = ($window->Flames->Internal->uid + 1);
+            $uid = $window->Flames->Internal->generateUid($window->Flames->Internal->uid);
+            $element->setAttribute($window->Flames->Internal->char . 'uid', $uid);
+        }
+
+        $_element = new Element();
+        $_element->setUid($uid);
+        $_element->setElementNative($element);
+        return $_element;
     }
 
     /**
@@ -535,25 +536,24 @@ class Element
             throw new Exception('Method only works on client.');
         }
 
-        $uid = Js::eval("
-            (function() {
-                var element = document.querySelector('" . $query . "');
-                if (element !== null) {
-                    if (element.getAttribute(Flames.Internal.char + 'uid') === null) {
-                        Flames.Internal.uid++;
-                        element.setAttribute(Flames.Internal.char + 'uid', Flames.Internal.generateUid(Flames.Internal.uid));
-                    }
-                    
-                    return element.getAttribute(Flames.Internal.char + 'uid');
-                }
-            })();
-        ");
+        $window = Js::getWindow();
 
-        if (isset($uid) === true && $uid !== null && $uid !== '') {
-            return new Element($uid);
+        $element = $window->document->querySelector($query);
+        if ($element === null) {
+            return null;
         }
 
-        return null;
+        $uid = $element->getAttribute($window->Flames->Internal->char . 'uid');
+        if ($uid === null) {
+            $window->Flames->Internal->uid = ($window->Flames->Internal->uid + 1);
+            $uid = $window->Flames->Internal->generateUid($window->Flames->Internal->uid);
+            $element->setAttribute($window->Flames->Internal->char . 'uid', $uid);
+        }
+
+        $_element = new Element();
+        $_element->setUid($uid);
+        $_element->setElementNative($element);
+        return $_element;
     }
 
     /**
@@ -569,40 +569,41 @@ class Element
             throw new Exception('Method only works on client.');
         }
 
-        $uids = Js::eval("
-            (function() {
-                var elements = document.querySelectorAll('" . $query . "');
-                var elementsUids = '';
-                for (var i = 0; i < elements.length; i++) {
-                    var element = elements[i];
-                    if (element !== null) {
-                        if (element.getAttribute(Flames.Internal.char + 'uid') === null) {
-                            Flames.Internal.uid++;
-                            element.setAttribute(Flames.Internal.char + 'uid', Flames.Internal.generateUid(Flames.Internal.uid));
-                        }
-                      
-                        elementsUids += (',' + element.getAttribute(Flames.Internal.char + 'uid'));
-                    }
-                }
-                
-                if (elementsUids !== '') {
-                    elementsUids = elementsUids.substr(1);
-                }
-                
-                return elementsUids;
-            })();
-        ");
-
-        if (isset($uids) === false && $uids !== null && $uids !== '') {
-            return null;
+        $window = Js::getWindow();
+        $elements = Arr();
+        $elementsUids = (array)unserialize($window->document->querySelectorAll($query)->toPhpSerializeUids());
+        $countElements = count($elementsUids);
+        if ($countElements === 0) {
+            return $elements;
         }
 
-        $elements = Arr();
-        $uids = explode(',', $uids);
-        foreach ($uids as $uid) {
-            $elements[] = new Element($uid);
+        foreach ($elementsUids as $elementUid) {
+            $elements[] = self::fromUid($elementUid);
         }
 
         return $elements;
+    }
+
+    public static function fromNative($element)
+    {
+        $_element = new Element();
+        $_element->setElementNative($element);
+
+        $window = Js::getWindow();
+        $uid = $element->getAttribute($window->Flames->Internal->char . 'uid');
+        if ($uid === null) {
+            $window->Flames->Internal->uid = ($window->Flames->Internal->uid + 1);
+            $uid = $window->Flames->Internal->generateUid($window->Flames->Internal->uid);
+            $element->setAttribute($window->Flames->Internal->char . 'uid', $uid);
+        }
+
+        $_element->setUid($uid);
+        return $_element;
+    }
+
+    public static function fromUid(string $uid)
+    {
+        $window = Js::getWindow();
+        return Element::query('[' . $window->Flames->Internal->char . 'uid="' . $uid . '"]');
     }
 }

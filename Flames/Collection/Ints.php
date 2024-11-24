@@ -12,7 +12,7 @@ final class Ints
      *
      * @param mixed $value The value to be converted.
      *
-     * @return bool The bool representation of the given value.
+     * @return int The int representation of the given value.
      */
     public static function parse(mixed $value)
     {

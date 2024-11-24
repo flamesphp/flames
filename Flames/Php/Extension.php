@@ -30,6 +30,7 @@ class Extension
             return \dl($prefix . 'sqlite.' . PHP_SHLIB_SUFFIX);
         }
 
+        // TODO: verify swf extension
         \dl($extension . '.so');
         usleep(1);
 

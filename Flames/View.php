@@ -3,6 +3,7 @@
 namespace Flames;
 
 use  Flames\Collection\Arr;
+use http\Env;
 
 /**
  * Class View
@@ -121,18 +122,21 @@ class View
         }
 
         $hash = Kernel::VERSION;
-        $clientResource = (APP_PATH . 'Client/Resource/client.js');
+        $clientResource = (APP_PATH . 'Client/Resource/Build/Flames.js');
         if (file_exists($clientResource) === true) {
             $hash .= ('.' . filemtime($clientResource));
         }
-        $scriptEngine = '<script src="/.flames.js?v=' . sha1(Environment::get('APP_KEY') . $hash) . '" type="text/javascript"></script>';
-        if (str_contains($html, $scriptEngine) === false) {
-            $html = str_replace($bodyCloseTag, "\t" . $scriptEngine . "\n\t" . $bodyCloseTag, $html);
-        }
 
-
+        $token = base64_encode (
+            rawurlencode(Kernel::CDN_VERSION) . '|' .
+            rawurlencode((string)Environment::get('CLIENT_CDN')) . '|' .
+            sha1(Environment::get('APP_KEY') . $hash) . '|' .
+            serialize($data)
+        );
+        $flamesEngine = '<script async src="//cdn.jsdelivr.net/gh/flamesphp/cdn@' . Kernel::CDN_VERSION . '/flames.js"></script>';
+        $html = str_replace($bodyCloseTag, "\t" . $flamesEngine . "\n\t" . $bodyCloseTag, $html);
         $html = str_replace($bodyCloseTag, "\t<flames hidden>" .
-            base64_encode(serialize($data)) .
+            $token .
             "</flames>\n\t" . $bodyCloseTag, $html);
         return $html;
     }

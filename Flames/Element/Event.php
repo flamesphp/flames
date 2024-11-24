@@ -2,99 +2,52 @@
 
 namespace Flames\Element;
 
+use Flames\Collection\Strings;
 use Flames\Element;
 use Flames\Event\Element\Click;
 use Flames\Event\Element\Change;
 use Flames\Event\Element\Input;
-use Flames\JS;
+use Flames\Js;
 
 /**
  * @internal
  */
 class Event
 {
-    protected string|null $uid = null;
+    private $element = null;
 
-    protected static array $delegates = [];
-
-    public function __construct(string $uid)
+    public function __construct($element)
     {
-        $this->uid = $uid;
+        $this->element = $element;
     }
 
-    public function click($delegate)
+    public function click(\Closure $delegate)
     {
-        self::$delegates[] = $delegate;
-        $delegateId = (count(self::$delegates) -1);
+        $tag = Strings::toLower($this->element->tagName);
+        $element = $this->element;
 
-        Js::eval("
-            (function() {
-                var element = document.querySelector('[' + Flames.Internal.char + 'uid=\"" . $this->uid . "\"]');
-                if (element !== null) {
-                    element.addEventListener('click', function(event) {
-                        if (element.tagName === 'A') {
-                            event.preventDefault();
-                        }
+        $this->element->addEventListener('click', function ($event) use ($delegate, $tag, $element) {
+            if ($tag === 'a') {
+                $event->preventDefault();
+            }
 
-                        var id = $delegateId;
-                        var uid = '$this->uid';
-                        window.PHP.eval('<?php \\\\Flames\\\\Element\\\\Event::onClick(' + id + ',\'' + uid + '\'); ?>');
-                    });
-                }
-            })();
-        ");
+            $delegate(new Click(Element::fromNative($element)));
+        });
     }
 
-    public static function onClick(string $id, string $uid)
+    public function change(\Closure $delegate)
     {
-        self::$delegates[$id](new Click(new Element($uid)));
+        $element = $this->element;
+        $this->element->addEventListener('change', function ($event) use ($delegate, $element) {
+            $delegate(new Click(Element::fromNative($element)));
+        });
     }
 
-    public function change($delegate)
+    public function input(\Closure $delegate)
     {
-        self::$delegates[] = $delegate;
-        $delegateId = (count(self::$delegates) -1);
-
-        Js::eval("
-            (function() {
-                var element = document.querySelector('[' + Flames.Internal.char + 'uid=\"" . $this->uid . "\"]');
-                if (element !== null) {
-                    element.addEventListener('change', function() {
-                        var id = $delegateId;
-                        var uid = '$this->uid';
-                        window.PHP.eval('<?php \\\\Flames\\\\Element\\\\Event::onChange(' + id + ',\'' + uid + '\'); ?>');
-                    });
-                }
-            })();
-        ");
-    }
-
-    public static function onChange(string $id, string $uid)
-    {
-        self::$delegates[$id](new Change(new Element($uid)));
-    }
-
-    public function input($delegate)
-    {
-        self::$delegates[] = $delegate;
-        $delegateId = (count(self::$delegates) -1);
-
-        Js::eval("
-            (function() {
-                var element = document.querySelector('[' + Flames.Internal.char + 'uid=\"" . $this->uid . "\"]');
-                if (element !== null) {
-                    element.addEventListener('input', function() {
-                        var id = $delegateId;
-                        var uid = '$this->uid';
-                        window.PHP.eval('<?php \\\\Flames\\\\Element\\\\Event::onInput(' + id + ',\'' + uid + '\'); ?>');
-                    });
-                }
-            })();
-        ");
-    }
-
-    public static function onInput(string $id, string $uid)
-    {
-        self::$delegates[$id](new Input(new Element($uid)));
+        $element = $this->element;
+        $this->element->addEventListener('input', function ($event) use ($delegate, $element) {
+            $delegate(new Click(Element::fromNative($element)));
+        });
     }
 }

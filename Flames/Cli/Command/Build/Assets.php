@@ -6,6 +6,9 @@ use Flames\Cli;
 use Flames\Cli\Command\Build\Assets\Automate;
 use Flames\Cli\Command\Build\Assets\Data;
 use Flames\Environment;
+use Flames;
+use Flames\Kernel;
+use http\Env;
 
 /**
  * Class Assets
@@ -16,45 +19,61 @@ use Flames\Environment;
  */
 final class Assets
 {
-    const BASE_PATH = (APP_PATH . 'Client/Resource/');
+    const BASE_PATH = (APP_PATH . 'Client/Resource/Build/');
 
-    protected static $defaultFiles = [
-        'Kernel/Client.php',
-        'Dump/Client.php',
-        'Connection/Client.php',
-        'Collection/Strings.php',
-        'Collection/Bools.php',
-        'Collection/Ints.php',
-        'Collection/Arr.php',
-        'Kernel/Wrapper/Raw.php',
-        'Php.php',
-        'Js.php',
-        'Cli.php',
-        'RequestData.php',
-        'Kernel/Route.php',
-        'Browser/Page.php',
-        'Router.php',
-        'Json.php',
-        'Event/Route.php',
-        'Router/Parser.php',
-        'Header/Client.php',
-        'Coroutine/Timeout.php',
-        'Coroutine/Timeout/Event.php',
-        'Element.php',
-        'Element/Event.php',
-        'Money/Client.php',
-        'Http/Client/Client.php',
-        'Http/Async/Request/Client.php',
-        'Http/Async/Response/Client.php',
-        'Http/Code.php',
-        'Event/Element/Click.php',
-        'Event/Element/Change.php',
-        'Event/Element/Input.php',
-        'Kernel/Client/Dispatch.php'
+    protected static array $defaultFiles = [
+        Flames\Kernel\Client::class,
+        Flames\Connection\Client::class,
+        Flames\Collection\Strings::class,
+        Flames\Collection\Bools::class,
+        Flames\Collection\Ints::class,
+        Flames\Collection\Floats::class,
+        Flames\Collection\Arr::class,
+        Flames\Php::class,
+        Flames\Js::class,
+        Flames\Cli::class,
+        Flames\RequestData::class,
+        Flames\Kernel\Route::class,
+        Flames\Browser\Page::class,
+        Flames\Router::class,
+        Flames\Json::class,
+        Flames\Event\Route::class,
+        Flames\Event\Ready::class,
+        Flames\Router\Parser::class,
+        Flames\Header\Client::class,
+        Flames\Coroutine\Timeout::class,
+        Flames\Element::class,
+        Flames\Element\Event::class,
+        Flames\Money\Client::class,
+        Flames\Http\Client\Client::class,
+        Flames\Http\Async\Request\Client::class,
+        Flames\Http\Async\Response\Client::class,
+        Flames\Http\Code::class,
+        Flames\Event\Element\Click::class,
+        Flames\Event\Element\Change::class,
+        Flames\Event\Element\Input::class,
+        Flames\Kernel\Client\Dispatch::class,
+        Flames\Js\Module::class,
+        Flames\Client\Os::class,
+        Flames\Client\Platform::class,
+        Flames\Client\Browser::class,
+        Flames\Client\UserAgentParser::class,
+    ];
+
+    protected static array $clientMocks = [
+        Flames\Kernel\Client::class,
+        Flames\Http\Client\Client::class,
+        Flames\Http\Async\Request\Client::class,
+        Flames\Http\Async\Response\Client::class,
+        Flames\Connection\Client::class,
+        Flames\Header\Client::class,
+        Flames\Money\Client::class
     ];
 
     protected bool $debug = false;
     protected bool $auto = false;
+
+    protected bool $swfExtension = false;
 
     public function __construct($data)
     {
@@ -83,18 +102,17 @@ final class Assets
         $this->createFolder();
 
         try {
-            $stream = fopen(self::BASE_PATH . 'client.js', 'w');
+            $stream = fopen(self::BASE_PATH . 'Flames.js', 'w');
         } catch (\Exception $e) {
             $mask = umask(0);
             @mkdir(self::BASE_PATH, 0777, true);
             umask($mask);
-            $stream = fopen(self::BASE_PATH . 'client.js', 'w');
+            $stream = fopen(self::BASE_PATH . 'Flames.js', 'w');
         }
 
         $this->injectStructure($stream);
-        $this->injectDefaultFiles($stream).
-        $this->injectClientFiles($stream).
-        $this->injectEnvironment($stream).
+        $this->injectExtensions($stream);
+        $this->injectDefaultFiles($stream);
         $this->finish($stream);
         $this->verifyAuto();
 
@@ -135,22 +153,108 @@ final class Assets
             echo ("Inject structure javascript system\n");
         }
 
-        fwrite($stream, '/*
-    ███████╗██╗      █████╗ ███╗   ███╗███████╗███████╗
-    ██╔════╝██║     ██╔══██╗████╗ ████║██╔════╝██╔════╝
-    █████╗  ██║     ███████║██╔████╔██║█████╗  ███████╗
-    ██╔══╝  ██║     ██╔══██║██║╚██╔╝██║██╔══╝  ╚════██║
-    ██║     ███████╗██║  ██║██║ ╚═╝ ██║███████╗███████║
-    ╚═╝     ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚══════╝
-    
-    𝗖𝗿𝗲𝗮𝘁𝗲𝗱 𝗯𝘆 𝗚𝗮𝗯𝗿𝗶𝗲𝗹 \'𝗞𝗮𝘇𝘇\' 𝗠𝗼𝗿𝗴𝗮𝗱𝗼
-    Github: https://github.com/flamesphp/flames
-    Docs:   https://flamesphp.com
-    
-*/
+        $this->swfExtension = false;
+        $extensions = Environment::get('CLIENT_EXTENSIONS');
+        if ($extensions !== null) {
+            $extensions = explode(',', strtolower($extensions));
+            if (in_array('swf', $extensions) === true) {
+                $this->swfExtension = true;
+            }
+        }
 
-');
-        fwrite($stream,"window.Flames = (window.Flames || {});Flames.Internal = (Flames.Internal || {});Flames.Internal.Build = (Flames.Internal.Build || {});Flames.Internal.Build.core = [];Flames.Internal.Build.client = [];Flames.Internal.Build.click = [];Flames.Internal.Build.staticConstruct = [];Flames.Internal.Build.change = [];Flames.Internal.Build.input = [];");
+        $unsupported = @file_get_contents(ROOT_PATH . 'App/Client/Resource/Event/Unsupported.js');
+        $engine = str_replace([
+            '{{ environment }}',
+            '{{ dumpLocalPath }}',
+            '\'{{ autoBuild }}\'',
+            '\'{{ swfExtension }}\'',
+            '\'{{ composer }}\'',
+            '\'{{ unsupported }}\';'
+        ], [
+            rawurlencode(Environment::get('ENVIRONMENT')),
+            rawurlencode(Environment::get('DUMP_LOCAL_PATH')),
+            ((Environment::get('CLIENT_AUTOBUILD') === true) ? 'true' : 'false'),
+            (($this->swfExtension === true) ? 'true' : 'false'),
+            ((FLAMES_COMPOSER === true) ? 'true' : 'false'),
+            ('(function(){' . $unsupported . '})();')
+        ], file_get_contents(FLAMES_PATH . 'Kernel/Client/Engine/Flames.js'));
+
+        fwrite($stream, $engine);
+        fwrite($stream, 'window.Flames.onReady=function(){');
+    }
+
+    protected function injectExtensions($stream): void
+    {
+        if ($this->debug === true) {
+            echo ("Inject default loaded extensions\n");
+        }
+
+        $extensions = Environment::get('CLIENT_EXTENSIONS');
+        if ($extensions !== null) {
+            $extensions = explode(',', strtolower($extensions));
+
+            $eval = '';
+            foreach ($extensions as $extension) {
+                if ($extension === 'swf') {
+                    continue;
+                }
+                if ($eval !== '') {
+                    $eval .= 'usleep(1);';
+                }
+                $eval .= ('dl(\'' . $extension . '.so\');');
+            }
+
+            if ($eval !== '') {
+                fwrite($stream, 'Flames.Internal.evalBase64(\'' . base64_encode($eval) . '\');');
+            }
+
+            if ($this->swfExtension === true) {
+                fwrite($stream, '
+                    var xmlhttp = new XMLHttpRequest();
+                    xmlhttp.open(\'GET\', \'https://cdn.jsdelivr.net/gh/flamesphp/cdn@' . Kernel::CDN_VERSION . '/swf/swf.js\');
+                    xmlhttp.onreadystatechange = function() { if ((xmlhttp.status == 200) && (xmlhttp.readyState == 4)) { eval(xmlhttp.responseText); }};
+                    xmlhttp.send();
+                ');
+            }
+        }
+    }
+
+
+    protected function loadPhpFile(string $path): string
+    {
+        $data = @file_get_contents($path);
+        return str_replace(['<?php'], '', $data);
+    }
+
+    protected function parseMockFile(string $fullClass, $data)
+    {
+        $split = explode('\\', $fullClass);
+        $oldNamespace = '';
+        $countSplitOldNamespace = (count($split) - 1);
+        for ($i = 0; $i < $countSplitOldNamespace; $i++) {
+            $oldNamespace .= ($split[$i] . '\\');
+        }
+        $oldNamespace = substr($oldNamespace, 0, -1);
+
+        $newNamespace = '';
+        $countSplitNewNamespace = (count($split) - 2);
+        for ($i = 0; $i < $countSplitNewNamespace; $i++) {
+            $newNamespace .= ($split[$i] . '\\');
+        }
+        $newNamespace = substr($newNamespace, 0, -1);
+
+        $oldClass = $split[count($split) - 1];
+        $newClass = $split[count($split) - 2];
+
+        $data = str_replace([
+            'namespace ' . $oldNamespace,
+            'class ' .$oldClass
+        ], [
+            'namespace ' . $newNamespace,
+            'class ' . $newClass
+        ], $data);
+
+        return $data;
     }
 
     /**
@@ -161,42 +265,79 @@ final class Assets
      */
     protected function injectDefaultFiles($stream) : void
     {
+        $virtual = $this->loadPhpFile(FLAMES_PATH . 'Kernel/Client/Virtual.php') .
+            $this->loadPhpFile(FLAMES_PATH . 'Dump/Client.php');
+
+
+
+        $virtualFilesBuffer = '';
+        $virtualFilesBuffer = $this->mountVirtualDefaultFiles($virtualFilesBuffer);
+
+        $clientFilesBufferMetadata = $this->mountVirtualClientFilesMetadata($virtualFilesBuffer);
+        $virtualFilesBuffer = $clientFilesBufferMetadata['virtualFilesBuffer'];
+
+        fwrite($stream, 'window.Flames.Internal.eventTriggers = Flames.Internal.unserialize(atob(\'' . base64_encode(serialize($clientFilesBufferMetadata['events']->toArray())) . '\'));');
+
+        $virtualConstructsBuffer = 'private static $constructors = [';
+        foreach ($clientFilesBufferMetadata['staticConstructors'] as $constructor) {
+            $virtualConstructsBuffer .= ('\'' . $constructor . '\',');
+        }
+
+        $virtualFilesBuffer = ('private static $buffers = [' . $virtualFilesBuffer);
+        $virtual = str_replace(
+            [
+                'private static $buffers = [',
+                'private static $constructors = [',
+            ], [
+                $virtualFilesBuffer,
+                $virtualConstructsBuffer
+            ],
+            $virtual);
+
+        $virtual .= $this->parseMockFile(Flames\AutoLoad\Client::class, $this->loadPhpFile(FLAMES_PATH . 'AutoLoad/Client.php'));
+        fwrite($stream, 'Flames.Internal.evalBase64(\'' . base64_encode($virtual) . '\');');
+
+        $autorun = '
+        \Flames\AutoLoad::run();
+        function Arr(mixed $value=null):\Flames\Collection\Arr{if($value instanceof \Flames\Collection\Arr){return $value;}return new \Flames\Collection\Arr($value);}
+        \Flames\Kernel\Client\Dispatch::run();
+';
+        fwrite($stream, "var data=Flames.Internal.evalBase64('" . base64_encode($autorun). "');if (data!==null){dump(data);}");
+
+        fwrite($stream, '};');
+        exit;
+    }
+
+    protected function mountVirtualDefaultFiles($virtualFilesBuffer)
+    {
         foreach (self::$defaultFiles as $defaultFile) {
-            $phpFile = file_get_contents(FLAMES_PATH . $defaultFile);
-            if ($defaultFile === 'Kernel/Client.php') {
-                $phpFile = str_replace(['namespace Flames\Kernel;', 'final class Client'], ['namespace Flames;', 'final class Kernel'], $phpFile);
-            } elseif ($defaultFile === 'Http/Client/Client.php') {
-                $phpFile = str_replace('namespace Flames\Http\Client;', 'namespace Flames\Http;', $phpFile);
-            } elseif ($defaultFile === 'Http/Async/Request/Client.php') {
-                $phpFile = str_replace(['namespace Flames\Http\Async\Request;', 'class Client'], ['namespace Flames\Http\Async;', 'class Request'], $phpFile);
-            } elseif ($defaultFile === 'Http/Async/Response/Client.php') {
-                $phpFile = str_replace(['namespace Flames\Http\Async\Response;', 'class Client'], ['namespace Flames\Http\Async;', 'class Response'], $phpFile);
-            } elseif ($defaultFile === 'Connection/Client.php') {
-                $phpFile = str_replace(['namespace Flames\Connection;', 'class Client'], ['namespace Flames;', 'class Connection'], $phpFile);
-            } elseif ($defaultFile === 'Header/Client.php') {
-                $phpFile = str_replace(['namespace Flames\Header;', 'class Client'], ['namespace Flames;', 'class Header'], $phpFile);
-            } elseif ($defaultFile === 'Money/Client.php') {
-                $phpFile = str_replace(['namespace Flames\Money;', 'class Client'], ['namespace Flames;', 'class Money'], $phpFile);
+            $phpFile = $this->loadPhpFile(FLAMES_PATH . substr(str_replace('\\', '/', $defaultFile), 6) . '.php');
+            if (in_array($defaultFile, self::$clientMocks) === true) {
+                $phpFile = $this->parseMockFile($defaultFile, $phpFile);
+
+                $split = explode('\\', $defaultFile);
+                $defaultFile = '';
+                for ($i = 0; $i < count($split) - 1; $i++) {
+                    $defaultFile .= $split[$i] . '\\';
+                }
+                $defaultFile = substr($defaultFile, 0, -1);
             }
 
             if ($this->debug === true) {
-                echo ('Compile ' . substr($defaultFile, 0, -4) . "\n");
+                echo ('Compile ' . $defaultFile . ".php\n");
             }
 
-            fwrite($stream, ('Flames.Internal.Build.core[Flames.Internal.Build.core.length] = \'' .
-                    base64_encode($phpFile)) . "';");
+            $virtualFilesBuffer .= '\'' . sha1($defaultFile) . '\'=>\'' . base64_encode($phpFile) . '\',';
         }
+
+        return $virtualFilesBuffer;
     }
 
-    /**
-     * Injects client files into the specified stream.
-     *
-     * @param resource $stream The stream where the client files will be injected.
-     *
-     * @return void
-     */
-    protected function injectClientFiles($stream) : void
+    protected function mountVirtualClientFilesMetadata($virtualFilesBuffer)
     {
+        $staticConstructors = Arr();
+        $events = Arr();
+
         $modules = ['Event', 'Component', 'Controller'];
         foreach ($modules as $module) {
             $clientPath = (APP_PATH . 'Client/' . $module);
@@ -214,31 +355,36 @@ final class Assets
                         $attributes = $this->verifyAttributes($data, $class);
 
                         foreach ($attributes->click as $trigger) {
-                            fwrite($stream, ('Flames.Internal.Build.click[\'' . $trigger->uid . '\'] = [\'' . urlencode($trigger->class) . '\',\'' . $trigger->name . "'];"));
+                            $events[] = $trigger;
                         }
                         foreach ($attributes->change as $trigger) {
-                            fwrite($stream, ('Flames.Internal.Build.change[\'' . $trigger->uid . '\'] = [\'' . urlencode($trigger->class) . '\',\'' . $trigger->name . "'];"));
+                            $events[] = $trigger;
                         }
                         foreach ($attributes->input as $trigger) {
-                            fwrite($stream, ('Flames.Internal.Build.input[\'' . $trigger->uid . '\'] = [\'' . urlencode($trigger->class) . '\',\'' . $trigger->name . "'];"));
+                            $events[] = $trigger;
                         }
 
                         if ($data->staticConstruct === true) {
-                            fwrite($stream, ('Flames.Internal.Build.staticConstruct[Flames.Internal.Build.staticConstruct.length] = \'' . urlencode($class) . "';"));
+                            $staticConstructors[] = sha1($class);
                         }
                     }
 
+                    $class = str_replace('/', '\\', substr($file, strlen(ROOT_PATH), -4));
                     if ($this->debug === true) {
-                        echo ('Compile module ' . strtolower($module) . ': ' . substr($file, strlen(ROOT_PATH), -4) . "\n");
+                        echo ('Compile module ' . strtolower($module) . ': ' . $class . "\n");
                     }
 
-                    fwrite($stream, ('Flames.Internal.Build.client[Flames.Internal.Build.client.length] = [\'' .
-                            substr($file, strlen(ROOT_PATH), -4) . '\', \'' .
-                            base64_encode(@utf8_decode(file_get_contents($file)))) . "'];");
+                    $phpFile = $this->loadPhpFile($file);
+                    $virtualFilesBuffer .= '\'' . sha1($class) . '\'=>\'' . base64_encode($phpFile) . '\',';
                 }
-
             }
         }
+
+        $data = Arr();
+        $data->virtualFilesBuffer = $virtualFilesBuffer;
+        $data->staticConstructors = $staticConstructors;
+        $data->events = $events;
+        return $data;
     }
 
     /**
@@ -246,9 +392,9 @@ final class Assets
      *
      * @param array $data The data to verify attributes for.
      * @param string $class The class to verify attributes for.
-     * @return array
+     * @return Flames\Collection\Arr
      */
-    protected function verifyAttributes($data, string $class)
+    protected function verifyAttributes($data, string $class): Flames\Collection\Arr
     {
         $attributes = Arr([
             'click'  => Arr(),
@@ -307,12 +453,12 @@ final class Assets
         if (str_contains($localPath, '\\') === true) {
             $localPath = str_replace('\\', '\\\\', $localPath);
         }
-        fwrite($stream, "Flames.Internal.dumpLocalPath='" . $localPath . "';");
+        fwrite($stream, "window.Flames.Internal.dumpLocalPath='" . $localPath . "';");
         $autoBuildClient = Environment::get('AUTO_BUILD_CLIENT');
         if ($autoBuildClient === true) {
-            fwrite($stream, "Flames.Internal.autoBuildClient=true;");
+            fwrite($stream, "window.Flames.Internal.autoBuildClient=true;");
         } else {
-            fwrite($stream, "Flames.Internal.autoBuildClient=false;");
+            fwrite($stream, "window.Flames.Internal.autoBuildClient=false;");
         }
     }
 
