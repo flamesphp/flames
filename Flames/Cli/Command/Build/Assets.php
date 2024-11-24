@@ -38,6 +38,7 @@ final class Assets
         Flames\Router::class,
         Flames\Json::class,
         Flames\Event\Route::class,
+        Flames\Event\Ready::class,
         Flames\Router\Parser::class,
         Flames\Header\Client::class,
         Flames\Coroutine\Timeout::class,

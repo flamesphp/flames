@@ -97,6 +97,11 @@ final class Dispatch
     {
         \Flames\Kernel::__injector();
 
+        if (class_exists('\\App\\Client\\Event\\Ready') === true) {
+            $ready = new \App\Client\Event\Ready();
+            $ready->onReady();
+        }
+
         if (class_exists('\\App\\Client\\Event\\Route') === true) {
             $route = new \App\Client\Event\Route();
             $router = $route->onRoute(new Router());
