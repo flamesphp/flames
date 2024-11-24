@@ -21,7 +21,7 @@ final class Assets
 {
     const BASE_PATH = (APP_PATH . 'Client/Resource/Build/');
 
-    protected static $defaultFiles = [
+    protected static array $defaultFiles = [
         Flames\Kernel\Client::class,
         Flames\Connection\Client::class,
         Flames\Collection\Strings::class,
@@ -59,7 +59,7 @@ final class Assets
         Flames\Client\UserAgentParser::class,
     ];
 
-    protected static $clientMocks = [
+    protected static array $clientMocks = [
         Flames\Kernel\Client::class,
         Flames\Http\Client\Client::class,
         Flames\Http\Async\Request\Client::class,
