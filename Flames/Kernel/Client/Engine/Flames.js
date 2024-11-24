@@ -67,7 +67,7 @@ window.Flames.onBoot = function() {
 
     window.Flames.Internal.importModule = function(uri, hash) {
         if (window.Flames.Internal.modules[hash] !== undefined && window.Flames.Internal.modules[hash] !== null) {
-            window.PHP.eval('<?php \\Flames\\Js\\Module::onLoad(\'' + hash + '\'); ?>');
+            Flames.Internal.evalBase64(btoa('\\Flames\\Js\\Module::onLoad(\'' + hash + '\');'));
             return;
         }
 
