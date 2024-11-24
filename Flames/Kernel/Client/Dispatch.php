@@ -78,7 +78,7 @@ final class Dispatch
                 }
             }
 
-            $inputUid = $element->getAttribute('@change');
+            $inputUid = $element->getAttribute('@input');
             if ($inputUid !== null) {
                 foreach ($window->Flames->Internal->eventTriggers as $eventTrigger) {
                     if ($inputUid === $eventTrigger->uid && $eventTrigger->type === 'input') {
