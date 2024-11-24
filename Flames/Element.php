@@ -5,6 +5,7 @@ namespace Flames;
 use Exception;
 use Flames\Collection\Arr;
 use Flames\Collection\Strings;
+use Flames\Element\Shadow;
 
 /**
  * Represents an HTML element.
@@ -86,6 +87,9 @@ class Element
         }
         elseif ($key === 'element') {
             return $this->element;
+        }
+        elseif ($key === 'shadow') {
+            return $this->getShadow();
         }
 
         return null;
@@ -521,6 +525,20 @@ class Element
         $_element->setUid($uid);
         $_element->setElementNative($element);
         return $_element;
+    }
+
+    public function getShadow(): Shadow|null
+    {
+        if ($this->element === null) {
+            return null;
+        }
+
+        $shadow = $this->element->shadowRoot;
+        if ($shadow === null) {
+            return null;
+        }
+
+        return new Shadow($shadow);
     }
 
     /**

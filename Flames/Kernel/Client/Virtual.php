@@ -11,6 +11,8 @@ namespace Flames\Kernel\Client
 
         private static $constructors = [];
 
+        private static $tags = [];
+
         public static function load(string $class): bool
         {
             $classHash = sha1($class);
@@ -24,6 +26,15 @@ namespace Flames\Kernel\Client
             }
 
             return false;
+        }
+
+        public static function getTagClass(string $tag)
+        {
+            if (isset(self::$tags[$tag]) === true) {
+                return self::$tags[$tag];
+            }
+
+            return null;
         }
     }
 }

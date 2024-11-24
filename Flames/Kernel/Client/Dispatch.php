@@ -48,14 +48,17 @@ final class Dispatch
 
     protected static function dispatchHooks()
     {
+        dump('dispatch hooks');
+
         $window = Js::getWindow();
         $elements = Element::queryAll('*');
         foreach ($elements as $element) {
-
             $clickUid = $element->getAttribute('@click');
             if ($clickUid !== null) {
                 foreach ($window->Flames->Internal->eventTriggers as $eventTrigger) {
                     if ($clickUid === $eventTrigger->uid && $eventTrigger->type === 'click') {
+                        $element->removeAttribute('@click');
+                        $element->setAttribute($window->Flames->Internal->char . 'click', $clickUid);
                         $element->event->click(function($event) use ($eventTrigger) {
                             $instance = self::getInstance($eventTrigger->class);
                             $instance->{$eventTrigger->name}($event);
@@ -69,6 +72,8 @@ final class Dispatch
             if ($changeUid !== null) {
                 foreach ($window->Flames->Internal->eventTriggers as $eventTrigger) {
                     if ($changeUid === $eventTrigger->uid && $eventTrigger->type === 'change') {
+                        $element->removeAttribute('@change');
+                        $element->setAttribute($window->Flames->Internal->char . 'change', $changeUid);
                         $element->event->change(function($event) use ($eventTrigger) {
                             $instance = self::getInstance($eventTrigger->class);
                             $instance->{$eventTrigger->name}($event);
@@ -82,6 +87,8 @@ final class Dispatch
             if ($inputUid !== null) {
                 foreach ($window->Flames->Internal->eventTriggers as $eventTrigger) {
                     if ($inputUid === $eventTrigger->uid && $eventTrigger->type === 'input') {
+                        $element->removeAttribute('@input');
+                        $element->setAttribute($window->Flames->Internal->char . 'input', $inputUid);
                         $element->event->input(function($event) use ($eventTrigger) {
                             $instance = self::getInstance($eventTrigger->class);
                             $instance->{$eventTrigger->name}($event);
