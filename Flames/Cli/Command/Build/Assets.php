@@ -5,6 +5,7 @@ namespace Flames\Cli\Command\Build;
 use Flames\Cli;
 use Flames\Cli\Command\Build\Assets\Automate;
 use Flames\Cli\Command\Build\Assets\Data;
+use Flames\Client\View;
 use Flames\Environment;
 use Flames;
 use Flames\Kernel;
@@ -58,6 +59,9 @@ final class Assets
         Flames\Client\Platform::class,
         Flames\Client\Browser::class,
         Flames\Client\UserAgentParser::class,
+        Flames\Kernel\Client\Dispatch\Tag::class,
+        Flames\Client\Tag::class,
+        Flames\Element\Shadow::class
     ];
 
     protected static array $clientMocks = [
@@ -265,10 +269,10 @@ final class Assets
      */
     protected function injectDefaultFiles($stream) : void
     {
-        $virtual = $this->loadPhpFile(FLAMES_PATH . 'Kernel/Client/Virtual.php') .
-            $this->loadPhpFile(FLAMES_PATH . 'Dump/Client.php');
-
-
+        $virtual = (
+            $this->loadPhpFile(FLAMES_PATH . 'Kernel/Client/Virtual.php') .
+            $this->loadPhpFile(FLAMES_PATH . 'Dump/Client.php')
+        );
 
         $virtualFilesBuffer = '';
         $virtualFilesBuffer = $this->mountVirtualDefaultFiles($virtualFilesBuffer);
@@ -283,14 +287,21 @@ final class Assets
             $virtualConstructsBuffer .= ('\'' . $constructor . '\',');
         }
 
+        $virtualTagsBuffer = 'private static $tags = [';
+        foreach ($clientFilesBufferMetadata['tags'] as $tag) {
+            $virtualTagsBuffer .= ('\'' .$tag->uid . '\' => \'' . $tag->class . '\',');
+        }
+
         $virtualFilesBuffer = ('private static $buffers = [' . $virtualFilesBuffer);
         $virtual = str_replace(
             [
                 'private static $buffers = [',
                 'private static $constructors = [',
+                'private static $tags = ['
             ], [
                 $virtualFilesBuffer,
-                $virtualConstructsBuffer
+                $virtualConstructsBuffer,
+                $virtualTagsBuffer
             ],
             $virtual);
 
@@ -304,8 +315,11 @@ final class Assets
 ';
         fwrite($stream, "var data=Flames.Internal.evalBase64('" . base64_encode($autorun). "');if (data!==null){dump(data);}");
 
+        foreach ($clientFilesBufferMetadata->tags as $tag) {
+            fwrite($stream, "window.eval(atob('" . base64_encode($tag->eval) . "'));");
+        }
+
         fwrite($stream, '};');
-        exit;
     }
 
     protected function mountVirtualDefaultFiles($virtualFilesBuffer)
@@ -337,8 +351,9 @@ final class Assets
     {
         $staticConstructors = Arr();
         $events = Arr();
+        $tags = Arr();
 
-        $modules = ['Event', 'Component', 'Controller'];
+        $modules = ['Event', 'Component', 'Controller', 'Tag'];
         foreach ($modules as $module) {
             $clientPath = (APP_PATH . 'Client/' . $module);
             if (is_dir($clientPath) === true) {
@@ -348,26 +363,32 @@ final class Assets
                         continue;
                     }
 
-                    if ($module === 'Controller' || $module === 'Component') {
-
+                    if ($module === 'Controller' || $module === 'Component' || $module === 'Tag') {
                         $class = (str_replace('/', '\\', substr($file, strlen(ROOT_PATH), -4)));
                         $data = Data::mountData($class);
                         $attributes = $this->verifyAttributes($data, $class);
 
-                        foreach ($attributes->click as $trigger) {
-                            $events[] = $trigger;
-                        }
-                        foreach ($attributes->change as $trigger) {
-                            $events[] = $trigger;
-                        }
-                        foreach ($attributes->input as $trigger) {
-                            $events[] = $trigger;
+                        if ($module !== 'Tag') {
+                            foreach ($attributes->click as $trigger) {
+                                $events[] = $trigger;
+                            }
+                            foreach ($attributes->change as $trigger) {
+                                $events[] = $trigger;
+                            }
+                            foreach ($attributes->input as $trigger) {
+                                $events[] = $trigger;
+                            }
                         }
 
                         if ($data->staticConstruct === true) {
                             $staticConstructors[] = sha1($class);
                         }
+
+                        if ($module === 'Tag') {
+                            $tags[] = $this->getTagData($class);
+                        }
                     }
+
 
                     $class = str_replace('/', '\\', substr($file, strlen(ROOT_PATH), -4));
                     if ($this->debug === true) {
@@ -384,7 +405,106 @@ final class Assets
         $data->virtualFilesBuffer = $virtualFilesBuffer;
         $data->staticConstructors = $staticConstructors;
         $data->events = $events;
+        $data->tags = $tags;
+
         return $data;
+    }
+
+    protected function getTagData(string $class)
+    {
+        $tag = Arr([
+            'class' => $class,
+            'uid' => null,
+            'path' => null,
+            'content' => null
+        ]);
+
+        $reflection = new \ReflectionClass($class);
+        $methods = $reflection->getMethods();
+        foreach ($methods as $method) {
+            if ($method->name === '__constructStatic') {
+                continue;
+            }
+
+            $attributes = $method->getAttributes();
+            foreach($attributes as $attribute) {
+                $attributeName = $attribute->getName();
+
+                if ($attributeName === \Flames\Client\Tag::class) {
+                    $arguments = $attribute->getArguments();
+                    if (isset($arguments['path'])) {
+                        $tag->path = $arguments['path'];
+                    }
+                    if (isset($arguments['uid'])) {
+                        $tag->uid = $arguments['uid'];
+                    }
+                }
+            }
+        }
+
+        if ($tag->uid === null) {
+            throw new \Exception('Missing tag uid.');
+        }
+        if ($tag->path === null) {
+            throw new \Exception('Missing tag path.');
+        }
+
+        $fullPath = (APP_PATH . 'Client/View/' . $tag->path);
+        if (file_exists($fullPath) === false) {
+            throw new \Exception('View path ' . $fullPath . ' does not exists.');
+        }
+
+
+        $loader = new \Flames\TemplateEngine\Loader\FilesystemLoader(APP_PATH . 'Client/View/');
+        $twig = new \Flames\TemplateEngine\Environment($loader, []);
+
+        $tag->content = $twig->render($tag->path, []);
+
+        $clientClassName = ('__Flames_Tag_' . str_replace('\\', '_', substr($class, 15)));
+
+        $tag->eval = "
+            var template = document.createElement('template');
+            template.innerHTML = `
+            " . $tag->content . "
+`;
+
+            Flames.Internal.tags['" . $tag->uid . "'] = {
+                template: template,
+                shadows: []
+            };
+            
+            class " . $clientClassName . " extends HTMLElement {
+                constructor() {
+                    super();
+                    
+                    this.attachShadow({mode: 'open'});
+                    this.shadowRoot.appendChild(Flames.Internal.tags['" . $tag->uid . "'].template.content.cloneNode(true));
+    
+                    var shadowId = Flames.Internal.tags['" . $tag->uid . "'].shadows.length;
+                    Flames.Internal.tags['" . $tag->uid . "'].shadows[shadowId] = this.shadowRoot;
+                    Flames.Internal.evalBase64(btoa('\\\\Flames\\\\Kernel\\\\Client\\\\Dispatch\\\\Tag::run(\'" . $tag->uid . "\',\'' + shadowId + '\');'));
+                }
+    
+                connectedCallback() {
+                    var shadowsCount = Flames.Internal.tags['" . $tag->uid . "'].shadows.length;
+                    var shadowId = null;
+                    
+                    for (var i = 0; i < shadowsCount; i++) {
+                        if (this.shadowRoot === Flames.Internal.tags['" . $tag->uid . "'].shadows[i]) {
+                            shadowId = i;
+                            break;
+                        }
+                    }
+
+                    Flames.Internal.evalBase64(btoa('\\\\Flames\\\\Kernel\\\\Client\\\\Dispatch\\\\Tag::render(\'" . $tag->uid . "\',\'' + shadowId + '\');'));
+                }
+            }
+            
+            window.customElements.define('" . $tag->uid . "', " . $clientClassName . ");
+        ";
+
+
+        return $tag;
     }
 
     /**

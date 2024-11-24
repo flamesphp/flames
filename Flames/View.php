@@ -2,7 +2,7 @@
 
 namespace Flames;
 
-use  Flames\Collection\Arr;
+use Flames\Collection\Arr;
 use http\Env;
 
 /**

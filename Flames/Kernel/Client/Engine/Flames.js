@@ -42,6 +42,7 @@ window.Flames.onBoot = function() {
     window.Flames.Internal.uid = 0;
     window.Flames.Internal.hashidfy = new Flames.Internal.Hashid('', 14,'abcdefghijklmnopqrstuvwxyz0123456789','');
     window.Flames.Internal.modules = [];
+    window.Flames.Internal.tags = [];
     window.Flames.Internal.generateUid = (function() {
         window.Flames.Internal.uid += 1;
         return Flames.Internal.hashidfy.encode([Flames.Internal.uid]);
