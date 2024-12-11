@@ -146,7 +146,7 @@ class MariaDB extends Driver
         }
 
         $column = $this->data->column->{$key};
-        if ($column->type === 'varchar' || $column->type === 'string' || $column->type === 'bigint' || $column->type === 'int' || $column->type === 'float' || $column->type === 'bool' || $column->type === 'boolean' || $column->type === 'datetime' || $column->type === 'text') {
+        if ($column->type === 'varchar' || $column->type === 'string' || $column->type === 'bigint' || $column->type === 'int' || $column->type === 'float' || $column->type === 'bool' || $column->type === 'boolean' || $column->type === 'datetime' || $column->type === 'text' || $column->type === 'mediumtext' || $column->type === 'longtext') {
             return parent::cast($key, $value);
         }
 
@@ -160,7 +160,7 @@ class MariaDB extends Driver
         }
 
         $column = $this->data->column->{$key};
-        if ($column->type === 'varchar' || $column->type === 'string' || $column->type === 'bigint' || $column->type === 'int' || $column->type === 'float' || $column->type === 'bool' || $column->type === 'boolean' || $column->type === 'datetime' || $column->type === 'text') {
+        if ($column->type === 'varchar' || $column->type === 'string' || $column->type === 'bigint' || $column->type === 'int' || $column->type === 'float' || $column->type === 'bool' || $column->type === 'boolean' || $column->type === 'datetime' || $column->type === 'text' || $column->type === 'mediumtext' || $column->type === 'longtext') {
             return parent::castPreDb($key, $value);
         }
 

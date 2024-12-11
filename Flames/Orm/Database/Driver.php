@@ -171,7 +171,7 @@ abstract class Driver
             return null;
         }
 
-        elseif ($column->type === 'text') {
+        elseif ($column->type === 'text' || $column->type === 'mediumtext' || $column->type === 'longtext') {
             if ($value === null) {
                 if ($column->nullable === true) {
                     return null;
