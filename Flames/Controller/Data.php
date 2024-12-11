@@ -50,8 +50,6 @@ class Data
         ]);
 
         $reflection = new \ReflectionClass($class);
-
-
         $methods = $reflection->getMethods();
         foreach ($methods as $method) {
             if ($method->name === 'success' || $method->name === 'error' || $method->name === '__constructStatic') {

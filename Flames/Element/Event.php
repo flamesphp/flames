@@ -39,7 +39,7 @@ class Event
     {
         $element = $this->element;
         $this->element->addEventListener('change', function ($event) use ($delegate, $element) {
-            $delegate(new Click(Element::fromNative($element)));
+            $delegate(new Change(Element::fromNative($element)));
         });
     }
 
@@ -47,7 +47,7 @@ class Event
     {
         $element = $this->element;
         $this->element->addEventListener('input', function ($event) use ($delegate, $element) {
-            $delegate(new Click(Element::fromNative($element)));
+            $delegate(new Input(Element::fromNative($element)));
         });
     }
 }

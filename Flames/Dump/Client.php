@@ -20,11 +20,19 @@ namespace {
 
 
         if ($arg instanceof \Flames\Element) {
+            $uid = $arg->getAttribute($window->Flames->Internal->char . 'uid');
+            if ($uid === null) {
+                $window->Flames->Internal->uid = ($window->Flames->Internal->uid + 1);
+                $uid = $window->Flames->Internal->generateUid($window->Flames->Internal->uid);
+                $arg->setAttribute($window->Flames->Internal->char . 'uid', $uid);
+            }
+
             $window->Flames->Internal->dump(
-                $window->document->querySelector('[' . $window->Flames->Internal->char . 'uid="' . $arg->uid. '"]'),
+                $window->document->querySelector('[' . $window->Flames->Internal->char . 'uid="' . $uid. '"]'),
                 (' | Called at ' .  $class . ':' . $line . ' | ' . $link)
             );
 
+            $arg->removeAttribute($window->Flames->Internal->char . 'uid');
             return;
         }
 
