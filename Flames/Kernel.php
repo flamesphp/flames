@@ -46,9 +46,9 @@ final class Kernel
                 if (self::renderDirectFile() === true) {
                     return;
                 }
-                if (self::renderFavIcon() === true) {
-                    return;
-                }
+//                if (self::renderFavIcon() === true) {
+//                    return;
+//                }
                 ErrorPage::dispatch404();
                 self::shutdown();
                 return;
@@ -367,13 +367,13 @@ final class Kernel
         }
     }
 
-    protected static function renderFavIcon(): bool
-    {
-        if (isset($_SERVER['REQUEST_URI']) === true && $_SERVER['REQUEST_URI'] === '/favicon.ico') {
-            header('Location: https://cdn.jsdelivr.net/gh/flamesphp/cdn@' . Kernel::CDN_VERSION . '/img/favicon.ico');
-            return true;
-        }
-
-        return false;
-    }
+//    protected static function renderFavIcon(): bool
+//    {
+//        if (isset($_SERVER['REQUEST_URI']) === true && $_SERVER['REQUEST_URI'] === '/favicon.ico') {
+//            header('Location: https://cdn.jsdelivr.net/gh/flamesphp/cdn@' . Kernel::CDN_VERSION . '/img/favicon.ico');
+//            return true;
+//        }
+//
+//        return false;
+//    }
 }

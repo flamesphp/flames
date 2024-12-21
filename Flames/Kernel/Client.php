@@ -36,7 +36,17 @@ final class Client
 
     public static function __injectData($data)
     {
-        self::$data = unserialize(base64_decode($data));
+        $data = base64_decode($data);
+        try {
+            $data = substr($data, strpos($data, '|') + 1);
+            $data = substr($data, strpos($data, '|') + 1);
+            $data = substr($data, strpos($data, '|') + 1);
+            $data = unserialize($data);
+        } catch (\Exception|\Error $_) {}
+        if ($data === false) {
+            $data = (object)[];
+        }
+        self::$data = $data;
         self::$getData = true;
     }
 

@@ -30,7 +30,7 @@ class Route
         {
             if ($isCLI === false) {
                 $method = $_SERVER['REQUEST_METHOD'];
-                $headers = (function_exists('getallheaders') ? getallheaders() : null);
+                $headers = (function_exists('getallheaders') ? getallheaders() : []);
                 $contentType = null;
                 if (isset($headers['Content-Type']) === true) {
                     $contentType = $headers['Content-Type'];

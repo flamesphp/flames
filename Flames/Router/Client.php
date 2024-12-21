@@ -47,7 +47,7 @@ class Client
 
     protected static function dispatchFlamesAutoStyle(): bool
     {
-        if (Environment::get('AUTO_BUILD_CLIENT') !== true) {
+        if (Environment::get('CLIENT_AUTO_BUILD') !== true) {
             return false;
         }
 

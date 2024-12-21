@@ -3,10 +3,12 @@
 namespace Flames\Kernel\Client;
 
 use Flames\Connection;
+use Flames\Coroutine;
 use Flames\Element;
 use Flames\Event\Element\Click;
 use Flames\Event\Element\Change;
 use Flames\Event\Element\Input;
+use Flames\Header;
 use Flames\Js;
 use Flames\Kernel\Route;
 use Flames\Router;
@@ -17,10 +19,18 @@ use Flames\Router;
 final class Dispatch
 {
     protected static $instances = null;
+    protected static $currentLoadId = 0;
+
     public static function run() : void
     {
+        self::runUriHandler();
+        self::runAsync(true);
+    }
+
+    public static function runAsync($firstLoad = false): void
+    {
         self::clean();
-        self::setup();
+        self::setup($firstLoad);
     }
 
     protected static function clean()
@@ -33,12 +43,13 @@ final class Dispatch
         self::$instances = [];
     }
 
-    protected static function setup() : void
+    protected static function setup($firstLoad = false) : void
     {
         self::simulateGlobals();
         self::dispatchHooks();
-        self::dispatchEvents();
+        self::dispatchEvents($firstLoad);
     }
+
     protected static function simulateGlobals() : void
     {
         $location = Js::getWindow()->location;
@@ -95,11 +106,30 @@ final class Dispatch
                     }
                 }
             }
+
+            $destroy = $element->getAttribute('@destroy');
+            if ($destroy === 'false') {
+                $element->removeAttribute('@destroy');
+                $element->setAttribute($window->Flames->Internal->char . 'destroy', 'false');
+            }
         }
     }
 
-    protected static function dispatchEvents() : bool
+    protected static function dispatchEvents($firstLoad) : bool
     {
+        // Memory Overflow Bugfix
+        if ($firstLoad === false) {
+            $currentLoadId = self::$currentLoadId;
+            Js::getWindow()->setTimeout(function() use($currentLoadId) {
+                if (self::$currentLoadId <= $currentLoadId) {
+                    $location = Js::getWindow()->location;
+                    $origin = $location->origin;
+                    $uri = explode('#', substr($location->href, strlen($origin)))[0];
+                    \Flames\Browser\Page::load($uri, null, true);
+                }
+            }, 150);
+        }
+
         \Flames\Kernel::__injector();
 
         if (class_exists('\\App\\Client\\Event\\Ready') === true) {
@@ -110,16 +140,21 @@ final class Dispatch
         if (class_exists('\\App\\Client\\Event\\Route') === true) {
             $route = new \App\Client\Event\Route();
             $router = $route->onRoute(new Router());
+
             if ($router !== null) {
                 $match = $router->getMatch();
                 if ($match === null) {
+                    self::$currentLoadId++;
                     return false;
                 }
 
-                return self::dispatchRoute($match, $route);
+                $dispatchRoute =self::dispatchRoute($match, $route);
+                self::$currentLoadId++;
+                return $dispatchRoute;
             }
         }
 
+        self::$currentLoadId++;
         return false;
     }
 
@@ -135,7 +170,6 @@ final class Dispatch
         $controller = new $routeData->controller();
         self::$instances[$routeData->controller] = $controller;
         $controller->{$routeData->delegate}($requestData);
-
         return true;
     }
 
@@ -147,5 +181,29 @@ final class Dispatch
             self::$instances[$class] = new $class();
             return self::$instances[$class];
         }
+    }
+
+    protected static $currentUri = null;
+    protected static function runUriHandler()
+    {
+        if (Js::getWindow()->Flames->Internal->asyncRedirect !== true) {
+            return;
+        }
+
+        $window = Js::getWindow();
+        $location = $window->location;
+        $origin = $location->origin;
+        self::$currentUri = explode('#', substr($location->href, strlen($origin)))[0];
+
+        $window->setInterval(function() use($location) {
+            try {
+                $origin = $location->origin;
+                $currentUri = explode('#', substr($location->href, strlen($origin)))[0];
+                if ($currentUri !== self::$currentUri) {
+                    self::$currentUri = $currentUri;
+                    \Flames\Browser\Page::load($currentUri, null, true);
+                }
+            } catch (\Exception|\Error $_) {}
+        }, 100);
     }
 }

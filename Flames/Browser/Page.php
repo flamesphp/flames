@@ -3,6 +3,7 @@
 namespace Flames\Browser;
 
 use App\Client\Component\Loading;
+use Flames\Coroutine;
 use Flames\Header;
 use Flames\Js;
 use Flames\Kernel;
@@ -10,30 +11,47 @@ use Flames\Http;
 
 class Page
 {
-    public static function load(string $uri, $delegate = null): mixed
+    public static function load(string $uri, $delegate = null, $fromHandler = false): mixed
     {
         if (Kernel::MODULE === 'SERVER') {
             return Header::redirect($uri);
         }
 
+        if (class_exists('\\App\\Client\\Event\\Page') === true) {
+            $page = new \App\Client\Event\Page();
+            try {
+                $uri = $page->onPreLoad($uri);
+            } catch (\Exception|\Error $_) {}
+        }
+
         $client = new Http\Client();
-        $request = new Http\Async\Request('GET', $uri, [  'Content-Type' => 'application/json']);
-        $client->sendAsync($request)->then(function(Http\Async\Response $response) use ($uri, $delegate) {
+        $request = new Http\Async\Request('GET', $uri, ['Content-Type' => 'application/json', 'X-Flames-Request' => 'async']);
+        $client->sendAsync($request)->then(function(Http\Async\Response $response) use ($uri, $delegate, $fromHandler) {
             $data = $response->getBody();
             if ($response->getStatusCode() !== 200) {
-                return Header::redirect($uri);
+                Js::getWindow()->location = $uri;
+                return null;
             }
 
-            self::processPage($uri, $data, $delegate);
+            self::processPage($uri, $data, $fromHandler, $delegate);
             return null;
         });
 
         return null;
     }
 
-    protected static function processPage($uri, $html, $delegate = null)
+    protected static function processPage($uri, $html, $fromHandler = false, $delegate = null)
     {
-        Js::getWindow()->history->pushState('change', 'Title', '" . $uri . "');
+        if (class_exists('\\App\\Client\\Event\\Page') === true) {
+            $page = new \App\Client\Event\Page();
+            try {
+                $html = $page->onLoad($html);
+            } catch (\Exception|\Error $_) {}
+        }
+
+        if ($fromHandler === false) {
+            Js::getWindow()->history->pushState('change', 'Title', $uri);
+        }
 
         $head = null;
         $headPos = strpos($html, '<head');
@@ -75,9 +93,9 @@ class Page
         preg_match_all('#<script(.*?)<\/script>#is', $body, $matches);
         $scripts = $matches[0];
         foreach ($scripts as $script) {
-            if (str_contains($currentBody, $script) === true) {
+//            if (str_contains($currentBody, $script) === true) {
                 $body = str_replace($script, '', $body);
-            }
+//            }
         }
 
         $flamesData = null;
@@ -122,8 +140,10 @@ class Page
                     removeCount = 0;
                     for (var child of body.children) {
                         if (!(child.tagName === 'FLAMES' || child.tagName === 'SCRIPT')) {
-                            child.remove();
-                            removeCount++;
+                            if (child.getAttribute(Flames.Internal.char + 'destroy') !== 'false') {
+                                child.remove();
+                                removeCount++;
+                            }
                         }
                     }
                 } while (removeCount > 0);
@@ -147,6 +167,15 @@ class Page
             Kernel::__injectData($flamesData);
         }
 
-        Kernel::__loader();
+        if (class_exists('\\App\\Client\\Event\\Page') === true) {
+            $page = new \App\Client\Event\Page();
+            try {
+                $page->onPostLoad();
+            } catch (\Exception|\Error $_) {}
+        }
+
+        Js::getWindow()->setTimeout(function() {
+            \Flames\Kernel\Client\Dispatch::runAsync();
+        }, 5);
     }
 }

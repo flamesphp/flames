@@ -71,7 +71,21 @@ class Client
 
     public static function redirect(string $url)
     {
-        Js::getWindow()->location = $url;
+        if (self::isAsyncRedirect() === true) {
+            \Flames\Browser\Page::load($url);
+        } else {
+            Js::getWindow()->location = $url;
+        }
+
         return Arr(['redirect' => $url]);
+    }
+
+    protected static $asyncRedirect = null;
+    protected static function isAsyncRedirect()
+    {
+        if (self::$asyncRedirect === null) {
+            self::$asyncRedirect = (Js::getWindow()->Flames->Internal->asyncRedirect === true);
+        }
+        return self::$asyncRedirect;
     }
 }

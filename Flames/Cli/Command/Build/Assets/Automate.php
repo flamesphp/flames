@@ -24,7 +24,7 @@ final class Automate
     {
         $this->debug = $debug;
 
-        $ignorePath = Environment::get('AUTO_BUILD_IGNORE_PATHS');
+        $ignorePath = Environment::get('CLIENT_AUTO_BUILD_IGNORE_PATHS');
         if ($ignorePath !== null) {
             $ignorePathSplit = explode(',', $ignorePath);
             if (is_array($ignorePathSplit)) {
