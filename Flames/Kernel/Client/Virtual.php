@@ -15,14 +15,18 @@ namespace Flames\Kernel\Client
 
         public static function load(string $class): bool
         {
-            $classHash = sha1($class);
-            if (isset(self::$buffers[$classHash]) === true) {
-                eval(base64_decode(self::$buffers[$classHash]));
-                unset(self::$buffers[$classHash]);
-                if (in_array($classHash, self::$constructors) === true) {
-                    $class::__constructStatic();
+            try {
+                $classHash = sha1($class);
+                if (isset(self::$buffers[$classHash]) === true) {
+                    eval(base64_decode(self::$buffers[$classHash]));
+                    unset(self::$buffers[$classHash]);
+                    if (in_array($classHash, self::$constructors) === true) {
+                        $class::__constructStatic();
+                    }
+                    return true;
                 }
-                return true;
+            } catch (\Exception|\Error $e) {
+                Error::handler($e);
             }
 
             return false;

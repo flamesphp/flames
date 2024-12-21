@@ -10,6 +10,7 @@ use Flames\Event\Element\Change;
 use Flames\Event\Element\Input;
 use Flames\Header;
 use Flames\Js;
+use Flames\Kernel\Client\Error;
 use Flames\Kernel\Route;
 use Flames\Router;
 
@@ -29,8 +30,12 @@ final class Dispatch
 
     public static function runAsync($firstLoad = false): void
     {
-        self::clean();
-        self::setup($firstLoad);
+        try {
+            self::clean();
+            self::setup($firstLoad);
+        } catch (\Exception|\Error $e) {
+            Error::handler($e);
+        }
     }
 
     protected static function clean()
@@ -148,7 +153,7 @@ final class Dispatch
                     return false;
                 }
 
-                $dispatchRoute =self::dispatchRoute($match, $route);
+                $dispatchRoute = self::dispatchRoute($match, $route);
                 self::$currentLoadId++;
                 return $dispatchRoute;
             }
@@ -186,24 +191,28 @@ final class Dispatch
     protected static $currentUri = null;
     protected static function runUriHandler()
     {
-        if (Js::getWindow()->Flames->Internal->asyncRedirect !== true) {
-            return;
+        try {
+            if (Js::getWindow()->Flames->Internal->asyncRedirect !== true) {
+                return;
+            }
+
+            $window = Js::getWindow();
+            $location = $window->location;
+            $origin = $location->origin;
+            self::$currentUri = explode('#', substr($location->href, strlen($origin)))[0];
+
+            $window->setInterval(function() use($location) {
+                try {
+                    $origin = $location->origin;
+                    $currentUri = explode('#', substr($location->href, strlen($origin)))[0];
+                    if ($currentUri !== self::$currentUri) {
+                        self::$currentUri = $currentUri;
+                        \Flames\Browser\Page::load($currentUri, null, true);
+                    }
+                } catch (\Exception|\Error $_) {}
+            }, 100);
+        } catch (\Exception|\Error $e) {
+            Error::handler($e);
         }
-
-        $window = Js::getWindow();
-        $location = $window->location;
-        $origin = $location->origin;
-        self::$currentUri = explode('#', substr($location->href, strlen($origin)))[0];
-
-        $window->setInterval(function() use($location) {
-            try {
-                $origin = $location->origin;
-                $currentUri = explode('#', substr($location->href, strlen($origin)))[0];
-                if ($currentUri !== self::$currentUri) {
-                    self::$currentUri = $currentUri;
-                    \Flames\Browser\Page::load($currentUri, null, true);
-                }
-            } catch (\Exception|\Error $_) {}
-        }, 100);
     }
 }

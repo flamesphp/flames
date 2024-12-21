@@ -29,7 +29,7 @@ namespace {
 
             $window->Flames->Internal->dump(
                 $window->document->querySelector('[' . $window->Flames->Internal->char . 'uid="' . $uid. '"]'),
-                (' | Called at ' .  $class . ':' . $line . ' | ' . $link)
+                (' | Called at ' .  $class . ' | Line ' . $line . ' | ' . $link)
             );
 
             $arg->removeAttribute($window->Flames->Internal->char . 'uid');
@@ -43,7 +43,7 @@ namespace {
         $data = base64_encode(json_encode($arg));
         $window->Flames->Internal->dump(
             $window->JSON->parse($window->atob($data)),
-            (' | Called at ' . $class . ':' . $line . ' | ' . $link)
+            (' | Called at ' . $class . ' | Line ' . $line . ' | ' . $link)
         );
     }
 
@@ -67,7 +67,7 @@ namespace {
         if ($arg instanceof \Flames\Element) {
             $window->Flames->Internal->dump(
                 $window->document->querySelector('[' . $window->Flames->Internal->char . 'uid="' . $arg->uid. '"]'),
-                (' | Called at ' . $class . ':' . $line . ' | ' . $link)
+                (' | Called at ' . $class . ' | Line ' . $line . ' | ' . $link)
             );
             exit;
         }
@@ -79,7 +79,7 @@ namespace {
         $data = base64_encode(json_encode($arg));
         $window->Flames->Internal->dump(
             $window->JSON->parse($window->atob($data)),
-            (' | Called at ' . str_replace('\\', '\\\\', $class . ':' . $line . ' | ' . $link))
+            (' | Called at ' . str_replace('\\', '\\\\', $class . ' | Line ' . $line . ' | ' . $link))
         );
         exit;
     }

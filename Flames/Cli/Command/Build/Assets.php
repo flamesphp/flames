@@ -23,6 +23,7 @@ final class Assets
     const BASE_PATH = (APP_PATH . 'Client/Resource/Build/');
 
     protected static array $defaultFiles = [
+        Flames\Kernel\Client\Error::class,
         Flames\Kernel\Client::class,
         Flames\Connection\Client::class,
         Flames\Collection\Strings::class,
