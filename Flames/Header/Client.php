@@ -72,6 +72,7 @@ class Client
     public static function redirect(string $url)
     {
         if (self::isAsyncRedirect() === true) {
+            dump('want load: ' . $url);
             \Flames\Browser\Page::load($url);
         } else {
             Js::getWindow()->location = $url;

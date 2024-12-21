@@ -9,6 +9,9 @@ use Flames\Js;
 use Flames\Kernel;
 use Flames\Http;
 
+/**
+ * @internal
+ */
 class Page
 {
     public static function load(string $uri, $delegate = null, $fromHandler = false): mixed
@@ -51,6 +54,7 @@ class Page
 
         if ($fromHandler === false) {
             Js::getWindow()->history->pushState('change', 'Title', $uri);
+            \Flames\Kernel\Client\Dispatch::injectUri($uri);
         }
 
         $head = null;

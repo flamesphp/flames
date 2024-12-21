@@ -215,4 +215,9 @@ final class Dispatch
             Error::handler($e);
         }
     }
+
+    public static function injectUri(string $uri)
+    {
+        self::$currentUri = $uri;
+    }
 }
