@@ -172,6 +172,7 @@ class MySql extends DefaultEx
             $firstWhere = true;
             $whereIndex = 0;
 
+
             foreach ($this->wheres as $where) {
                 if ($firstWhere === true) {
                     $firstWhere = false;
@@ -190,7 +191,7 @@ class MySql extends DefaultEx
                         );
                     }
 
-                    $query .= ('`' . $this->modelData->column[$where['key']]->name . '` ' . $where['condition'] . ' ' . $whereParam . ' ');
+                    $query .= ('`' . $where['key'] . '` ' . $where['condition'] . ' ' . $whereParam . ' ');
                 }
 
                 $data['where_' . $whereIndex] = $where['value'];
@@ -269,7 +270,7 @@ class MySql extends DefaultEx
                 }
 
                 if ($where['type'] === 'default') { // TODO: function/raw
-                    $query .= ('`' . $this->modelData->column[$where['key']]->name . '` = :where_' . $whereIndex . ' ');
+                    $query .= ('`' . $where['key'] . '` = :where_' . $whereIndex . ' ');
                 }
 
                 $data['where_' . $whereIndex] = $where['value'];

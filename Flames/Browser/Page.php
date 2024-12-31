@@ -53,7 +53,11 @@ class Page
         }
 
         if ($fromHandler === false) {
-            Js::getWindow()->history->pushState('change', 'Title', $uri);
+            $window = Js::getWindow();
+            $currentUri = ($window->location->pathname . $window->location->search);
+            if ($currentUri !== $uri) {
+                $window->history->pushState('change', 'Title', $uri);
+            }
             \Flames\Kernel\Client\Dispatch::injectUri($uri);
         }
 
