@@ -23,4 +23,9 @@ class TimeZone extends DateTimeZone
         self::$defaultTimezone = new TimeZone($timezone);
         return self::$defaultTimezone;
     }
+
+    public static function getUtc()
+    {
+        return new TimeZone('UTC');
+    }
 }

@@ -16,10 +16,9 @@ use Flames\Orm\Repository\Data;
 abstract class Repository
 {
     private static array $__setup = [];
-    private static array $driver  = [];
+    private static array $_driver  = [];
 
-    private static array $database = [];
-    private static array $model    = [];
+    private static array $_data = [];
 
     /**
      * Class constructor for static methods.
@@ -59,13 +58,23 @@ abstract class Repository
 
         if ($data->database === null) {
             $data->database = $data->model::getDatabase();
+
             if ($data->database === null) {
                 throw new Exception('Repository ' . static::class . ' need a database, not founded in model.');
             }
         }
 
-        self::$database[$class] = $data->database;
-        self::$model[$class]    = $data->model;
+        self::$_data[$class] = $data;
+    }
+
+    protected static function getQueryBuilder()
+    {
+        $class = static::class;
+
+        /** @var Database\QueryBuilder\DefaultEx $queryBuilder */
+        $queryBuilder = self::getDriver()->getQueryBuilder(self::$_data[$class]->model);
+        $queryBuilder->setModel(self::$_data[$class]->model);
+        return $queryBuilder;
     }
 
     /**
@@ -76,7 +85,18 @@ abstract class Repository
      */
     public static function get(mixed $index) : Model|null
     {
-        return self::getDriver()->getByIndex($index);
+        $class = static::class;
+        $indexColumn = self::_getIndexColumn();
+
+        $queryBuilder = self::getQueryBuilder();
+        $queryBuilder->where($indexColumn->property, $index);
+        $rows = $queryBuilder->get();
+
+        if ($rows->count === 0) {
+            return null;
+        }
+
+        return $rows[0];
     }
 
     /**
@@ -89,21 +109,104 @@ abstract class Repository
      */
     public static function withFilters(Arr|array $filters, Arr|array $options = null) : Arr|null
     {
-        return self::getDriver()->getWithFilters($filters, $options);
+        $filters = self::_parseFilters($filters);
+        $queryBuilder = self::getQueryBuilder();
+
+        foreach ($filters as $filter) {
+            if ($filter[3] === 'AND') {
+                if ($filter[1] === 'LIKE') {
+                    $queryBuilder = $queryBuilder->whereLike($filter[0], $filter[2]);
+                } else {
+                    $queryBuilder = $queryBuilder->where($filter[0], $filter[1], $filter[2]);
+                }
+            } else {
+                if ($filter[1] === 'LIKE') {
+                    $queryBuilder = $queryBuilder->orWhereLike($filter[0], $filter[2]);
+                } else {
+                    $queryBuilder = $queryBuilder->orWhere($filter[0], $filter[1], $filter[2]);
+                }
+            }
+        }
+
+        // TODO: $options -> order, limit
+        return $queryBuilder->get();
     }
+
+    protected static function _parseFilters(Arr|array $filters) : array
+    {
+        if ($filters instanceof Arr) {
+            $filters = (array)$filters;
+        }
+
+        $_filters = [];
+        foreach ($filters as $key => $filter) {
+            if (is_array($filter) || $filter instanceof Arr) {
+                $filterCount = count($filter);
+                if ($filterCount === 2) {
+                    $_filters[] = [$filter[0], '=', $filter[1], 'AND'];
+                }
+                elseif ($filterCount === 3) {
+                    $_filters[] = [$filter[0], strtoupper($filter[1]), $filter[2], 'AND'];
+                }
+                elseif ($filterCount === 4) {
+                    $_filters[] = [$filter[0], strtoupper($filter[1]), $filter[2], $filter[3]];
+                }
+                else {
+                    throw new Exception('Invalid filter data.');
+                }
+                continue;
+            }
+
+            $_filters[] = [$key, '=', $filter, 'AND'];
+        }
+
+        return $_filters;
+    }
+
 
     /**
      * Returns the database driver instance.
      *
      * @return Database\Driver|null The database driver instance or null if not set.
      */
-    public static function getDriver(): Database\Driver|null
+    public static function getDriver(): mixed
     {
         $class = static::class;
 
-        if (isset(self::$driver[$class]) === false || self::$driver[$class] === null) {
-            self::$driver[$class] = self::$model[$class]::{'getDriver'}();
+        if (isset(self::$_driver[$class]) === false || self::$_driver[$class] === null) {
+            self::$_driver[$class] = self::$_data[$class]->model::{'getDriver'}();
         }
-        return self::$driver[$class];
+
+        return self::$_driver[$class];
+    }
+
+    protected static function _getIndexColumn()
+    {
+        $class = static::class;
+
+        $metadata = self::$_data[$class]->model::getMetadata();
+
+        $indexColumn = null;
+        foreach ($metadata->column as $column) {
+            if ($column->primary === true || $column->autoIncrement === true) {
+                $indexColumn = $column;
+                break;
+            }
+        }
+        if ($indexColumn === null) {
+            foreach ($metadata->column as $column) {
+                if ($column->unique === true) {
+                    $indexColumn = $column;
+                    break;
+                }
+            }
+        }
+
+        if ($indexColumn === null) {
+            throw new Error('Missing primary or unique column in table ' . self::$table . ' using class ' . static::class . '.');
+        }
+
+
+        return $indexColumn;
     }
 }

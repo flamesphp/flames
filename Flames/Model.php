@@ -17,10 +17,10 @@ use Flames\Orm\Model\Data;
 abstract class Model
 {
     private static array $__setup  = [];
-    private static array $driver   = [];
-    private static array $database = [];
-    private static array $table    = [];
-    private static array $column   = [];
+    private static array $_driver   = [];
+    private static array $_data = [];
+    private static array $_cast = [];
+    private static array $_connection = [];
 
     private array|null $__changed = null;
 
@@ -36,14 +36,14 @@ abstract class Model
         $class = static::class;
 
         $indexColumn = null;
-        foreach (self::$column[$class] as $column) {
+        foreach (self::$_data[$class]->column as $column) {
             if ($column->primary === true || $column->autoIncrement === true) {
                 $indexColumn = $column;
                 break;
             }
         }
         if ($indexColumn === null) {
-            foreach (self::$column[$class] as $column) {
+            foreach (self::$_data[$class]->column as $column) {
                 if ($column->unique === true) {
                     $indexColumn = $column;
                     break;
@@ -58,11 +58,15 @@ abstract class Model
         $data = $this->toArray();
 
         if ($data[$indexColumn->property] === null) {
-            $insert = self::$driver[$class]->insert($data);
-            if ($insert !== true) {
-                foreach ($insert as $key => $value) {
-                    $this->{$key} = $value;
-                }
+            self::_verifyConnection($class);
+
+            /** @var Database\QueryBuilder\DefaultEx $queryBuilder */
+            $queryBuilder = self::$_driver[self::$_data[$class]->database]->getQueryBuilder($class);
+            $queryBuilder->setModel(static::class);
+
+            $insert = $queryBuilder->insert($data);
+            foreach ($insert as $key => $value) {
+                $this->{$key} = $value;
             }
 
             $this->__changed = null;
@@ -82,7 +86,13 @@ abstract class Model
 
         $data[$indexColumn->property] = $this->{$indexColumn->property};
 
-        self::$driver[$class]->update($indexColumn->property, $data);
+        self::_verifyConnection($class);
+
+        /** @var Database\QueryBuilder\DefaultEx $queryBuilder */
+        $queryBuilder = self::$_driver[self::$_data[$class]->database]->getQueryBuilder($class);
+        $queryBuilder->setModel(static::class);
+        $queryBuilder->where($indexColumn->property, $this->{$indexColumn->property});
+        $queryBuilder->update($data);
         $this->__changed = null;
     }
 
@@ -134,7 +144,7 @@ abstract class Model
         $class = static::class;
         $data = [];
 
-        foreach (self::$column[$class] as $column) {
+        foreach (self::$_data[$class]->column as $column) {
             try {
                 $data[$column->property] = $this->{$column->property};
             } catch (\Error $_) {
@@ -170,11 +180,11 @@ abstract class Model
     public static function getDatabase() : string|null
     {
         $class = static::class;
-        if (isset(static::$database[$class]) === false) {
+        if (isset(self::$_data[$class]) === false) {
             return null;
         }
 
-        return self::$database[$class];
+        return self::$_data[$class]->database;
     }
 
     // TODO: dynamic check migration on change table/database
@@ -226,15 +236,10 @@ abstract class Model
     private static function __setup(Arr $data): void
     {
         $class = static::class;
-        self::$database[$class] = $data->database;
-        self::$table[$class]    = $data->table;
-
-        if ($data->column->length === 0) {
+        self::$_data[$class] = $data;
+        if (self::$_data[$class]->column->length === 0) {
             throw new \Exception('Model ' . static::class . 'need at least one column.');
         }
-
-        self::$column[$class] = $data->column;
-        self::$driver[$class] = Database\RawConnection::getByDatabase(self::$database[$class])->getDriver($data);
     }
 
     /**
@@ -263,6 +268,11 @@ abstract class Model
             }
         }
 
+        $data = $this->toArray();
+        foreach ($data as $key => $value) {
+            $this->__set($key, $value);
+        }
+
         if ($ignoreChanged === true) {
             $this->__changed = null;
         }
@@ -280,7 +290,8 @@ abstract class Model
     public function __set(string $key, mixed $value)
     {
         $class = static::class;
-        if (isset(self::$column[$class][$key]) === true) {
+
+        if (isset(self::$_data[$class]->column[$key]) === true) {
             try {
                 $this->{$key} = self::cast($key, $value);
             } catch (\TypeError $e) {}
@@ -332,7 +343,13 @@ abstract class Model
     public static function cast(string $key, mixed $value = null) : mixed
     {
         $class = static::class;
-        return self::$driver[$class]->cast($key, $value);
+
+        if (isset(self::$_data[$class]->column[$key]) === false) {
+            throw new \Exception('Model key ' . $key . ' not found in class ' . $class);
+        }
+
+        self::_verifyCast($class);
+        return self::$_cast[$class]::pos(self::$_data[$class]->column[$key], $value);
     }
 
     /**
@@ -345,13 +362,54 @@ abstract class Model
      * it will be initialized by calling the static constructor.
      *
      */
-    public static function getDriver(): Database\Driver|null
+    public static function getDriver(): mixed
     {
         $class = static::class;
 
-        if (isset(self::$driver[$class]) === false || self::$driver[$class] === null) {
-            new static();
+        $database = self::$_data[$class]->database;
+        if ($database === null) {
+            $database = sha1($config);
         }
-        return self::$driver[$class];
+
+        if (isset(self::$_driver[$database]) === false || self::$_driver[$database] === null) {
+            $_driver = new static();
+            $_driver::_verifyConnection($class);
+        }
+        return self::$_driver[$database];
+    }
+
+    private static function _verifyConnection(string $class)
+    {
+        if (isset(self::$_connection[$class]) === false || self::$_connection[$class] === false) {
+            self::$_connection[$class] = false;
+
+            $database = self::$_data[$class]->database;
+            if ($database === null) {
+                $database = sha1($config);
+            }
+
+            $driver = Database\Driver::getByConfigAndDatabase(
+                Database\DataFactory::getConfigByDatabase($database),
+                self::$_data[$class]->database
+            );
+
+            $driver->migrate(self::$_data[$class]);
+            self::$_driver[$database] = $driver;
+        }
+    }
+
+    private static function _verifyCast(string $class)
+    {
+        if (isset(self::$_cast[$class]) === false || self::$_cast[$class] === false) {
+            self::$_cast[$class] = Database\Cast\Factory::getByDatabaseType(
+                Database\DataFactory::getConfigByDatabase(self::$_data[$class]->database)->type
+            );
+        }
+    }
+
+    public static function getMetadata()
+    {
+        $class = static::class;
+        return self::$_data[$class];
     }
 }

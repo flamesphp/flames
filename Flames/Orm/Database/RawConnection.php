@@ -9,89 +9,35 @@ use Flames\Orm\Database\Driver\MySQL;
 use PDO;
 use PDOException;
 
+/**
+ * @internal
+ */
 class RawConnection
 {
-    protected PDO|null $connection = null;
-    protected Driver|MySQL|MariaDB|null $driver = null;
-    protected string|null $driverType = null;
+    protected static $connections = [];
 
-    protected static $activeConnections = [];
-
-    public function __construct(string|null $database = null)
+    public static function getByConfigAndDatabase($config, string $database = null)
     {
         if ($database === null) {
-            $database = Environment::get('DATABASE_DEFAULT');
+            $database = sha1($config);
         }
 
-        $database = strtoupper($database);
-        $this->driverType = (Environment::get('DATABASE_' . $database . '_DRIVER'));
-
-        if ($this->driverType === 'mysql') {
-            $this->createMysql($database);
-            return;
-        } elseif ($this->driverType === 'mariadb') {
-            $this->createMariaDb($database);
-            return;
+        if (isset(self::$connections[$database]) === true) {
+            return self::$connections[$database];
         }
 
-        throw new \Exception('Unknown driver type ' . $this->driverType . '.');
-    }
-
-    protected function createMariaDb(string $database): void
-    {
-        $name     = (Environment::get('DATABASE_' . $database . '_NAME'));
-        $host     = (Environment::get('DATABASE_' . $database . '_HOST'));
-        $port     = (Environment::get('DATABASE_' . $database . '_PORT'));
-        $user     = (Environment::get('DATABASE_' . $database . '_USER'));
-        $password = (Environment::get('DATABASE_' . $database . '_PASSWORD'));
-
-        try {
-            $connectionUri = ('mysql:host='. $host . ';dbname=' . $name . ';port=' . $port);
-            $connection = new PDO($connectionUri, $user, $password);
-            $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-            $this->connection = $connection;
-        } catch(PDOException $e) {
-            throw new \Error($e->getMessage());
-        }
-    }
-
-    protected function createMysql(string $database): void
-    {
-        $this->createMariaDb($database);
-    }
-
-    public function getConnection() : PDO|null
-    {
-        return $this->connection;
-    }
-
-    public function getDriver(Arr $data) : Driver
-    {
-        if ($this->driver === null) {
-            if ($this->driverType === 'mysql') {
-                $this->driver = new MySQL($this->connection, $data);
-            }
-            elseif ($this->driverType === 'mariadb') {
-                $this->driver = new MariaDB($this->connection, $data);
+        // PDO Connection
+        if ($config->type === 'mariadb' || $config->type === 'mysql') {
+            try {
+                $connectionUri = ('mysql:host='. $config->host . ';dbname=' . $config->name . ';port=' . $config->port . ';charset=utf8');
+                $connection = new PDO($connectionUri, $config->user, $config->password);
+                $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                self::$connections[$database] = $connection;
+            } catch(PDOException $e) {
+                throw new \Error($e->getMessage());
             }
         }
 
-        return $this->driver;
-    }
-
-    public static function getByDatabase(string|null $database = null)
-    {
-        if ($database === null) {
-            $database = Environment::get('DATABASE_DEFAULT');
-        }
-
-        $database = strtoupper($database);
-        if (isset(self::$activeConnections[$database]) === true) {
-            return self::$activeConnections[$database];
-        }
-
-        self::$activeConnections[$database] = new self($database);
-        return self::$activeConnections[$database];
+        return self::$connections[$database];
     }
 }
