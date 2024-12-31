@@ -234,7 +234,7 @@ abstract class Model
         }
 
         self::$column[$class] = $data->column;
-        self::$driver[$class] = (new Database\RawConnection(self::$database[$class]))->getDriver($data);
+        self::$driver[$class] = Database\RawConnection::getByDatabase(self::$database[$class])->getDriver($data);
     }
 
     /**

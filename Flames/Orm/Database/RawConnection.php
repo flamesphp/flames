@@ -15,6 +15,8 @@ class RawConnection
     protected Driver|MySQL|MariaDB|null $driver = null;
     protected string|null $driverType = null;
 
+    protected static $activeConnections = [];
+
     public function __construct(string|null $database = null)
     {
         if ($database === null) {
@@ -76,5 +78,20 @@ class RawConnection
         }
 
         return $this->driver;
+    }
+
+    public static function getByDatabase(string|null $database = null)
+    {
+        if ($database === null) {
+            $database = Environment::get('DATABASE_DEFAULT');
+        }
+
+        $database = strtoupper($database);
+        if (isset(self::$activeConnections[$database]) === true) {
+            return self::$activeConnections[$database];
+        }
+
+        self::$activeConnections[$database] = new self($database);
+        return self::$activeConnections[$database];
     }
 }
