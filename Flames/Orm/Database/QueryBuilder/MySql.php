@@ -221,7 +221,7 @@ class MySql extends DefaultEx
                 }
 
                 if ($where['type'] === 'default') { // TODO: function/raw
-                    $whereParam = (':where_' . $this->whereBaseIndex . $whereIndex);
+                    $whereParam = (':where_' . $this->whereBaseIndex . $whereIndex . '_' . $where['key']);
 
                     if ($where['condition'] === 'LIKE') {
                         $whereParam = (
@@ -232,7 +232,7 @@ class MySql extends DefaultEx
                     }
 
                     $query .= ('`' . $where['key'] . '` ' . $where['condition'] . ' ' . $whereParam . ' ');
-                    $data['where_' . $this->whereBaseIndex . $whereIndex] = $where['value'];
+                    $data['where_' . $this->whereBaseIndex . $whereIndex . '_' . $where['key']] = $where['value'];
                     $whereIndex++;
                 }
                 elseif ($where['type'] === 'raw') {
