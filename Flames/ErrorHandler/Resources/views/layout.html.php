@@ -2,6 +2,9 @@
 /**
 * Layout template file for ErrorHandler's pretty error output.
 */
+
+use Flames\Connection;
+
 ?>
 <!DOCTYPE html><?php echo $preface; ?>
 <html>
@@ -44,7 +47,7 @@
     </head>
     <body>
     <?php
-        if(\Flames\Connection\HttpClient::isHttpClient() === false) {  ?>
+        if(\Flames\Connection\HttpClient::isHttpClient() === false && Connection\Async::isFlamesClient() === false) {  ?>
             <div class="--flames-fullscreen-loading">
                 <img src="/.flames.png">
             </div>

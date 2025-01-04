@@ -21,6 +21,18 @@ class Client
             $headers = [];
         }
         $this->header = (array)$headers;
+        $this->hookClientHeader();
+    }
+
+    protected function hookClientHeader()
+    {
+        if (isset($this->header['X-Flames-Request']) === true) {
+            return;
+        }
+        if (isset($this->header['x-flames-request']) === true) {
+            return;
+        }
+        $this->header['X-Flames-Request'] = 'client';;
     }
 
     public function getMethod() : string
