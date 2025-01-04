@@ -162,10 +162,9 @@ class MySql extends DefaultEx
         return $this;
     }
 
-    public function get()
+    protected function _nativeWhere($data)
     {
-        $data = [];
-        $query = ('SELECT * FROM `' . $this->table . '` ');
+        $query = '';
 
         if (count($this->wheres) > 0) {
             $query .= ' WHERE ';
@@ -201,14 +200,22 @@ class MySql extends DefaultEx
             $query = (substr($query, 0, -1) . "\r\n");
         }
 
+        return ['data' => $data, 'query' => $query];
+    }
+
+    public function get()
+    {
+        $data = [];
+        $query = ('SELECT * FROM `' . $this->table . '` ');
+
+        $nativeWhere = $this->_nativeWhere($data);
+        $data = $nativeWhere['data'];
+        $query .= $nativeWhere['query'];
+
         $statement = $this->connection->prepare($query);
         $statement->execute($data);
 
-        $cast = null;
-
         if ($this->mode === 'model') {
-            $cast = null;
-
             $models = Arr();
             while ($row = $statement->fetch()) {
                 $modelData = [];
@@ -257,28 +264,9 @@ class MySql extends DefaultEx
 
         $query = (substr($query, 0, -1) . "\r\n");
 
-        if (count($this->wheres) > 0) {
-            $query .= ' WHERE ';
-            $firstWhere = true;
-
-            $whereIndex = 0;
-            foreach ($this->wheres as $where) {
-                if ($firstWhere === true) {
-                    $firstWhere = false;
-                } else {
-                    $query .= (' ' . $where['operator'] . ' ');
-                }
-
-                if ($where['type'] === 'default') { // TODO: function/raw
-                    $query .= ('`' . $where['key'] . '` = :where_' . $whereIndex . ' ');
-                }
-
-                $data['where_' . $whereIndex] = $where['value'];
-                $whereIndex++;
-            }
-
-            $query = (substr($query, 0, -1) . "\r\n");
-        }
+        $nativeWhere = $this->_nativeWhere($data);
+        $data = $nativeWhere['data'];
+        $query .= $nativeWhere['query'];
 
         $statement = $this->connection->prepare($query);
         $statement->execute($data);
@@ -345,7 +333,7 @@ class MySql extends DefaultEx
 
         foreach ($data as $key => $value) {
             if (isset($this->modelData->column[$key]) === false) {
-                throw new \Exception('Model key ' . $key . ' not found in class ' . $class);
+                throw new \Exception('Model key ' . $key . ' not found in class ' . $this->modelData->class);
             }
 
             $data[$key] = $cast::pos($this->modelData->column[$key], $value, $fromDb);
@@ -360,7 +348,7 @@ class MySql extends DefaultEx
 
         foreach ($data as $key => $value) {
             if (isset($this->modelData->column[$key]) === false) {
-                throw new \Exception('Model key ' . $key . ' not found in class ' . $class);
+                throw new \Exception('Model key ' . $key . ' not found in class ' . $this->modelData->class);
             }
             $data[$key] = $cast::pre($this->modelData->column[$key], $value);
         }
