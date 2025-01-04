@@ -517,18 +517,6 @@ class MySql extends DefaultEx
         $data = $nativeWhere['data'];
         $query .= $nativeWhere['query'];
 
-        $nativeGroup = $this->_nativeGroup();
-        if ($nativeGroup !== '') {
-            $query .= ("\r\n GROUP BY \r\n" . $nativeGroup);
-            if ($this->mode === 'model') {
-                // TODO: group by (fix joins with multiples entries)
-            }
-        } else {
-            if ($this->mode === 'model') {
-                // TODO: group by (fix joins with multiples entries)
-            }
-        }
-
         $nativeOrder = $this->_nativeOrder();
         if ($nativeOrder !== '') {
             $query .= ("\r\n ORDER BY \r\n" . $nativeOrder);
@@ -536,9 +524,6 @@ class MySql extends DefaultEx
 
         if ($this->limit !== null) {
             $query .= ("\r\n LIMIT " . $this->limit);
-        }
-        if ($this->offset !== null) {
-            $query .= ("\r\n OFFSET " . $this->offset);
         }
 
         $statement = $this->connection->prepare($query);
