@@ -155,7 +155,13 @@ SQL;
 
     protected function __updateTable($data, string $hash): void
     {
-        $query = $this->connection->query('SHOW COLUMNS FROM ' . $data->table . ';');
+        try {
+            $query = $this->connection->query('SHOW COLUMNS FROM ' . $data->table . ';');
+        } catch (\PdoException $e) {
+            $this->__mountTable($data, $hash);
+            $query = $this->connection->query('SHOW COLUMNS FROM ' . $data->table . ';');
+        }
+
         $dbColumns = $query->fetchAll();
 
         $queries = [];
@@ -180,7 +186,6 @@ SQL;
                 continue;
             }
 
-            // TODO: run only if really changes column (func: __createColumnDbBase)
             $preQuery = ('ALTER TABLE `' . $data->table . '` MODIFY `' . $column->name . '` ' . $this->__createColumnBase($column));
             if ($column->autoIncrement === true) {
                 $preQuery .= ' AUTO_INCREMENT';
@@ -310,6 +315,13 @@ SQL;
             }
         } else {
             $this->connection->query('UPDATE `flames_migration` SET `hash` = \'' . $hash . '\', `version` = \'' . self::__VERSION__ . '\' WHERE `flames_migration`.`class` = \'' . str_replace('\\', '\\\\', $data->class) . '\';');
+        }
+
+        // Verify if is really updated (case delete from migration table for table recreation)
+        $query = $this->connection->query('SELECT `id` FROM `flames_migration` WHERE `class` = \'' . str_replace('\\', '\\\\', $data->class) . '\';');
+        $migrationDb = $query->fetchAll();
+        if (count($migrationDb) === 0) {
+            $this->connection->query('INSERT INTO `flames_migration` (`id`, `class`, `hash`, `version`) VALUES (NULL, \'' . str_replace('\\', '\\\\', $data->class) .'\', \'' . $hash . '\', ' . self::__VERSION__ . '); ' . ';');
         }
     }
 

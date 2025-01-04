@@ -6,7 +6,7 @@ use Flames\Collection\Arr;
 use Flames\Environment;
 use Flames\Orm\Database\Driver\MariaDB;
 use Flames\Orm\Database\Driver\MySQL;
-use PDO;
+//use PDO;
 use PDOException;
 
 /**
@@ -30,9 +30,7 @@ class RawConnection
         if ($config->type === 'mariadb' || $config->type === 'mysql') {
             try {
                 $connectionUri = ('mysql:host='. $config->host . ';dbname=' . $config->name . ';port=' . $config->port . ';charset=utf8mb4');
-                $connection = new PDO($connectionUri, $config->user, $config->password);
-                $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                $connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+                $connection = new RawConnection\Pdo($connectionUri, $config->user, $config->password, null, $config, $database);
                 self::$connections[$database] = $connection;
             } catch(PDOException $e) {
                 throw new \Error($e->getMessage());

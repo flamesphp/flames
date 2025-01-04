@@ -12,8 +12,11 @@ use Exception;
  */
 class MySql extends DefaultEx
 {
+    protected static $tableColumns = [];
+
     protected $mode = 'table';
     protected $connection;
+//    protected $databasePrefix = '';
 
     protected $model = null;
     protected $modelData = null;
@@ -22,10 +25,17 @@ class MySql extends DefaultEx
 
     protected $wheres = [];
     protected $whereBaseIndex = '';
+    protected $orders = [];
 
     public function __construct($connection)
     {
         $this->connection = $connection;
+
+        // TODO: support multi database
+//        $config = $this->connection->getConfig();
+//        if ($config !== null && isset($config->name) === true) {
+//            $this->databasePrefix = ('`' . $config->name . '`.');
+//        }
     }
 
     public function setTable(string $table)
@@ -124,7 +134,6 @@ class MySql extends DefaultEx
             }
 
             $data = $this->_castDataPre([$key => $value]);
-            $this->modelData->column[$key]->name;
 
             $this->wheres[] = [
                 'type' => 'default',
@@ -163,7 +172,6 @@ class MySql extends DefaultEx
             }
 
             $data = $this->_castDataPre([$key => $value]);
-            $this->modelData->column[$key]->name;
 
             $this->wheres[] = [
                 'type' => 'default',
@@ -220,7 +228,7 @@ class MySql extends DefaultEx
                     $query .= (' ' . $where['operator'] . ' ');
                 }
 
-                if ($where['type'] === 'default') { // TODO: function/raw
+                if ($where['type'] === 'default') {
                     $whereParam = (':where_' . $this->whereBaseIndex . $whereIndex . '_' . $where['key']);
 
                     if ($where['condition'] === 'LIKE') {
@@ -231,7 +239,7 @@ class MySql extends DefaultEx
                         );
                     }
 
-                    $query .= ('`' . $where['key'] . '` ' . $where['condition'] . ' ' . $whereParam . ' ');
+                    $query .= ('`' . $this->table . '`.`' . $where['key'] . '` ' . $where['condition'] . ' ' . $whereParam . ' ');
                     $data['where_' . $this->whereBaseIndex . $whereIndex . '_' . $where['key']] = $where['value'];
                     $whereIndex++;
                 }
@@ -274,20 +282,91 @@ class MySql extends DefaultEx
         return ['data' => $data, 'query' => $query];
     }
 
+    public function join(string $model, string $name, callable $delegate)
+    {
+
+    }
+
+    protected function _nativeJoin()
+    {
+        return '';
+    }
+
+    public function order(string $key, string $direction = 'ASC')
+    {
+        if ($this->mode === 'model') {
+            if (isset($this->modelData->column[$key]) === false) {
+                throw new \Exception('Model key ' . $key . ' not found in class ' . $this->modelData->class);
+            }
+
+            $this->orders[] = [
+                'type' => 'default',
+                'key' => $this->modelData->column[$key]->name,
+                'direction' => strtolower($direction)
+            ];
+        } else {
+            $this->wheres[] = [
+                'type' => 'default',
+                'key' => $key,
+                'direction' => strtolower($direction)
+            ];
+        }
+
+        return $this;
+    }
+
+    protected function _nativeOrder()
+    {
+        $query = '';
+
+        if (count($this->orders) > 0) {
+            foreach ($this->orders as $order) {
+                if ($order['type'] === 'default') {
+                    $query .= ('`' . $this->table . '`.`' . $order['key'] . '` ' . $order['direction'] . ',');
+                }
+            }
+        }
+
+        if ($query !== '') {
+            $query = (substr($query, 0, -1) . "\r\n");
+        }
+        $query = str_replace(',', ",\r\n", $query);
+
+        return $query;
+    }
+
     public function get()
     {
         $data = [];
-        $query = ('SELECT * FROM `' . $this->table . '` ');
+        $query = "SELECT \r\n";
+
+        $querySelectors = '';
+        $columns = $this->_getTableColumns();
+        foreach ($columns as $column) {
+            $querySelectors .= ('`' . $this->table . '`.`' . $column . '` as \'' . $this->table . '.' . $column . "',");
+        }
+        if ($querySelectors !== '') {
+            $querySelectors = (substr($querySelectors, 0, -1) . "\r\n");
+        }
+        $query .= str_replace(',', ",\r\n", $querySelectors);
+        // TODO: where joins
+
+        $query .= (' FROM `' . $this->table . '` ');
+
+        $query .= $this->_nativeJoin();
 
         $nativeWhere = $this->_nativeWhere($data);
-        if ($nativeWhere !== '') {
-            $query .= ' WHERE ';
+
+        if ($nativeWhere['query'] !== '') {
+            $query .= "\r\n WHERE \r\n";
         }
         $data = $nativeWhere['data'];
         $query .= $nativeWhere['query'];
 
-        dump($query);
-        dump($data);
+        $nativeOrder = $this->_nativeOrder();
+        if ($nativeOrder !== '') {
+            $query .= ("\r\n ORDER BY \r\n" . $nativeOrder);
+        }
 
         $statement = $this->connection->prepare($query);
         $statement->execute($data);
@@ -297,10 +376,12 @@ class MySql extends DefaultEx
             while ($row = $statement->fetch()) {
                 $modelData = [];
                 foreach ($this->modelData->column as $column) {
-                    if (isset($row[$column->name]) === true) {
-                        $modelData[$column->property] = $row[$column->name];
+                    if (isset($row[$this->table . '.' . $column->name]) === true) {
+                        $modelData[$column->property] = $row[$this->table . '.' . $column->name];
                     }
                 }
+
+                // TODO: join selects
 
                 $modelData = $this->_castDataPos($modelData, true);
                 $models[] = new $this->modelData->class($modelData, true);
@@ -327,7 +408,9 @@ class MySql extends DefaultEx
             throw new Exception('Update payload in table ' . $this->table . ' can\'t be empty.');
         }
 
-        $query = ('UPDATE `' . $this->table . '` SET ');
+        $query = ('UPDATE `' . $this->table . '` ');
+        $query .= $this->_nativeJoin();
+        $query .= ' SET ';
 
         if ($this->mode === 'model') {
             foreach ($data as $key => $value) {
@@ -342,11 +425,20 @@ class MySql extends DefaultEx
         $query = (substr($query, 0, -1) . "\r\n");
 
         $nativeWhere = $this->_nativeWhere($data);
-        if ($nativeWhere !== '') {
-            $query .= ' WHERE ';
+        if ($nativeWhere['query'] !== '') {
+            $query .= "\r\n WHERE \r\n";
         }
         $data = $nativeWhere['data'];
         $query .= $nativeWhere['query'];
+
+        $nativeOrder = $this->_nativeOrder();
+        if ($nativeOrder !== '') {
+            $query .= ("\r\n ORDER BY \r\n" . $nativeOrder);
+        }
+
+        if ($this->mode === 'model') {
+            // TODO: group by (fix joins with multiples entries)
+        }
 
         $statement = $this->connection->prepare($query);
         $statement->execute($data);
@@ -382,8 +474,8 @@ class MySql extends DefaultEx
             $query .= (':' . $key . ', ');
         }
         $query = (substr($query, 0, -2) . ');');
-
         $statement = $this->connection->prepare($query);
+
         $statement->execute($data);
 
         $insertId = $this->connection->lastInsertId();
@@ -435,5 +527,25 @@ class MySql extends DefaultEx
         }
 
         return $data;
+    }
+
+    protected function _getTableColumns()
+    {
+        $dbColumns = [];
+
+        if ($this->mode === 'table') {
+            $query = $this->connection->query('SHOW COLUMNS FROM ' . $this->table . ';');
+            $_dbColumns = $query->fetchAll();
+            foreach ($_dbColumns as $dbColumn) {
+                $dbColumns[] = $dbColumn['Field'];
+            }
+        } else {
+            foreach ($this->modelData->column as $key => $column) {
+                $dbColumns[] = $column['name'];
+            }
+        }
+
+        self::$tableColumns[$this->table] = $dbColumns;
+        return self::$tableColumns[$this->table];
     }
 }
