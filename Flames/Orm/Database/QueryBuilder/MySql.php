@@ -252,8 +252,6 @@ class MySql extends DefaultEx
                     }
                 }
                 elseif ($where['type'] === 'delegate') {
-                    dump('delegate');
-
                     $delegateQueryBuilder = new self($this->connection);
                     $delegateQueryBuilder->_setBaseIndex($this->whereBaseIndex . $whereIndex. '_');
                     if ($this->mode === 'model') { $delegateQueryBuilder->setModel($this->model); }
