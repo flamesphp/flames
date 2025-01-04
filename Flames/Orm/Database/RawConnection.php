@@ -29,7 +29,7 @@ class RawConnection
         // PDO Connection
         if ($config->type === 'mariadb' || $config->type === 'mysql') {
             try {
-                $connectionUri = ('mysql:host='. $config->host . ';dbname=' . $config->name . ';port=' . $config->port . ';charset=utf8');
+                $connectionUri = ('mysql:host='. $config->host . ';dbname=' . $config->name . ';port=' . $config->port . ';charset=utf8mb4');
                 $connection = new PDO($connectionUri, $config->user, $config->password);
                 $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 $connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);

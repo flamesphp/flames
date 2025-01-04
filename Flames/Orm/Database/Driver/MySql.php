@@ -43,7 +43,7 @@ class Mysql extends DefaultEx
             // Get migration table
             try {
                 $query = $this->connection->query('SELECT * FROM `flames_migration`;');
-            } catch (PDOException $_) {
+            } catch (\PDOException $e) {
                 // Case fail, create migration table
                 $this->__mountMigration($data);
                 $query = $this->connection->query('SELECT * FROM `flames_migration`;');
@@ -124,7 +124,7 @@ SQL;
             $query .= ",\n\t\t\t";
             $columns[] = $column;
         }
-        $query = (substr($query, 0, strlen($query) - 5) . "\n\t\t) ENGINE=InnoDB DEFAULT CHARACTER  SET=utf8;\n");
+        $query = (substr($query, 0, strlen($query) - 5) . "\n\t\t) DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;\n");
         $this->connection->query($query);
 
         $queries = [];
@@ -331,5 +331,25 @@ SQL;
         }
 
         return $query;
+    }
+
+    protected function __mountMigration(): void
+    {
+        $this->connection->query('
+            CREATE TABLE `flames_migration` (
+                `id` bigint(20) NOT NULL,
+                `class` varchar(1024) NOT NULL,
+                `hash` varchar(40) NOT NULL,
+                `version` int(11) NOT NULL
+            ) DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
+        ');
+        $this->connection->query('
+            ALTER TABLE `flames_migration`
+                ADD PRIMARY KEY (`id`);
+        ');
+        $this->connection->query('
+            ALTER TABLE `flames_migration`
+                MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+        ');
     }
 }
