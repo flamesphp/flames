@@ -26,6 +26,9 @@ class MySql extends DefaultEx
     protected $wheres = [];
     protected $whereBaseIndex = '';
     protected $orders = [];
+    protected $groups = [];
+    protected $limit = null;
+    protected $offset = null;
 
     public function __construct($connection)
     {
@@ -305,7 +308,7 @@ class MySql extends DefaultEx
                 'direction' => strtolower($direction)
             ];
         } else {
-            $this->wheres[] = [
+            $this->orders[] = [
                 'type' => 'default',
                 'key' => $key,
                 'direction' => strtolower($direction)
@@ -333,6 +336,67 @@ class MySql extends DefaultEx
         $query = str_replace(',', ",\r\n", $query);
 
         return $query;
+    }
+
+    public function group(string $key)
+    {
+        if ($this->mode === 'model') {
+            if (isset($this->modelData->column[$key]) === false) {
+                throw new \Exception('Model key ' . $key . ' not found in class ' . $this->modelData->class);
+            }
+
+            $this->groups[] = [
+                'type' => 'default',
+                'key' => $this->modelData->column[$key]->name
+            ];
+        } else {
+            $this->groups[] = [
+                'type' => 'default',
+                'key' => $key
+            ];
+        }
+
+        return $this;
+    }
+
+    protected function _nativeGroup()
+    {
+        $query = '';
+
+        if (count($this->groups) > 0) {
+            foreach ($this->groups as $group) {
+                if ($group['type'] === 'default') {
+                    $query .= ('`' . $this->table . '`.`' . $group['key'] . '`,');
+                }
+            }
+        }
+
+        if ($query !== '') {
+            $query = (substr($query, 0, -1) . "\r\n");
+        }
+        $query = str_replace(',', ",\r\n", $query);
+
+        return $query;
+    }
+
+    public function limit(int $limit)
+    {
+        $this->limit = $limit;
+    }
+
+    public function offset(int $offset)
+    {
+        $this->offset = $offset;
+    }
+
+    public function paginate(int $limit, int $page)
+    {
+        $this->limit($limit);
+
+        if ($page > 1) {
+            $offset = ($page * $limit) - $limit;
+            $this->offset($offset);
+        }
     }
 
     public function get()
@@ -363,10 +427,32 @@ class MySql extends DefaultEx
         $data = $nativeWhere['data'];
         $query .= $nativeWhere['query'];
 
+        $nativeGroup = $this->_nativeGroup();
+        if ($nativeGroup !== '') {
+            $query .= ("\r\n GROUP BY \r\n" . $nativeGroup);
+            if ($this->mode === 'model') {
+                // TODO: group by (fix joins with multiples entries)
+            }
+        } else {
+            if ($this->mode === 'model') {
+                // TODO: group by (fix joins with multiples entries)
+            }
+        }
+
         $nativeOrder = $this->_nativeOrder();
         if ($nativeOrder !== '') {
             $query .= ("\r\n ORDER BY \r\n" . $nativeOrder);
         }
+
+        if ($this->limit !== null) {
+            $query .= ("\r\n LIMIT " . $this->limit);
+        }
+        if ($this->offset !== null) {
+            $query .= ("\r\n OFFSET " . $this->offset);
+        }
+
+//        dump($query);
+//        exit;
 
         $statement = $this->connection->prepare($query);
         $statement->execute($data);
@@ -431,13 +517,28 @@ class MySql extends DefaultEx
         $data = $nativeWhere['data'];
         $query .= $nativeWhere['query'];
 
+        $nativeGroup = $this->_nativeGroup();
+        if ($nativeGroup !== '') {
+            $query .= ("\r\n GROUP BY \r\n" . $nativeGroup);
+            if ($this->mode === 'model') {
+                // TODO: group by (fix joins with multiples entries)
+            }
+        } else {
+            if ($this->mode === 'model') {
+                // TODO: group by (fix joins with multiples entries)
+            }
+        }
+
         $nativeOrder = $this->_nativeOrder();
         if ($nativeOrder !== '') {
             $query .= ("\r\n ORDER BY \r\n" . $nativeOrder);
         }
 
-        if ($this->mode === 'model') {
-            // TODO: group by (fix joins with multiples entries)
+        if ($this->limit !== null) {
+            $query .= ("\r\n LIMIT " . $this->limit);
+        }
+        if ($this->offset !== null) {
+            $query .= ("\r\n OFFSET " . $this->offset);
         }
 
         $statement = $this->connection->prepare($query);

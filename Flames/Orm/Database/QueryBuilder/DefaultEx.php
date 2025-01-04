@@ -41,4 +41,10 @@ class DefaultEx
     public function whereRaw(string $condition, mixed $values = null) { return $this; }
 
     public function orWhereRaw(string $condition, mixed $values = null) { return $this; }
+
+    public function limit(int $limit) { return $this; }
+
+    public function offset(int $offset) { return $this; }
+
+    public function paginate(int $limit, int $page) { return $this; }
 }
