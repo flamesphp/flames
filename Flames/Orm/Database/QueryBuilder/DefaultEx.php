@@ -16,7 +16,29 @@ class DefaultEx
 {
     public function __construct($connection) {}
 
-    public function setTable($table) {}
+    public function setTable(string $table) { return $this; }
 
-    public function setModel($model) {}
+    public function setModel(string $model) { return $this; }
+
+    public function where(string $key, mixed $valueOrCondition = null, mixed $value = null) { return $this; }
+
+    public function orWhere(string $key, mixed $valueOrCondition = null, mixed $value = null) { return $this; }
+
+    public function whereGroup(callable $delegate, Arr|array|null $values = null) { return $this; }
+
+    public function orWhereGroup(callable $delegate, Arr|array|null $values = null) { return $this; }
+
+    public function whereLike(string $key, mixed $value = null) { return $this; }
+
+    public function orWhereLike(string $key, mixed $value = null) { return $this; }
+
+    public function get() { return $this; }
+
+    public function update(Arr|array $data) { return $this; }
+
+    public function insert(Arr|array $data) { return $this; }
+
+    public function whereRaw(string $condition, mixed $values = null) { return $this; }
+
+    public function orWhereRaw(string $condition, mixed $values = null) { return $this; }
 }

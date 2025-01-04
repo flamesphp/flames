@@ -21,50 +21,71 @@ class MySql extends DefaultEx
     protected $table = null;
 
     protected $wheres = [];
+    protected $whereBaseIndex = '';
 
     public function __construct($connection)
     {
         $this->connection = $connection;
     }
 
-    public function setTable($table)
+    public function setTable(string $table)
     {
         $this->mode = 'table';
         $this->table = $table;
         $this->model = null;
+
+        return $this;
     }
 
-    public function setModel($model)
+    public function setModel(string $model)
     {
         $this->mode = 'model';
+        $this->model = $model;
         $this->modelData = $model::getMetadata();
         $this->modelCast = \Flames\Orm\Database\Cast\Factory::getByDatabaseType(
             \Flames\Orm\Database\DataFactory::getConfigByDatabase($this->modelData->database)->type
         );
         $this->table = $this->modelData->table;
+
+        return $this;
     }
 
-    public function where($keyOrFunction, $valueOrCondition, $value = null)
+    protected function _setBaseIndex($whereBaseIndex)
+    {
+        $this->whereBaseIndex = $whereBaseIndex;
+    }
+
+    public function where(string $key, mixed $valueOrCondition  = null, mixed $value = null)
     {
         $argsCount = func_num_args();
         if ($argsCount === 2) {
-            return $this->_where('AND', $keyOrFunction, $valueOrCondition);
+            return $this->_where('AND', $key, $valueOrCondition);
         }
 
-        return $this->_where('AND', $keyOrFunction, $valueOrCondition, $value);
+        return $this->_where('AND', $key, $valueOrCondition, $value);
     }
 
-    public function orWhere($keyOrFunction, $valueOrCondition, $value = null)
+    public function orWhere(string $key, mixed $valueOrCondition = null , mixed $value = null)
     {
         $argsCount = func_num_args();
         if ($argsCount === 2) {
-            return $this->_where('OR', $keyOrFunction, $valueOrCondition);
+            return $this->_where('OR', $key, $valueOrCondition);
         }
 
-        return $this->_where('OR', $keyOrFunction, $valueOrCondition, $value);
+        return $this->_where('OR', $key, $valueOrCondition, $value);
     }
 
-    protected function _where($operator, $keyOrFunction, $valueOrCondition, $value = null)
+    public function whereGroup(callable $delegate, Arr|array|null $values = null)
+    {
+        return $this->_where('AND', $delegate, $values);
+    }
+
+    public function orWhereGroup(callable $delegate, Arr|array|null $values = null)
+    {
+        return $this->_where('OR', $delegate, $values);
+    }
+
+    protected function _where(string $operator, string|callable $keyOrFunction, mixed $valueOrCondition = null, $value = null)
     {
         $function = null;
         $key = null;
@@ -74,6 +95,13 @@ class MySql extends DefaultEx
             $valueOrCondition = null;
             $value = null;
             $function = $keyOrFunction;
+
+            $this->wheres[] = [
+                'type' => 'delegate',
+                'value' => $function,
+                'operator' => $operator
+            ];
+            return $this;
         }
         elseif (is_string($keyOrFunction) === true) {
             $argsCount = func_num_args();
@@ -90,17 +118,12 @@ class MySql extends DefaultEx
             throw new Exception('Invalid where parameters in table ' . $this->table  . '.');
         }
 
-        // TODO: $function parenthesis
-//        if ($function !== null) {
-//
-//        } else {
-
         if ($this->mode === 'model') {
             if (isset($this->modelData->column[$key]) === false) {
-                throw new \Exception('Model key ' . $key . ' not found in class ' . $class);
+                throw new \Exception('Model key ' . $key . ' not found in class ' . $this->modelData->class);
             }
 
-            $data = $this->castDataPre([$key => $value]);
+            $data = $this->_castDataPre([$key => $value]);
             $this->modelData->column[$key]->name;
 
             $this->wheres[] = [
@@ -118,29 +141,28 @@ class MySql extends DefaultEx
                 'value' => $value
             ];
         }
-//        }
 
         return $this;
     }
 
-    public function whereLike($key, $value = null)
+    public function whereLike(string $key, mixed $value = null)
     {
         return $this->_whereLike('AND', $key, $value);
     }
 
-    public function orWhereLike($key, $value = null)
+    public function orWhereLike(string $key, mixed $value = null)
     {
         return $this->_whereLike('OR', $key, $value);
     }
 
-    protected function _whereLike($operator, $key, $value = null)
+    protected function _whereLike(string $operator, string $key, mixed $value = null)
     {
         if ($this->mode === 'model') {
             if (isset($this->modelData->column[$key]) === false) {
-                throw new \Exception('Model key ' . $key . ' not found in class ' . $class);
+                throw new \Exception('Model key ' . $key . ' not found in class ' . $this->modelData->class);
             }
 
-            $data = $this->castDataPre([$key => $value]);
+            $data = $this->_castDataPre([$key => $value]);
             $this->modelData->column[$key]->name;
 
             $this->wheres[] = [
@@ -155,22 +177,41 @@ class MySql extends DefaultEx
                 'type' => 'default',
                 'key' => $key,
                 'condition' => 'LIKE',
-                'value' => $value
+                'value' => $value,
+                'operator' => $operator
             ];
         }
 
         return $this;
     }
 
-    protected function _nativeWhere($data)
+    public function whereRaw(string $condition, mixed $values = null)
+    {
+        return $this->_whereRaw('AND', $condition, $values);
+    }
+
+    public function orWhereRaw(string $condition, mixed $values = null)
+    {
+        return $this->_whereRaw('OR', $condition, $values);
+    }
+
+    protected function _whereRaw(string $operator, string $condition, mixed $values = null)
+    {
+        $this->wheres[] = [
+            'type' => 'raw',
+            'condition' => $condition,
+            'value' => $values,
+            'operator' => $operator
+        ];
+    }
+
+    protected function _nativeWhere(Arr|array $data)
     {
         $query = '';
 
         if (count($this->wheres) > 0) {
-            $query .= ' WHERE ';
             $firstWhere = true;
             $whereIndex = 0;
-
 
             foreach ($this->wheres as $where) {
                 if ($firstWhere === true) {
@@ -180,7 +221,7 @@ class MySql extends DefaultEx
                 }
 
                 if ($where['type'] === 'default') { // TODO: function/raw
-                    $whereParam = (':where_' . $whereIndex);
+                    $whereParam = (':where_' . $this->whereBaseIndex . $whereIndex);
 
                     if ($where['condition'] === 'LIKE') {
                         $whereParam = (
@@ -191,10 +232,42 @@ class MySql extends DefaultEx
                     }
 
                     $query .= ('`' . $where['key'] . '` ' . $where['condition'] . ' ' . $whereParam . ' ');
+                    $data['where_' . $this->whereBaseIndex . $whereIndex] = $where['value'];
+                    $whereIndex++;
                 }
+                elseif ($where['type'] === 'raw') {
+                    if ($where['condition'] !== '') {
+                        if ($where['value'] === null) {
+                            $query .= (' (' . $where['condition'] . ') ');
+                        } else {
+                            foreach ($where['value'] as $key => $value) {
+                                $whereParam = (':where_' . $this->whereBaseIndex . $whereIndex . '_' . $key);
+                                $where['condition'] = str_replace('{' . $key . '}', $whereParam, $where['condition']);
+                                $data['where_' . $this->whereBaseIndex . $whereIndex . '_' . $key] = $value;
+                                $whereIndex++;
+                            }
 
-                $data['where_' . $whereIndex] = $where['value'];
-                $whereIndex++;
+                            $query .= (' (' . $where['condition'] . ') ');
+                        }
+                    }
+                }
+                elseif ($where['type'] === 'delegate') {
+                    dump('delegate');
+
+                    $delegateQueryBuilder = new self($this->connection);
+                    $delegateQueryBuilder->_setBaseIndex($this->whereBaseIndex . $whereIndex. '_');
+                    if ($this->mode === 'model') { $delegateQueryBuilder->setModel($this->model); }
+                    else { $delegateQueryBuilder->setTable($this->table); }
+
+                    $delegate = $where['value'];
+                    $delegate($delegateQueryBuilder);
+
+                    $delegateWhereQuery = $delegateQueryBuilder->_nativeWhere([]);
+                    $data = array_merge($data, $delegateWhereQuery['data']);
+
+                    $query .= (' (' . $delegateWhereQuery['query'] . ') ');
+                    $whereIndex++;
+                }
             }
 
             $query = (substr($query, 0, -1) . "\r\n");
@@ -209,8 +282,14 @@ class MySql extends DefaultEx
         $query = ('SELECT * FROM `' . $this->table . '` ');
 
         $nativeWhere = $this->_nativeWhere($data);
+        if ($nativeWhere !== '') {
+            $query .= ' WHERE ';
+        }
         $data = $nativeWhere['data'];
         $query .= $nativeWhere['query'];
+
+        dump($query);
+        dump($data);
 
         $statement = $this->connection->prepare($query);
         $statement->execute($data);
@@ -225,7 +304,7 @@ class MySql extends DefaultEx
                     }
                 }
 
-                $modelData = $this->castDataPos($modelData, true);
+                $modelData = $this->_castDataPos($modelData, true);
                 $models[] = new $this->modelData->class($modelData, true);
             }
 
@@ -239,11 +318,11 @@ class MySql extends DefaultEx
         return $rows;
     }
 
-    public function update($data)
+    public function update(Arr|array $data)
     {
         if ($this->mode === 'model') {
-            $data = $this->castDataPos($data);
-            $data = $this->castDataPre($data);
+            $data = $this->_castDataPos($data);
+            $data = $this->_castDataPre($data);
         }
 
         if (count($data) === 0) {
@@ -265,19 +344,23 @@ class MySql extends DefaultEx
         $query = (substr($query, 0, -1) . "\r\n");
 
         $nativeWhere = $this->_nativeWhere($data);
+        if ($nativeWhere !== '') {
+            $query .= ' WHERE ';
+        }
         $data = $nativeWhere['data'];
         $query .= $nativeWhere['query'];
 
         $statement = $this->connection->prepare($query);
         $statement->execute($data);
+
         return true;
     }
 
-    public function insert($data)
+    public function insert(Arr|array  $data)
     {
         if ($this->mode === 'model') {
-            $data = $this->castDataPos($data);
-            $data = $this->castDataPre($data);
+            $data = $this->_castDataPos($data);
+            $data = $this->_castDataPre($data);
         }
 
         if (count($data) === 0) {
@@ -327,7 +410,7 @@ class MySql extends DefaultEx
         return $insertId;
     }
 
-    protected function castDataPos($data, $fromDb = false)
+    protected function _castDataPos(Arr|array $data, bool $fromDb = false)
     {
         $cast = $this->modelCast;
 
@@ -342,7 +425,7 @@ class MySql extends DefaultEx
         return $data;
     }
 
-    protected function castDataPre($data)
+    protected function _castDataPre(Arr|array $data)
     {
         $cast = $this->modelCast;
 
