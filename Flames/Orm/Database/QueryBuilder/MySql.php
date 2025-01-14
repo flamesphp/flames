@@ -451,13 +451,7 @@ class MySql extends DefaultEx
             $query .= ("\r\n OFFSET " . $this->offset);
         }
 
-//        dump($query);
-//        exit;
-
-        try {
-            $statement = $this->connection->prepare($query);
-        } catch (\Exception $e) { dump($e->getMessage()); exit;}
-
+        $statement = $this->connection->prepare($query);
         $statement->execute($data);
 
         if ($this->mode === 'model') {
