@@ -454,7 +454,10 @@ class MySql extends DefaultEx
 //        dump($query);
 //        exit;
 
-        $statement = $this->connection->prepare($query);
+        try {
+            $statement = $this->connection->prepare($query);
+        } catch (\Exception $e) { dump($e->getMessage()); exit;}
+
         $statement->execute($data);
 
         if ($this->mode === 'model') {

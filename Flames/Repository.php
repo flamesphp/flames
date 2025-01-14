@@ -71,6 +71,9 @@ abstract class Repository
     {
         $class = static::class;
 
+        $model = self::$_data[$class]->model;
+        $model::getMetadata(true); // Force verify connection
+
         /** @var Database\QueryBuilder\DefaultEx $queryBuilder */
         $queryBuilder = self::getDriver()->getQueryBuilder(self::$_data[$class]->model);
         $queryBuilder->setModel(self::$_data[$class]->model);
@@ -90,6 +93,7 @@ abstract class Repository
 
         $queryBuilder = self::getQueryBuilder();
         $queryBuilder->where($indexColumn->property, $index);
+        $queryBuilder->limit(1);
         $rows = $queryBuilder->get();
 
         if ($rows->count === 0) {

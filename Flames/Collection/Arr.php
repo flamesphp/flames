@@ -27,6 +27,24 @@ final class Arr extends \ArrayObject
         parent::__construct($value, \ArrayObject::ARRAY_AS_PROPS);
     }
 
+    public static function fromObject(object $object)
+    {
+        $array = self::__parseObjectToArray($object);
+        return new self($array);
+    }
+
+    private static function __parseObjectToArray($value, bool $parseChildren = false)
+    {
+        $value = (array)$value;
+        foreach ($value as $key => $_value) {
+            if (is_array($_value) === true || is_object($_value) === true) {
+                $value[$key] = self::__parseObjectToArray($_value);
+            }
+        }
+
+        return $value;
+    }
+
     /**
      * Get the string representation of the object.
      *

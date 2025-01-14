@@ -407,9 +407,15 @@ abstract class Model
         }
     }
 
-    public static function getMetadata()
+    public static function getMetadata($verifyConnection = false)
     {
         $class = static::class;
+
+        if ($verifyConnection === true) {
+            self::_verifyConnection($class);
+            return true;
+        }
+
         return self::$_data[$class];
     }
 }
