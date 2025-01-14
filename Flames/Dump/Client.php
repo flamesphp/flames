@@ -18,7 +18,6 @@ namespace {
 
         $arg = func_get_args()[0];
 
-
         if ($arg instanceof \Flames\Element) {
             $uid = $arg->getAttribute($window->Flames->Internal->char . 'uid');
             if ($uid === null) {

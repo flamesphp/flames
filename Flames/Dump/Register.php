@@ -17,11 +17,8 @@ function dump() : void
     $buffer = ob_get_contents();
     ob_end_clean();
 
-    $headers = (function_exists('getallheaders') ? getallheaders() : null);;
-    if (isset($headers['User-Agent']) === true) {
-        if (\Flames\Connection\HttpClient::isHttpClient() === true) {
-            $buffer = str_replace('"_sage-parent"', '"_sage-parent _sage-show"', $buffer);
-        }
+    if (\Flames\Connection\HttpClient::isHttpClient() === true || \Flames\Connection\Async::isFlamesClient() === true) {
+        $buffer = str_replace('class="_sage-parent"', 'class="_sage-parent _sage-show"', $buffer);
     }
 
     $buffer = str_replace('>Flames\Collection\Arr</a>', '>Arr</a>', $buffer);

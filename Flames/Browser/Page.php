@@ -29,8 +29,10 @@ class Page
 
         $client = new Http\Client();
         $request = new Http\Async\Request('GET', $uri, ['Content-Type' => 'application/json', 'X-Flames-Request' => 'async']);
+
         $client->sendAsync($request)->then(function(Http\Async\Response $response) use ($uri, $delegate, $fromHandler) {
             $data = $response->getBody();
+
             if ($response->getStatusCode() !== 200) {
                 Js::getWindow()->location = $uri;
                 return null;
@@ -97,7 +99,7 @@ class Page
             }
         }
 
-        $currentBody = Js::getWindow()->document->body->innerHTML;
+//        $currentBody = Js::getWindow()->document->body->innerHTML;
         preg_match_all('#<script(.*?)<\/script>#is', $body, $matches);
         $scripts = $matches[0];
         foreach ($scripts as $script) {
@@ -157,7 +159,6 @@ class Page
                 } while (removeCount > 0);
             }
         ");
-
 //        Js::eval("
 //            var html = document.querySelector('html');
 //            html.insertAdjacentHTML('afterbegin', decodeURIComponent('" . rawurlencode($head) . "'))
@@ -182,8 +183,30 @@ class Page
             } catch (\Exception|\Error $_) {}
         }
 
+        if (self::$currentAsyncId === null) {
+            self::$currentAsyncId = 0;
+        }
+        self::$currentAsyncId++;
+        self::$currentLoadedId = self::$currentAsyncId;
+
+        // Secure load by two ways
+        Js::eval('window.setTimeout(function() { Flames.Internal.evalBase64(btoa(\'\\\\Flames\\\\Browser\\\\Page::runAsync();\')); }, 5);');
         Js::getWindow()->setTimeout(function() {
-            \Flames\Kernel\Client\Dispatch::runAsync();
+            self::runAsync();
         }, 5);
+    }
+
+    protected static $currentAsyncId = null;
+    protected static $currentLoadedId = null;
+
+    // Grant not loading two pages at same time
+    public static function runAsync()
+    {
+        if (self::$currentLoadedId !== self::$currentAsyncId) {
+            return;
+        }
+
+        self::$currentLoadedId = null;
+        \Flames\Kernel\Client\Dispatch::runAsync();
     }
 }
