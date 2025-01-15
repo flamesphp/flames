@@ -15,10 +15,16 @@ class Mysql extends DefaultEx
     protected $connection = null;
     protected $tableUpdateds = [];
     protected $tablesMigrations = [];
+    protected $allTables = [];
 
     public function __construct(PDO $connection)
     {
         $this->connection = $connection;
+    }
+
+    public function getConnection()
+    {
+        return $this->connection;
     }
 
     public function getQueryBuilder($model)
@@ -99,12 +105,16 @@ class Mysql extends DefaultEx
         return true;
     }
 
-    protected function __mountTable($data, string $hash): void
+    protected function _updateTables()
     {
         $_query =  $this->connection->query('SHOW TABLES;');
-        $tables = $_query->fetchAll();
+        $this->allTables = $_query->fetchAll();
+    }
+    protected function __mountTable($data, string $hash): void
+    {
+        $this->_updateTables();
 
-        foreach ($tables as $_table) {
+        foreach ($this->allTables as $_table) {
             if ($_table[0] === $data->table) {
                 $this->__updateTable($data, $hash);
                 return;
@@ -363,5 +373,39 @@ SQL;
             ALTER TABLE `flames_migration`
                 MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
         ');
+    }
+
+    public function migrateQueue(string $table)
+    {
+        if (count($this->allTables) === 0) {
+            $this->_updateTables();
+        }
+
+        $found = false;
+        foreach ($this->allTables as $_table) {
+            if ($_table[0] === $table) {
+                $found = true;
+                break;
+            }
+        }
+
+        if ($found === false) {
+            $this->connection->query('
+                CREATE TABLE `' . $table . '` (
+                    `id` bigint(20) NOT NULL,
+                    `process_id` varchar(40) DEFAULT NULL,
+                    `data` longtext NOT NULL,
+                    `date` datetime DEFAULT NULL
+                ) DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
+            ');
+            $this->connection->query('
+                ALTER TABLE `' . $table . '`
+                    ADD PRIMARY KEY (`id`);
+            ');
+            $this->connection->query('
+                ALTER TABLE `' . $table . '`
+                    MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+            ');
+        }
     }
 }

@@ -399,7 +399,7 @@ class MySql extends DefaultEx
         }
     }
 
-    public function get()
+    public function get(): Arr
     {
         $data = [];
         $query = "SELECT \r\n";

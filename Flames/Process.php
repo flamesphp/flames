@@ -16,8 +16,12 @@ class Process
      *
      * @param string $command The command to be executed.
      */
-    public function __construct(string $command)
+    public function __construct(?string $command = null)
     {
+        if ($command === null) {
+            return;
+        }
+
         if (Os::isUnix() === true) {
             $command = ($command . ' > /dev/null 2>&1 & echo $!');
             exec($command, $output);
@@ -29,7 +33,7 @@ class Process
             return;
         }
 
-        if ( $procSocket = proc_open("start /b " . $command, [
+        if ($procSocket = proc_open("start /b " . $command, [
             0 => ["pipe", "r"],
             1 => ["pipe", "w"],
         ], $pipes)) {
@@ -61,5 +65,12 @@ class Process
         }
 
         exec('taskkill /pid ' . $this->pid . ' /F');
+    }
+
+    public static function getCurrent()
+    {
+        $process = new self();
+        $process->pid = getmypid();
+        return $process;
     }
 }

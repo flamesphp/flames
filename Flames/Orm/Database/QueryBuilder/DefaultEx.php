@@ -32,11 +32,11 @@ class DefaultEx
 
     public function orWhereLike(string $key, mixed $value = null) { return $this; }
 
-    public function get() { return $this; }
+    public function get(): Arr { return Arr(); }
 
     public function update(Arr|array $data) { return $this; }
 
-    public function insert(Arr|array $data) { return $this; }
+    public function insert(Arr|array $data) { return null; }
 
     public function whereRaw(string $condition, mixed $values = null) { return $this; }
 

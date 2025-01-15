@@ -5,6 +5,7 @@ namespace Flames;
 use Exception;
 use Flames\Collection\Arr;
 use Flames\Orm\Database;
+use Flames\Orm\Database\QueryBuilder;
 use Flames\Orm\Repository\Data;
 
 /**
@@ -67,7 +68,7 @@ abstract class Repository
         self::$_data[$class] = $data;
     }
 
-    protected static function getQueryBuilder()
+    protected static function getQueryBuilder(): \Flames\Orm\Database\QueryBuilder\DefaultEx
     {
         $class = static::class;
 
