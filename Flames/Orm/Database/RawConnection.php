@@ -6,7 +6,7 @@ use Flames\Collection\Arr;
 use Flames\Environment;
 use Flames\Orm\Database\Driver\MariaDB;
 use Flames\Orm\Database\Driver\MySQL;
-//use PDO;
+use Http\Client;
 use PDOException;
 
 /**
@@ -35,6 +35,11 @@ class RawConnection
             } catch(PDOException $e) {
                 throw new \Error($e->getMessage());
             }
+        }
+        elseif ($config->type === 'meilisearch') {
+            $connectionUri = ('http://'. $config->host . ':' . $config->port . '/');
+            $connection = new RawConnection\Meilisearch($connectionUri, $config->masterKey, $config);
+            self::$connections[$database] = $connection;
         }
 
         return self::$connections[$database];

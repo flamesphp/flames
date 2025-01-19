@@ -146,7 +146,7 @@ abstract class Queue
         $timeLimit = self::$_data[$class]->timelimit;
         $delay = self::$_data[$class]->delay;
         $currentTime = microtime(true);
-        $timeoutFinal = ($currentTime + self::$_data[$class]->timeout);
+        $timeLimitFinal = ($currentTime + $timeLimit);
 
         do {
             $dateNow = (new \DateTimeImmutable());
@@ -178,7 +178,7 @@ abstract class Queue
                     WHERE `id` = \'' . $id . '\';');
             }
 
-            if ((microtime(true) + $delay) > $timeoutFinal) {
+            if ((microtime(true) + $delay) > $timeLimitFinal) {
                 break;
             }
 

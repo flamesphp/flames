@@ -5,6 +5,7 @@ namespace Flames\Orm\Database;
 use Flames\Collection\Arr;
 use Flames\Environment;
 use Flames\Orm\Database\Driver\MariaDb;
+use Flames\Orm\Database\Driver\Meilisearch;
 use Flames\Orm\Database\Driver\MySql;
 use PDO;
 use Exception;
@@ -35,6 +36,11 @@ class Driver
 
         if ($config->type === 'mysql') {
             self::$drivers[$database] = new MySql($rawConnection);
+            return self::$drivers[$database];
+        }
+
+        if ($config->type === 'meilisearch') {
+            self::$drivers[$database] = new Meilisearch($rawConnection);
             return self::$drivers[$database];
         }
 

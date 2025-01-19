@@ -69,26 +69,34 @@ class Header
      *
      * @return void
      */
-    public static function send()
+    public static function send(): void
     {
-        if (array_key_exists('Code', self::$data) === true) {
-            try {
-                http_response_code(self::$data['Code']);
-            } catch (\Exception $_) {}
-        }
-        elseif (array_key_exists('code', self::$data) === true) {
-            try {
-                http_response_code(self::$data['code']);
-            } catch (\Exception $_) {}
-        }
-
-        foreach (self::$data as $key => $value) {
-            if (strtolower($key) === 'code') {
-                continue;
+        try {
+            if (array_key_exists('Code', self::$data) === true) {
+                try {
+                    http_response_code(self::$data['Code']);
+                } catch (\Exception $_) {}
             }
-            try {
-                header($key . ':' . $value);
-            } catch (\Exception $_) {}
+            elseif (array_key_exists('code', self::$data) === true) {
+                try {
+                    http_response_code(self::$data['code']);
+                } catch (\Exception $_) {}
+            }
+
+            foreach (self::$data as $key => $value) {
+                if (strtolower($key) === 'code') {
+                    continue;
+                }
+                try {
+                    header($key . ':' . $value);
+                } catch (\Exception $_) {}
+            }
+        } catch (\Exception $e) {
+            if (Cli::isCli() === true) {
+                return;
+            }
+
+            throw $e;
         }
     }
 
