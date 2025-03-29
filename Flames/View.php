@@ -2,6 +2,8 @@
 
 namespace Flames;
 
+use Flames\Cli\Command\Build\Assets\Automate;
+use Flames\Client\Builder;
 use Flames\Collection\Arr;
 use http\Env;
 
@@ -136,6 +138,10 @@ class View
         $html = str_replace($bodyCloseTag, "\t<flames hidden>" .
             $token .
             "</flames>\n\t" . $bodyCloseTag, $html);
+        if (Environment::get('AUTO_BUILD_CLIENT') === true) {
+            $automate = new Automate();
+            $html = str_replace($bodyCloseTag, "\t<flames-autobuild>" . $automate->getCurrentHash() . "</flames-autobuild>\n\t" . $bodyCloseTag, $html);
+        }
         $flamesEngine = '<script async src="//cdn.jsdelivr.net/gh/flamesphp/cdn@' . Kernel::CDN_VERSION . '/flames.js"></script>';
         $html = str_replace($bodyCloseTag, "\t" . $flamesEngine . "\n\t" . $bodyCloseTag, $html);
 

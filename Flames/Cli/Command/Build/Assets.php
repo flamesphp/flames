@@ -180,7 +180,7 @@ final class Assets
         ], [
             rawurlencode(Environment::get('ENVIRONMENT')),
             rawurlencode(Environment::get('DUMP_LOCAL_PATH')),
-            ((Environment::get('CLIENT_AUTOBUILD') === true) ? 'true' : 'false'),
+            ((Environment::get('AUTO_BUILD_CLIENT') === true) ? 'true' : 'false'),
             ((Environment::get('CLIENT_ASYNC_REDIRECT') === true) ? 'true' : 'false'),
             (($this->swfExtension === true) ? 'true' : 'false'),
             ((FLAMES_COMPOSER === true) ? 'true' : 'false'),

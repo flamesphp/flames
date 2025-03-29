@@ -1,6 +1,7 @@
 <?php
 
 namespace Flames\Router;
+use Flames\Cli\Command\Build\Assets\Automate;
 use Flames\Command;
 use Flames\Environment;
 
@@ -17,8 +18,8 @@ class Client
         if ($uri === 'js') {
             return self::dispatchFlames();
         }
-        elseif ($uri === 'auto/style') {
-            return self::dispatchFlamesAutoStyle();
+        elseif ($uri === 'auto/build') {
+            return self::dispatchFlamesAutoBuild();
         }
 
         return false;
@@ -45,13 +46,27 @@ class Client
         return true;
     }
 
-    protected static function dispatchFlamesAutoStyle(): bool
+    protected static function dispatchFlamesAutoBuild(): bool
     {
-        if (Environment::get('CLIENT_AUTO_BUILD') !== true) {
+        if (Environment::get('AUTO_BUILD_CLIENT') !== true) {
             return false;
         }
 
+        $automate = new Automate();
+        $currentHash = $automate->getCurrentHash();
+
+        $data = json_decode(file_get_contents('php://input'), true);
+        $checkHash = @$data['hash'];
+
+        if ($checkHash === $currentHash) {
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['changed' => false]);
+            exit;
+        }
+
         Command::run('build:assets --auto');
-        return true;
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['changed' => true]);
+        exit;
     }
 }
