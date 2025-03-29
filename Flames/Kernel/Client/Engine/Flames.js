@@ -2,9 +2,9 @@ window.Flames = (window.Flames || {});
 
 window.Flames.onBoot = function() {
     window.Flames.Internal.mockLog = {};
-    window.Flames.Internal.mockLog.log = function() {};
-    window.Flames.Internal.mockLog.error = function() {};
-    window.Flames.Internal.mockLog.warn = function() {};
+    window.Flames.Internal.mockLog.log = function(a,b,c) {console.log('[native]');console.log(a,b,c,e)};
+    window.Flames.Internal.mockLog.error = function(a,b,c) {console.log('[native]');console.log(a,b,c)};
+    window.Flames.Internal.mockLog.warn = function(a,b,c) {console.log('[native]');console.log(a,b,c)};
     window.Flames.Internal.log = false;
     window.Flames.Internal.environment = decodeURIComponent('{{ environment }}');
     window.Flames.Internal.dumpLocalPath = decodeURIComponent('{{ dumpLocalPath }}');

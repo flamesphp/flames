@@ -357,7 +357,7 @@ final class Assets
         $events = Arr();
         $tags = Arr();
 
-        $modules = ['Event', 'Component', 'Controller', 'Tag'];
+        $modules = ['Event', 'Component', 'Service', 'Controller', 'Tag'];
         foreach ($modules as $module) {
             $clientPath = (APP_PATH . 'Client/' . $module);
             if (is_dir($clientPath) === true) {

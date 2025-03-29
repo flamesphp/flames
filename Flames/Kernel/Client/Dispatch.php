@@ -74,8 +74,12 @@ final class Dispatch
                         $element->removeAttribute('@click');
                         $element->setAttribute($window->Flames->Internal->char . 'click', $clickUid);
                         $element->event->click(function($event) use ($eventTrigger) {
-                            $instance = self::getInstance($eventTrigger->class);
-                            $instance->{$eventTrigger->name}($event);
+                            try {
+                                $instance = self::getInstance($eventTrigger->class);
+                                $instance->{$eventTrigger->name}($event);
+                            } catch (\Exception|\Error $e) {
+                                Error::handler($e);
+                            }
                         });
                         break;
                     }
@@ -89,8 +93,12 @@ final class Dispatch
                         $element->removeAttribute('@change');
                         $element->setAttribute($window->Flames->Internal->char . 'change', $changeUid);
                         $element->event->change(function($event) use ($eventTrigger) {
-                            $instance = self::getInstance($eventTrigger->class);
-                            $instance->{$eventTrigger->name}($event);
+                            try {
+                                $instance = self::getInstance($eventTrigger->class);
+                                $instance->{$eventTrigger->name}($event);
+                            } catch (\Exception|\Error $e) {
+                                Error::handler($e);
+                            }
                         });
                         break;
                     }
@@ -104,8 +112,13 @@ final class Dispatch
                         $element->removeAttribute('@input');
                         $element->setAttribute($window->Flames->Internal->char . 'input', $inputUid);
                         $element->event->input(function($event) use ($eventTrigger) {
-                            $instance = self::getInstance($eventTrigger->class);
-                            $instance->{$eventTrigger->name}($event);
+                            try {
+                                $instance = self::getInstance($eventTrigger->class);
+                                $instance->{$eventTrigger->name}($event);
+                            } catch (\Exception|\Error $e) {
+                                Error::handler($e);
+                            }
+
                         });
                         break;
                     }
@@ -137,29 +150,36 @@ final class Dispatch
 
         \Flames\Kernel::__injector();
 
-        if (class_exists('\\App\\Client\\Event\\Ready') === true) {
-            $ready = new \App\Client\Event\Ready();
-            $ready->onReady();
-        }
-
-        if (class_exists('\\App\\Client\\Event\\Route') === true) {
-            $route = new \App\Client\Event\Route();
-            $router = $route->onRoute(new Router());
-
-            if ($router !== null) {
-                $match = $router->getMatch();
-                if ($match === null) {
-                    self::$currentLoadId++;
-                    return false;
-                }
-
-                $dispatchRoute = self::dispatchRoute($match, $route);
-                self::$currentLoadId++;
-                return $dispatchRoute;
+        try {
+            if (class_exists('\\App\\Client\\Event\\Ready') === true) {
+                $ready = new \App\Client\Event\Ready();
+                $ready->onReady();
             }
+
+            if (class_exists('\\App\\Client\\Event\\Route') === true) {
+                $route = new \App\Client\Event\Route();
+                $router = $route->onRoute(new Router());
+
+                if ($router !== null) {
+                    $match = $router->getMatch();
+                    if ($match === null) {
+                        self::$currentLoadId++;
+                        return false;
+                    }
+
+                    $dispatchRoute = self::dispatchRoute($match, $route);
+                    self::$currentLoadId++;
+                    return $dispatchRoute;
+                }
+            }
+
+            self::$currentLoadId++;
+            return false;
+        }
+        catch (\Exception|\Error $e) {
+            Error::handler($e);
         }
 
-        self::$currentLoadId++;
         return false;
     }
 

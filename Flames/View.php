@@ -133,11 +133,12 @@ class View
             sha1(Environment::get('APP_KEY') . $hash) . '|' .
             serialize($data)
         );
-        $flamesEngine = '<script async src="//cdn.jsdelivr.net/gh/flamesphp/cdn@' . Kernel::CDN_VERSION . '/flames.js"></script>';
-        $html = str_replace($bodyCloseTag, "\t" . $flamesEngine . "\n\t" . $bodyCloseTag, $html);
         $html = str_replace($bodyCloseTag, "\t<flames hidden>" .
             $token .
             "</flames>\n\t" . $bodyCloseTag, $html);
+        $flamesEngine = '<script async src="//cdn.jsdelivr.net/gh/flamesphp/cdn@' . Kernel::CDN_VERSION . '/flames.js"></script>';
+        $html = str_replace($bodyCloseTag, "\t" . $flamesEngine . "\n\t" . $bodyCloseTag, $html);
+
         return $html;
     }
 }

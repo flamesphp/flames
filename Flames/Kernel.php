@@ -16,9 +16,9 @@ use Flames\Router\Client;
  */
 final class Kernel
 {
-    public const VERSION = 'v0.0.19-alpha';
+    public const VERSION = 'v0.0.25-alpha';
     public const MODULE  = 'SERVER';
-    public const CDN_VERSION = 'v0.0.19-alpha';
+    public const CDN_VERSION = 'v0.0.25-alpha';
 
     protected static Router|null $defaultRouter = null;
     protected static ErrorHandler\Run|null $errorHandler = null;
