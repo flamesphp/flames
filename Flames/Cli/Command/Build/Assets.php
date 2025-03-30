@@ -172,7 +172,6 @@ final class Assets
         $engine = str_replace([
             '{{ environment }}',
             '{{ dumpLocalPath }}',
-            '\'{{ autoBuild }}\'',
             '\'{{ asyncRedirect }}\'',
             '\'{{ swfExtension }}\'',
             '\'{{ composer }}\'',
@@ -180,7 +179,6 @@ final class Assets
         ], [
             rawurlencode(Environment::get('ENVIRONMENT')),
             rawurlencode(Environment::get('DUMP_LOCAL_PATH')),
-            ((Environment::get('AUTO_BUILD_CLIENT') === true) ? 'true' : 'false'),
             ((Environment::get('CLIENT_ASYNC_REDIRECT') === true) ? 'true' : 'false'),
             (($this->swfExtension === true) ? 'true' : 'false'),
             ((FLAMES_COMPOSER === true) ? 'true' : 'false'),

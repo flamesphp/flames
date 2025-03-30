@@ -52,21 +52,34 @@ class Client
             return false;
         }
 
-        $automate = new Automate();
-        $currentHash = $automate->getCurrentHash();
+        $timeLimit = 55;
+        $maxExecutionTime = 55;
+        try { $maxExecutionTime = (int)@ini_get('max_execution_time'); } catch (\Error|\Exception $e) {}
+        if ($maxExecutionTime > 0 && $timeLimit > $maxExecutionTime) {  $timeLimit = ($maxExecutionTime - 5); }
+        if ($timeLimit <= 0) { $timeLimit = 5; }
 
         $data = json_decode(file_get_contents('php://input'), true);
         $checkHash = @$data['hash'];
 
-        if ($checkHash === $currentHash) {
-            header('Content-Type: application/json; charset=utf-8');
-            echo json_encode(['changed' => false]);
-            exit;
+        $diffTime = 0;
+        $currentTime = microtime(true);
+        while ($diffTime < 55) {
+            $automate = new Automate();
+            $currentHash = $automate->getCurrentHash();
+
+            if ($checkHash !== $currentHash) {
+                Command::run('build:assets --auto');
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode(['changed' => true]);
+                exit;
+            }
+            usleep(250000);
+
+            $diffTime = (microtime(true) - $currentTime);
         }
 
-        Command::run('build:assets --auto');
         header('Content-Type: application/json; charset=utf-8');
-        echo json_encode(['changed' => true]);
+        echo json_encode(['changed' => false]);
         exit;
     }
 }

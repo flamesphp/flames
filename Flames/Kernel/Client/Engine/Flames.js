@@ -8,7 +8,6 @@ window.Flames.onBoot = function() {
     window.Flames.Internal.log = false;
     window.Flames.Internal.environment = decodeURIComponent('{{ environment }}');
     window.Flames.Internal.dumpLocalPath = decodeURIComponent('{{ dumpLocalPath }}');
-    window.Flames.Internal.autoBuild = '{{ autoBuild }}';
     window.Flames.Internal.asyncRedirect = '{{ asyncRedirect }}';
     window.Flames.Internal.composer = '{{ composer }}';
     window.Flames.Internal.swfExtension = '{{ swfExtension }}';
@@ -85,39 +84,34 @@ window.Flames.onBoot = function() {
 
     window.Flames.onReady();
 
-    if (window.Flames.Internal.autoBuild === true) {
-        window.Flames.Internal.autoBuildHash = null;
-        try {
-            var autoBuildHashElement = document.querySelector('flames-autobuild');
-            window.Flames.Internal.autoBuildHash = autoBuildHashElement.innerHTML;
-            autoBuildHashElement.remove();
-        } catch (error) {}
-        if (window.Flames.Internal.autoBuildHash !== null) {
-            window.Flames.Internal.runAutoBuild = function() {
-                var xmlhttp = new XMLHttpRequest();
-                xmlhttp.open('POST', '/flames/auto/build');
-                xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-                xmlhttp.onreadystatechange = function() {
-                    if ((xmlhttp.status == 200) && (xmlhttp.readyState == 4)) {
-                        var data = JSON.parse(xmlhttp.responseText);
-                        if (data.changed === false) {
-                            window.setTimeout(function() { window.Flames.Internal.runAutoBuild(); }, 250);
-                        } else {
-                            var alert = document.body.insertAdjacentHTML('beforeend', '<div id="flames-changed-alert" style="position: fixed;  bottom: 0; right: 0; background-color: #202020; z-index: 999999999999; padding: 5px; border-radius: 5px; margin: 10px; color: #ffffff; opacity: 0; transition: opacity .25s ease-in-out">File changed detected. Reloading!</div>');
-                            window.setTimeout(function() {
-                                var flamesChangedAlertElement = document.getElementById('flames-changed-alert');
-                                flamesChangedAlertElement.style.opacity = 1;
-                            }, 1);
-                            window.setTimeout(function() { window.location.reload(); }, 1000);
-                        }
-                    }
-                };
-                xmlhttp.send(JSON.stringify({"hash": window.Flames.Internal.autoBuildHash}));
-            }
-            window.Flames.Internal.runAutoBuild();
-        }
-    }
+    var autoBuildHashElement = document.querySelector('flames-autobuild');
+    if (autoBuildHashElement !== null) {
+        window.Flames.Internal.autoBuildHash = autoBuildHashElement.innerHTML;
+        autoBuildHashElement.remove();
 
+        window.Flames.Internal.runAutoBuild = function() {
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.open('POST', '/flames/auto/build');
+            xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xmlhttp.onreadystatechange = function() {
+                if ((xmlhttp.status == 200) && (xmlhttp.readyState == 4)) {
+                    var data = JSON.parse(xmlhttp.responseText);
+                    if (data.changed === false) {
+                        window.setTimeout(function() { window.Flames.Internal.runAutoBuild(); }, 250);
+                    } else {
+                        var alert = document.body.insertAdjacentHTML('beforeend', '<div id="flames-changed-alert" style="position: fixed;  bottom: 0; right: 0; background-color: #202020; z-index: 999999999999; padding: 5px; border-radius: 5px; margin: 10px; color: #ffffff; opacity: 0; transition: opacity .25s ease-in-out">File changed detected. Reloading!</div>');
+                        window.setTimeout(function() {
+                            var flamesChangedAlertElement = document.getElementById('flames-changed-alert');
+                            flamesChangedAlertElement.style.opacity = 1;
+                        }, 1);
+                        window.setTimeout(function() { window.location.reload(); }, 1000);
+                    }
+                }
+            };
+            xmlhttp.send(JSON.stringify({"hash": window.Flames.Internal.autoBuildHash}));
+        }
+        window.Flames.Internal.runAutoBuild();
+    }
 }
 
 window.Flames.onUnsupported = function() {
