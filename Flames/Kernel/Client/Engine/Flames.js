@@ -1,5 +1,45 @@
 window.Flames = (window.Flames || {});
 
+window.Flames.onRun = function() {
+    window.Flames.onReadyAsync = function () {
+        if (window.Flames.onReady !== undefined && window.Flames.onReady !== null) {
+            window.Flames.onReady();
+            return;
+        }
+        window.setTimeout(function() { window.Flames.onReadyAsync(); }, 1);
+    }
+    window.Flames.onReadyAsync();
+
+    var autoBuildHashElement = document.querySelector('flames-autobuild');
+    if (autoBuildHashElement !== null) {
+        window.Flames.Internal.autoBuildHash = autoBuildHashElement.innerHTML;
+        autoBuildHashElement.remove();
+
+        window.Flames.Internal.runAutoBuild = function() {
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.open('POST', '/flames/auto/build');
+            xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xmlhttp.onreadystatechange = function() {
+                if ((xmlhttp.status == 200) && (xmlhttp.readyState == 4)) {
+                    var data = JSON.parse(xmlhttp.responseText);
+                    if (data.changed === false) {
+                        window.setTimeout(function() { window.Flames.Internal.runAutoBuild(); }, 250);
+                    } else {
+                        var alert = document.body.insertAdjacentHTML('beforeend', '<div id="flames-changed-alert" style="position: fixed;  bottom: 0; right: 0; background-color: #202020; z-index: 999999999999; padding: 5px; border-radius: 5px; margin: 10px; color: #ffffff; opacity: 0; transition: opacity .25s ease-in-out">File changed detected. Reloading!</div>');
+                        window.setTimeout(function() {
+                            var flamesChangedAlertElement = document.getElementById('flames-changed-alert');
+                            flamesChangedAlertElement.style.opacity = 1;
+                        }, 1);
+                        window.setTimeout(function() { window.location.reload(); }, 1000);
+                    }
+                }
+            };
+            xmlhttp.send(JSON.stringify({"hash": window.Flames.Internal.autoBuildHash}));
+        }
+        window.Flames.Internal.runAutoBuild();
+    }
+}
+
 window.Flames.onBoot = function() {
     window.Flames.Internal.mockLog = {};
     window.Flames.Internal.mockLog.log = function(a,b,c) {console.log('[native]');console.log(a,b,c,e)};
@@ -82,36 +122,7 @@ window.Flames.onBoot = function() {
         return window.Flames.Internal.modules[hash];
     }
 
-    window.Flames.onReady();
-
-    var autoBuildHashElement = document.querySelector('flames-autobuild');
-    if (autoBuildHashElement !== null) {
-        window.Flames.Internal.autoBuildHash = autoBuildHashElement.innerHTML;
-        autoBuildHashElement.remove();
-
-        window.Flames.Internal.runAutoBuild = function() {
-            var xmlhttp = new XMLHttpRequest();
-            xmlhttp.open('POST', '/flames/auto/build');
-            xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-            xmlhttp.onreadystatechange = function() {
-                if ((xmlhttp.status == 200) && (xmlhttp.readyState == 4)) {
-                    var data = JSON.parse(xmlhttp.responseText);
-                    if (data.changed === false) {
-                        window.setTimeout(function() { window.Flames.Internal.runAutoBuild(); }, 250);
-                    } else {
-                        var alert = document.body.insertAdjacentHTML('beforeend', '<div id="flames-changed-alert" style="position: fixed;  bottom: 0; right: 0; background-color: #202020; z-index: 999999999999; padding: 5px; border-radius: 5px; margin: 10px; color: #ffffff; opacity: 0; transition: opacity .25s ease-in-out">File changed detected. Reloading!</div>');
-                        window.setTimeout(function() {
-                            var flamesChangedAlertElement = document.getElementById('flames-changed-alert');
-                            flamesChangedAlertElement.style.opacity = 1;
-                        }, 1);
-                        window.setTimeout(function() { window.location.reload(); }, 1000);
-                    }
-                }
-            };
-            xmlhttp.send(JSON.stringify({"hash": window.Flames.Internal.autoBuildHash}));
-        }
-        window.Flames.Internal.runAutoBuild();
-    }
+    window.Flames.onRun();
 }
 
 window.Flames.onUnsupported = function() {
