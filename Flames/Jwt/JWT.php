@@ -1,6 +1,6 @@
 <?php
 
-namespace Flames\Jwt\JWT;
+namespace Flames\Jwt;
 
 use ArrayAccess;
 use DateTime;

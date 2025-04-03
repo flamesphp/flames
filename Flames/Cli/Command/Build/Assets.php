@@ -55,6 +55,8 @@ final class Assets
         Flames\Event\Element\Click::class,
         Flames\Event\Element\Change::class,
         Flames\Event\Element\Input::class,
+        Flames\Event\Element\KeyDown::class,
+        Flames\Event\Element\KeyUp::class,
         Flames\Kernel\Client\Dispatch::class,
         Flames\Js\Module::class,
         Flames\Client\Os::class,
@@ -63,7 +65,14 @@ final class Assets
         Flames\Client\UserAgentParser::class,
         Flames\Kernel\Client\Dispatch\Tag::class,
         Flames\Client\Tag::class,
-        Flames\Element\Shadow::class
+        Flames\Element\Shadow::class,
+        Flames\Kernel\Client\Service\Keyboard::class,
+        Flames\Kernel\Client\Service\Clipboard::class,
+        Flames\Client\Keyboard::class,
+        Flames\Client\Keyboard\Event::class,
+        Flames\Client\Clipboard::class,
+        Flames\Client\Clipboard\Event::class,
+        Flames\Event\Clipboard\Paste::class,
     ];
 
     protected static array $clientMocks = [

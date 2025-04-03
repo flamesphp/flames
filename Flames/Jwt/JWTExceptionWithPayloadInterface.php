@@ -1,5 +1,5 @@
 <?php
-namespace Flames\Jwt\JWT;
+namespace Flames\Jwt;
 
 /**
  * @internal

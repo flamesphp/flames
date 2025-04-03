@@ -11,6 +11,7 @@ use Flames\Event\Element\Input;
 use Flames\Header;
 use Flames\Js;
 use Flames\Kernel\Client\Error;
+use Flames\Kernel\Client\Service\Keyboard;
 use Flames\Kernel\Route;
 use Flames\Router;
 
@@ -53,6 +54,7 @@ final class Dispatch
         self::simulateGlobals();
         self::dispatchHooks();
         self::dispatchEvents($firstLoad);
+        self::dispatchNativeServices();
     }
 
     protected static function simulateGlobals() : void
@@ -239,5 +241,10 @@ final class Dispatch
     public static function injectUri(string $uri)
     {
         self::$currentUri = $uri;
+    }
+
+    protected static function dispatchNativeServices()
+    {
+        Keyboard::register();
     }
 }

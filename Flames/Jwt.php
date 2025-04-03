@@ -1,6 +1,7 @@
 <?php
 
 namespace Flames;
+
 use Flames\Collection\Arr;
 
 class Jwt

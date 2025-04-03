@@ -591,4 +591,9 @@ class Element
         $window = Js::getWindow();
         return Element::query('[' . $window->Flames->Internal->char . 'uid="' . $uid . '"]');
     }
+
+    public static function getBody()
+    {
+        return self::fromNative(Js::getWindow()->document->body);
+    }
 }
