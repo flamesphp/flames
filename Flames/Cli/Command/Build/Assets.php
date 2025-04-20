@@ -73,6 +73,7 @@ final class Assets
         Flames\Client\Clipboard::class,
         Flames\Client\Clipboard\Event::class,
         Flames\Event\Clipboard\Paste::class,
+        Flames\FunctionEx::class
     ];
 
     protected static array $clientMocks = [
