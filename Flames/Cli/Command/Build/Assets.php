@@ -73,7 +73,11 @@ final class Assets
         Flames\Client\Clipboard::class,
         Flames\Client\Clipboard\Event::class,
         Flames\Event\Clipboard\Paste::class,
-        Flames\FunctionEx::class
+        Flames\FunctionEx::class,
+        Flames\Cache\Memory\Client::class,
+        Flames\Cookie\Client::class,
+        Flames\DateTime::class,
+        Flames\Date\TimeZone\Client::class,
     ];
 
     protected static array $clientMocks = [
@@ -83,7 +87,10 @@ final class Assets
         Flames\Http\Async\Response\Client::class,
         Flames\Connection\Client::class,
         Flames\Header\Client::class,
-        Flames\Money\Client::class
+        Flames\Money\Client::class,
+        Flames\Cache\Memory\Client::class,
+        Flames\Cookie\Client::class,
+        Flames\Date\TimeZone\Client::class,
     ];
 
     protected bool $debug = false;
@@ -178,10 +185,17 @@ final class Assets
             }
         }
 
+        $dateTimezone = trim((string)Environment::get('DATE_TIMEZONE'));
+        if ($dateTimezone === '') {
+            $dateTimezone = 'UTC';
+        }
+        $dateTimezone = rawurlencode($dateTimezone);
+
         $unsupported = @file_get_contents(ROOT_PATH . 'App/Client/Resource/Event/Unsupported.js');
         $engine = str_replace([
             '{{ environment }}',
             '{{ dumpLocalPath }}',
+            '{{ dateTimeZone }}',
             '\'{{ asyncRedirect }}\'',
             '\'{{ swfExtension }}\'',
             '\'{{ composer }}\'',
@@ -189,6 +203,7 @@ final class Assets
         ], [
             rawurlencode(Environment::get('ENVIRONMENT')),
             rawurlencode(Environment::get('DUMP_LOCAL_PATH')),
+            $dateTimezone,
             ((Environment::get('CLIENT_ASYNC_REDIRECT') === true) ? 'true' : 'false'),
             (($this->swfExtension === true) ? 'true' : 'false'),
             ((FLAMES_COMPOSER === true) ? 'true' : 'false'),
@@ -576,29 +591,34 @@ final class Assets
         return $results;
     }
 
-    protected function injectEnvironment($stream)
-    {
-        $localPath = Environment::get('DUMP_LOCAL_PATH');
-        if (str_ends_with($localPath, '\\') || str_ends_with($localPath, '/')) {
-            $localPath = substr($localPath, 0, -1);
-        }
-        if (str_contains($localPath, '\\') === true) {
-            $localPath = str_replace('\\', '\\\\', $localPath);
-        }
-        fwrite($stream, "window.Flames.Internal.dumpLocalPath='" . $localPath . "';");
-        $autoBuildClient = Environment::get('CLIENT_AUTO_BUILD');
-        if ($autoBuildClient === true) {
-            fwrite($stream, "window.Flames.Internal.clientAutoBuildClient=true;");
-        } else {
-            fwrite($stream, "window.Flames.Internal.clientAutoBuildClient=false;");
-        }
-        $asyncRedirectClient = Environment::get('CLIENT_ASYNC_REDIRECT');
-        if ($asyncRedirectClient === true) {
-            fwrite($stream, "window.Flames.Internal.clientAsyncRedirect=true;");
-        } else {
-            fwrite($stream, "window.Flames.Internal.clientAsyncRedirect=false;");
-        }
-    }
+//    protected function injectEnvironment($stream): void
+//    {
+//        $localPath = Environment::get('DUMP_LOCAL_PATH');
+//        if (str_ends_with($localPath, '\\') || str_ends_with($localPath, '/')) {
+//            $localPath = substr($localPath, 0, -1);
+//        }
+//        if (str_contains($localPath, '\\') === true) {
+//            $localPath = str_replace('\\', '\\\\', $localPath);
+//        }
+//        fwrite($stream, "window.Flames.Internal.dumpLocalPath='" . $localPath . "';");
+//        $autoBuildClient = Environment::get('CLIENT_AUTO_BUILD');
+//        if ($autoBuildClient === true) {
+//            fwrite($stream, "window.Flames.Internal.clientAutoBuildClient=true;");
+//        } else {
+//            fwrite($stream, "window.Flames.Internal.clientAutoBuildClient=false;");
+//        }
+//        $asyncRedirectClient = Environment::get('CLIENT_ASYNC_REDIRECT');
+//        if ($asyncRedirectClient === true) {
+//            fwrite($stream, "window.Flames.Internal.clientAsyncRedirect=true;");
+//        } else {
+//            fwrite($stream, "window.Flames.Internal.clientAsyncRedirect=false;");
+//        }
+//        $dateTimezone = trim((string)Environment::get('DATE_TIMEZONE'));
+//        if ($dateTimezone === '') {
+//            $dateTimezone = 'UTC';
+//        }
+//        fwrite($stream, "window.Flames.Internal.dateTimezone='" . $dateTimezone . "';");
+//    }
 
     /**
      * Finishes the stream by closing it.

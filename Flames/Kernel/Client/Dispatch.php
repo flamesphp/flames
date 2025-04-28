@@ -5,6 +5,7 @@ namespace Flames\Kernel\Client;
 use Flames\Connection;
 use Flames\Coroutine;
 use Flames\Element;
+use Flames\Environment;
 use Flames\Event\Element\Click;
 use Flames\Event\Element\Change;
 use Flames\Event\Element\Input;
@@ -52,6 +53,7 @@ final class Dispatch
     protected static function setup($firstLoad = false) : void
     {
         self::simulateGlobals();
+        self::setDate();
         self::dispatchHooks();
         self::dispatchEvents($firstLoad);
         self::dispatchNativeServices();
@@ -62,6 +64,17 @@ final class Dispatch
         $location = Js::getWindow()->location;
         $origin = $location->origin;
         $_SERVER['REQUEST_URI'] = explode('#', substr($location->href, strlen($origin)))[0];
+    }
+
+    protected static function setDate(): void
+    {
+        $timezone = Js::getWindow()->Flames->Internal->dateTimeZone;
+
+        if ($timezone !== null && $timezone !== '') {
+            \date_default_timezone_set($timezone);
+            return;
+        }
+        \date_default_timezone_set('UTC');
     }
 
     protected static function dispatchHooks()

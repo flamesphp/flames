@@ -48,6 +48,7 @@ window.Flames.onBoot = function() {
     window.Flames.Internal.log = false;
     window.Flames.Internal.environment = decodeURIComponent('{{ environment }}');
     window.Flames.Internal.dumpLocalPath = decodeURIComponent('{{ dumpLocalPath }}');
+    window.Flames.Internal.dateTimeZone = decodeURIComponent('{{ dateTimeZone }}');
     window.Flames.Internal.asyncRedirect = '{{ asyncRedirect }}';
     window.Flames.Internal.composer = '{{ composer }}';
     window.Flames.Internal.swfExtension = '{{ swfExtension }}';

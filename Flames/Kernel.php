@@ -179,6 +179,7 @@ final class Kernel
         $timezone = Environment::get('DATE_TIMEZONE');
         if ($timezone !== null && $timezone !== '') {
             \date_default_timezone_set($timezone);
+            return;
         }
         \date_default_timezone_set('UTC');
     }
