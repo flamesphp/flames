@@ -316,7 +316,14 @@ final class Assets
 
         $virtualTagsBuffer = 'private static $tags = [';
         foreach ($clientFilesBufferMetadata['tags'] as $tag) {
-            $virtualTagsBuffer .= ('\'' .$tag->uid . '\' => \'' . $tag->class . '\',');
+            $virtualTagsBuffer .= ('\'' . $tag->uid . '\' => \'' . $tag->class . '\',');
+        }
+
+        $virtualViewsBuffer = 'private static $views = [';
+        if (Cli\Command\Build\Assets\Template::isTemplateExtension() === true) {
+            foreach ($clientFilesBufferMetadata['views'] as $twigNs => $viewData) {
+                $virtualViewsBuffer .= ('\'' . $twigNs . '\' => \'' . base64_encode($viewData) . '\',');
+            }
         }
 
         $virtualFilesBuffer = ('private static $buffers = [' . $virtualFilesBuffer);
@@ -324,11 +331,13 @@ final class Assets
             [
                 'private static $buffers = [',
                 'private static $constructors = [',
-                'private static $tags = ['
+                'private static $tags = [',
+                'private static $views = ['
             ], [
                 $virtualFilesBuffer,
                 $virtualConstructsBuffer,
-                $virtualTagsBuffer
+                $virtualTagsBuffer,
+            $virtualViewsBuffer
             ],
             $virtual);
 
@@ -351,9 +360,17 @@ final class Assets
 
     protected function mountVirtualDefaultFiles($virtualFilesBuffer)
     {
-        foreach (self::$defaultFiles as $defaultFile) {
+        $defaultFiles = self::$defaultFiles;
+        $clientMocks = self::$clientMocks;
+
+        if (Cli\Command\Build\Assets\Template::isTemplateExtension() === true) {
+            $defaultFiles = Cli\Command\Build\Assets\Template::injectDefaultFiles($defaultFiles);
+            $clientMocks = Cli\Command\Build\Assets\Template::injectClientMocks($clientMocks);
+        }
+
+        foreach ($defaultFiles as $defaultFile) {
             $phpFile = $this->loadPhpFile(FLAMES_PATH . substr(str_replace('\\', '/', $defaultFile), 6) . '.php');
-            if (in_array($defaultFile, self::$clientMocks) === true) {
+            if (in_array($defaultFile, $clientMocks) === true) {
                 $phpFile = $this->parseMockFile($defaultFile, $phpFile);
 
                 $split = explode('\\', $defaultFile);
@@ -376,17 +393,38 @@ final class Assets
 
     protected function mountVirtualClientFilesMetadata($virtualFilesBuffer)
     {
+        $useViews = Cli\Command\Build\Assets\Template::isTemplateExtension();
+
         $staticConstructors = Arr();
         $events = Arr();
         $tags = Arr();
+        $views = Arr();
 
-        $modules = ['Event', 'Component', 'Service', 'Controller', 'Tag'];
+        $modules = ['Event', 'Component', 'Service', 'Controller', 'Tag', 'View'];
         foreach ($modules as $module) {
             $clientPath = (APP_PATH . 'Client/' . $module);
             if (is_dir($clientPath) === true) {
                 $files = $this->getDirContents($clientPath);
                 foreach ($files as $file) {
                     if (is_dir($file) === true) {
+                        continue;
+                    }
+
+                    if ($module === 'View') {
+                        if ($useViews === false) {
+                            continue;
+                        }
+
+                        $fileData = (string)file_get_contents($file);
+                        while (str_contains($fileData, '  ') === true) {
+                            $fileData = str_replace('  ', ' ', $fileData);
+                        }
+                        if (str_starts_with($fileData, '{% export true %}') === false) {
+                            continue;
+                        }
+
+                        $twigNs = substr((str_replace('\\', '/', substr($file, strlen(ROOT_PATH), strlen($file)))), 16);
+                        $views[$twigNs] = $fileData;
                         continue;
                     }
 
@@ -416,7 +454,6 @@ final class Assets
                         }
                     }
 
-
                     $class = str_replace('/', '\\', substr($file, strlen(ROOT_PATH), -4));
                     if ($this->debug === true) {
                         echo ('Compile module ' . strtolower($module) . ': ' . $class . "\n");
@@ -433,6 +470,7 @@ final class Assets
         $data->staticConstructors = $staticConstructors;
         $data->events = $events;
         $data->tags = $tags;
+        $data->views = $views;
 
         return $data;
     }
@@ -482,8 +520,8 @@ final class Assets
         }
 
 
-        $loader = new \Flames\TemplateEngine\Loader\FilesystemLoader(APP_PATH . 'Client/View/');
-        $twig = new \Flames\TemplateEngine\Environment($loader, []);
+        $loader = new \Flames\Template\Loader\FilesystemLoader(APP_PATH . 'Client/View/');
+        $twig = new \Flames\Template\Environment($loader, []);
 
         $tag->content = $twig->render($tag->path, []);
 

@@ -51,10 +51,10 @@ class View
      */
     protected function renderHtml(Arr|array $data = null)
     {
-        $loader = new TemplateEngine\Loader\ArrayLoader([
+        $loader = new Template\Loader\ArrayLoader([
             'index' => $this->html,
         ]);
-        $twig = new TemplateEngine\Environment($loader);
+        $twig = new Template\Environment($loader);
         return $this->postRender($twig->render('index', $data), $data);
     }
 
@@ -66,8 +66,8 @@ class View
      */
     protected function renderFile(Arr|array $data = null)
     {
-        $loader = new TemplateEngine\Loader\FilesystemLoader(APP_PATH . 'Client/View/');
-        $twig = new TemplateEngine\Environment($loader, [
+        $loader = new Template\Loader\FilesystemLoader(APP_PATH . 'Client/View/');
+        $twig = new Template\Environment($loader, [
 //            'cache' => (ROOT_PATH . '.cache/view-twig'),
         ]);
 
