@@ -6,6 +6,7 @@ use Flames\Collection\Strings;
 use Flames\Element;
 use Flames\Event\Element\Click;
 use Flames\Event\Element\Change;
+use Flames\Event\Element\Focus;
 use Flames\Event\Element\Input;
 use Flames\Js;
 use Flames\Kernel\Client\Error;
@@ -60,6 +61,27 @@ class Event
         $this->element->addEventListener('input', function ($event) use ($delegate, $element) {
             try {
                 $delegate(new Input(Element::fromNative($element)));
+            } catch (\Exception|\Error $e) {
+                Error::handler($e);
+                return;
+            }
+        });
+    }
+
+    public function focus(\Closure $delegate)
+    {
+        $element = $this->element;
+        $this->element->addEventListener('focus', function ($event) use ($delegate, $element) {
+            try {
+                $delegate(new Focus(Element::fromNative($element), true));
+            } catch (\Exception|\Error $e) {
+                Error::handler($e);
+                return;
+            }
+        });
+        $this->element->addEventListener('blur', function ($event) use ($delegate, $element) {
+            try {
+                $delegate(new Focus(Element::fromNative($element), false));
             } catch (\Exception|\Error $e) {
                 Error::handler($e);
                 return;

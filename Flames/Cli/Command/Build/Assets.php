@@ -55,6 +55,7 @@ final class Assets
         Flames\Event\Element\Click::class,
         Flames\Event\Element\Change::class,
         Flames\Event\Element\Input::class,
+        Flames\Event\Element\Focus::class,
         Flames\Kernel\Client\Dispatch::class,
         Flames\Js\Module::class,
         Flames\Client\Os::class,
