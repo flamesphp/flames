@@ -68,10 +68,12 @@ class Client
             $currentHash = $automate->getCurrentHash();
 
             if ($checkHash !== $currentHash) {
-                Command::run('build:assets --auto');
-                header('Content-Type: application/json; charset=utf-8');
-                echo json_encode(['changed' => true]);
-                exit;
+                try {
+                    Command::run('build:assets --auto');
+                    header('Content-Type: application/json; charset=utf-8');
+                    echo json_encode(['changed' => true]);
+                    exit;
+                } catch (\Error|\Exception $e) {}
             }
             usleep(250000);
 

@@ -59,7 +59,7 @@ class StaticEx
         Command::run('build:assets');
 
         $this->buildFlames();
-        $this->buildKernel();
+//        $this->buildKernel();
         $this->buildZip();
         $this->restoreInputs();
 
@@ -104,7 +104,7 @@ class StaticEx
 
     protected function buildFlames() : void
     {
-        $buildStream  = fopen($this->buildPath . '.flames.js', 'w+');
+        $buildStream  = fopen($this->buildPath . 'flames.js', 'w+');
 
         $clientPath = (APP_PATH . 'Client/Resource/client.js');
         if (file_exists($clientPath) === true) {
@@ -116,7 +116,7 @@ class StaticEx
             fclose($fileStream);
         }
 
-        $fileStream = fopen(FLAMES_PATH . 'Kernel/Client/Engine/Flames.js', 'r');
+        $fileStream = fopen(APP_PATH . 'Client/Resource/Build/Flames.js', 'r');
         while(!feof($fileStream)) {
             $buffer = fgets($fileStream, 128000); // 128 kb
             fputs($buildStream, $buffer);
@@ -132,17 +132,17 @@ class StaticEx
         }
     }
 
-    protected function buildKernel() : void
-    {
-        $flamesKernelDir = ($this->buildPath . '.flames/kernel');
-        if (is_dir($flamesKernelDir) === false) {
-            $mask = umask(0);
-            mkdir($flamesKernelDir, 0777, true);
-            umask($mask);
-        }
-
-        copy(FLAMES_PATH . 'Kernel/Client/Engine/Flames.wasm', $this->buildPath . '.flames.wasm');
-    }
+//    protected function buildKernel() : void
+//    {
+//        $flamesKernelDir = ($this->buildPath . '.flames/kernel');
+//        if (is_dir($flamesKernelDir) === false) {
+//            $mask = umask(0);
+//            mkdir($flamesKernelDir, 0777, true);
+//            umask($mask);
+//        }
+//
+//        copy(FLAMES_PATH . 'Kernel/Client/Engine/Flames.wasm', $this->buildPath . '.flames.wasm');
+//    }
 
     protected function cleanBuild() : void
     {
