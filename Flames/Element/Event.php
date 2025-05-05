@@ -75,9 +75,6 @@ class Event
     {
         $element = $this->element;
         $this->element->addEventListener('keydown', function ($event) use ($delegate, $element) {
-            dump('keysddo');
-            dump($event);
-            dump($event->key);
             try {
                 $delegate(new KeyDown(Element::fromNative($element), $event));
             } catch (\Exception|\Error $e) {
@@ -91,9 +88,6 @@ class Event
     {
         $element = $this->element;
         $this->element->addEventListener('keyup', function ($event) use ($delegate, $element) {
-            dump('keysddo');
-            dump($event);
-            dump($event->key);
             try {
                 $delegate(new KeyUp(Element::fromNative($element), $event));
             } catch (\Exception|\Error $e) {
