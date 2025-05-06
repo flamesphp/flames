@@ -5,6 +5,7 @@ namespace Flames;
 use Flames\Cli\Command\Build\Assets\Automate;
 use Flames\Client\Builder;
 use Flames\Collection\Arr;
+use Flames\Collection\Strings;
 use http\Env;
 
 /**
@@ -55,7 +56,7 @@ class View
             'index' => $this->html,
         ]);
         $twig = new Template\Environment($loader);
-        return $this->postRender($twig->render('index', $data), $data);
+        $htmlRendered = $this->postRender($twig->render('index', $data), $data);
     }
 
     /**
@@ -144,6 +145,12 @@ class View
         }
         $flamesEngine = '<script async src="//cdn.jsdelivr.net/gh/flamesphp/cdn@' . Kernel::CDN_VERSION . '/flames.js"></script>';
         $html = str_replace($bodyCloseTag, "\t" . $flamesEngine . "\n\t" . $bodyCloseTag, $html);
+
+
+        $sanizateOutput = Environment::get('CLIENT_SANIZATE_OUTPUT');
+        if ($sanizateOutput === true) {
+            $html = Html::sanitize($html);
+        }
 
         return $html;
     }
