@@ -22,7 +22,7 @@ class Keyboard
 
     protected static ?bool $capsLockActive = null;
 
-    public static function register()
+    public static function register(): void
     {
         $element = Element::getBody();
         if ($element === null) {
@@ -134,12 +134,12 @@ class Keyboard
         return isset(self::$keyCodes[$keyCode]);
     }
 
-    public static function registerKeyDown(\Closure $delegate)
+    public static function registerKeyDown(\Closure $delegate): void
     {
         self::$keyDownDelegates[] = $delegate;
     }
 
-    public static function registerKeyUp(\Closure $delegate)
+    public static function registerKeyUp(\Closure $delegate): void
     {
         self::$keyUpDelegates[] = $delegate;
     }
