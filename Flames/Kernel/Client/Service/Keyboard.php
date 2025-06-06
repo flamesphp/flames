@@ -43,8 +43,12 @@ class Keyboard
                 $keyLower = mb_strtolower($event->key, 'UTF-8');
             } catch (\Exception|\Error $e) { $keyLower = strtolower($event->key); }
 
-            self::$keys[$keyLower] = true;
-            self::$keyCodes[$event->keyCode] = true;
+            if ($keyLower !== '' && $keyLower !== null) {
+                self::$keys[$keyLower] = true;
+            }
+            if ($event->keyCode !== '' && $event->keyCode !== null) {
+                self::$keyCodes[$event->keyCode] = true;
+            }
             $preventDefault = false;
 
             if (count(self::$keyDownDelegates) > 0) {
@@ -84,8 +88,12 @@ class Keyboard
                 $keyLower = mb_strtolower($event->key, 'UTF-8');
             } catch (\Exception|\Error $e) { $keyLower = strtolower($event->key); }
 
-            unset(self::$keys[$keyLower]);
-            unset(self::$keyCodes[$event->keyCode]);
+            if ($keyLower !== '' && $keyLower !== null) {
+                unset(self::$keys[$keyLower]);
+            }
+            if ($event->keyCode !== '' && $event->keyCode !== null) {
+                unset(self::$keyCodes[$event->keyCode]);
+            }
             $preventDefault = false;
 
             if (count(self::$keyUpDelegates) > 0) {

@@ -133,7 +133,6 @@ final class Dispatch
                             } catch (\Exception|\Error $e) {
                                 Error::handler($e);
                             }
-
                         });
                         break;
                     }
