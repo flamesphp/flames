@@ -205,16 +205,16 @@ class Native
         file_put_contents($this->buildPath . 'main.js', file_get_contents($this->assetsPath . 'main.js'));
         file_put_contents($this->buildPath . 'forge.config.js', file_get_contents($this->assetsPath . 'forge.config.js'));
 
-        $assetsAppPath = ($this->buildPath . 'App/');
+        $assetsAppPath = ($this->buildPath . 'Kernel/');
         if (is_dir($assetsAppPath) === false) {
             $mask = umask(0);
             mkdir($assetsAppPath, 0777, true);
             umask($mask);
         }
 
-        file_put_contents($assetsAppPath . 'BrowserView.js', file_get_contents($this->assetsPath . 'App/BrowserView.js'));
-        file_put_contents($assetsAppPath . 'BrowserWindow.js', file_get_contents($this->assetsPath . 'App/BrowserWindow.js'));
-        file_put_contents($assetsAppPath . 'Register.js', file_get_contents($this->assetsPath . 'App/Register.js'));
+        file_put_contents($assetsAppPath . 'BrowserView.js', file_get_contents($this->assetsPath . 'Kernel/BrowserView.js'));
+        file_put_contents($assetsAppPath . 'BrowserWindow.js', file_get_contents($this->assetsPath . 'Kernel/BrowserWindow.js'));
+        file_put_contents($assetsAppPath . 'Register.js', file_get_contents($this->assetsPath . 'Kernel/Register.js'));
 
         $appDomain = Environment::get('APP_DOMAIN');
         if (empty($appDomain)) {
