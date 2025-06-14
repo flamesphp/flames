@@ -80,7 +80,7 @@ final class Kernel
         try {
             mb_internal_encoding('UTF-8');
         } catch (\Error $e) {
-            Required::file(FLAMES_PATH . 'Kernel/Missing/Mbstring.php');
+            Required::file(FLAMES_PATH . 'Kernel/Missing/mbstring.php');
             return false;
         }
 

@@ -31,6 +31,7 @@ class Native
         if (self::$isRunningBuild === true) {
             return false;
         }
+        dump('native build');
         self::$isRunningBuild = true;
 
         $this->debug = $debug;
@@ -115,6 +116,8 @@ class Native
         $appTitle = Environment::get('APP_TITLE');
         if (!empty($appTitle)) { $packageData->name = $appTitle; }
         else { echo "Please set APP_TITLE environment variable in .env. Using default value.\n"; sleep(1); }
+
+        exit;
 
         $appVersion = Environment::get('APP_VERSION');
         if (!empty($appVersion)) { $packageData->version = $appVersion; }
