@@ -5,7 +5,7 @@
 #define MyAppExeName "{{ FILE_EXECUTABLE }}"
 
 [Setup]
-AppId={{FA1B38C9-DA39-44AB-883F-B7E3DA8D0A80}
+AppId={{{{ APP_UUID }}}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}

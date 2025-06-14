@@ -58,6 +58,9 @@ class Native
         $this->assetsPath = (FLAMES_PATH . 'Cli/Command/Build/App/Native/Desktop/');
 
         $this->checkBuildPath();
+        if ($this->packBuild() === false) { return false; }
+        exit;
+
         $this->cleanBuild();
 
         if ($this->verifyDependencies() === false) { return false; }
@@ -308,13 +311,13 @@ class Native
                 if ($outputFile !== null) {
                     $outputFilePath = ($squirrelPath . $outputFile);
                     $fileName = ('build_' . $this->getBuildFilePrefix() . '.nupkg');
-                    copy($outputFilePath, (APP_PATH . 'Client/Build/' . $fileName));
+                    //copy($outputFilePath, (APP_PATH . 'Client/Build/' . $fileName));
                 } else {
                     $this->log("No nupkg build file found in output directory.\n");
                 }
             }
 
-            $this->packZip($outputPath);
+            //$this->packZip($outputPath);
 
             if ($this->installer === true) {
                 if ($this->buildInstaller($outputPath) === false) {
@@ -409,6 +412,7 @@ class Native
         }
 
         $this->buildIconInstaller();
+        $appInstallerUuid = $this->getInstallerUuid();
 
         $appTitle = Environment::get('APP_TITLE'); if (empty($appTitle)) { $appTitle = 'Flames'; }
         $appVersion = Environment::get('APP_VERSION'); if (empty($appTitle)) { $appVersion = '1.0.0'; }
@@ -422,6 +426,7 @@ class Native
             '{{ APP_VERSION }}',
             '{{ APP_AUTHOR }}',
             '{{ APP_URL }}',
+            '{{ APP_UUID }}',
             '{{ FILE_EXECUTABLE }}',
             '{{ PATH_INTALLER }}',
             '{{ PATH_BUILD }}',
@@ -430,6 +435,7 @@ class Native
             $appVersion,
             $appAuthor,
             ($appProtocol . '://' . $appDomain),
+            $appInstallerUuid,
             $exeFile,
             $installerPath,
             $outputDir,
@@ -448,6 +454,25 @@ class Native
         copy($installerPath . 'setup.exe', (APP_PATH . 'Client/Build/' . $fileName));
 
         return true;
+    }
+
+    protected function getInstallerUuid(): string
+    {
+        $installerUuid = Environment::get('APP_INSTALLER_UUID');
+        if (empty($installerUuid)) {
+            $data = random_bytes(16);
+            $data[6] = chr(ord($data[6]) & 0x0f | 0x40); // set version to 0100
+            $data[8] = chr(ord($data[8]) & 0x3f | 0x80); // set bits 6-7 to 10
+            $uuid = Strings::toUpper(vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4)));
+
+            $env = Environment::default();
+            $env->APP_INSTALLER_UUID = $uuid;
+            $env->save();
+
+            return $env->APP_INSTALLER_UUID;
+        }
+
+        return $installerUuid;
     }
 
     protected function buildIconInstaller(): void
