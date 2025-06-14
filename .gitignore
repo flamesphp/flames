@@ -4,5 +4,3 @@ syntax: glob
 .idea/
 .env
 .gitmodules
-App/
-Service/
