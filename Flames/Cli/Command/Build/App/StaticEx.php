@@ -20,6 +20,15 @@ class StaticEx
 
     protected static bool $isRunningBuild = false;
 
+    protected $cloudflare = false;
+
+    public function __construct($data)
+    {
+        if ($data->option->contains('cloudflare') === true) {
+            $this->cloudflare = true;
+        }
+    }
+
     public function run(bool $debug = false) : bool
     {
         // Stack overflow protection
@@ -76,7 +85,7 @@ class StaticEx
             umask($mask);
         }
 
-        $zipName = '';
+        $zipName = 'build_';
         $appName = Environment::get('APP_NAME');
         if (!empty($appName)) {
             $zipName = (strtolower($appName) . '_');
