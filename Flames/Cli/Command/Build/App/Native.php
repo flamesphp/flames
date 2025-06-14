@@ -5,6 +5,7 @@ namespace Flames\Cli\Command\Build\App;
 use Flames\Collection\Arr;
 use Flames\Collection\Strings;
 use Flames\Environment;
+use Flames\Kernel;
 use Flames\Kernel\Tools\WinIco;
 use Flames\Process;
 use Flames\Server\Shell;
@@ -12,6 +13,8 @@ use ZipArchive;
 
 class Native
 {
+    protected const ICON_INSTALLER_MAX_SIZE = 256;
+
     protected bool $debug = false;
     protected string $buildPath;
     protected string $assetsPath;
@@ -281,7 +284,6 @@ class Native
     protected function packBuild(): bool
     {
         $buildZipPath = (APP_PATH . 'Client/Build/');
-
         if (is_dir($buildZipPath) === false) {
             $mask = umask(0);
             mkdir($buildZipPath, 0777, true);
@@ -319,8 +321,7 @@ class Native
                     return false;
                 }
             }
-
-            if ($this->run === true) {
+            elseif ($this->run === true) {
                 $this->runBuild($outputPath);
             }
             return true;
@@ -363,13 +364,7 @@ class Native
 
     protected function packZip(string $outputPath): bool
     {
-        $outDirs = scandir($outputPath);
-        $outputDir = null;
-        foreach ($outDirs as $outDir) {
-            if ($outDir !== '.' && $outDir !== '..' && $outDir !== 'make') {
-                $outputDir = ($outputPath . $outDir . '/');
-            }
-        }
+        $outputDir = $this->getPackPath($outputPath);
 
         if ($outputDir === null) {
             $this->log("No output directory found.\n");
@@ -384,9 +379,135 @@ class Native
         return true;
     }
 
+    public function getPackPath(string $outputPath): ?string
+    {
+        $outDirs = scandir($outputPath);
+        $outputDir = null;
+        foreach ($outDirs as $outDir) {
+            if ($outDir !== '.' && $outDir !== '..' && $outDir !== 'make') {
+                $outputDir = ($outputPath . $outDir . '/');
+            }
+        }
+
+        return $outputDir;
+    }
+
     protected function buildInstaller(string $outputPath): bool
     {
+        $this->log("Building windows installer... It could take up to several minutes...\n");
+
+        $outputDir = $this->getPackPath($outputPath);
+        $exeFile = $this->getWindowExecutable($outputDir);
+
+        $isppPath = $this->verifyIspp();
+
+        $installerPath = ($this->buildPath . 'Installer/');
+        if (is_dir($installerPath) === false) {
+            $mask = umask(0);
+            mkdir($installerPath, 0777, true);
+            umask($mask);
+        }
+
+        $this->buildIconInstaller();
+
+        $appTitle = Environment::get('APP_TITLE'); if (empty($appTitle)) { $appTitle = 'Flames'; }
+        $appVersion = Environment::get('APP_VERSION'); if (empty($appTitle)) { $appVersion = '1.0.0'; }
+        $appAuthor = Environment::get('APP_AUTHOR'); if (empty($appTitle)) { $appAuthor = 'Flames'; }
+        $appDomain = Environment::get('APP_DOMAIN'); if (empty($appDomain)) { $appDomain = 'localhost'; }
+        $appProtocol = Environment::get('APP_PROTOCOL'); if (empty($appDomain)) { $appDomain = 'https'; }
+
+        $issData = file_get_contents($this->assetsPath . 'WinInstaller/setup.template.iss');
+        $issData = str_replace([
+            '{{ APP_TITLE }}',
+            '{{ APP_VERSION }}',
+            '{{ APP_AUTHOR }}',
+            '{{ APP_URL }}',
+            '{{ FILE_EXECUTABLE }}',
+            '{{ PATH_INTALLER }}',
+            '{{ PATH_BUILD }}',
+        ], [
+            $appTitle,
+            $appVersion,
+            $appAuthor,
+            ($appProtocol . '://' . $appDomain),
+            $exeFile,
+            $installerPath,
+            $outputDir,
+        ], $issData);
+        file_put_contents($installerPath . 'setup.iss', $issData);
+
+        $buildCommand = ($isppPath . 'iscc.exe "' . $installerPath . 'setup.iss"');
+
+        $process = new Shell($buildCommand);
+        if ($process->getCode() !== Shell\Code::CODE_SUCESS) {
+            $this->log("Error building installer.\n");
+            return false;
+        }
+
+        $fileName = ('build_' . $this->getBuildFilePrefix() . '.exe');
+        copy($installerPath . 'setup.exe', (APP_PATH . 'Client/Build/' . $fileName));
+
         return true;
+    }
+
+    protected function buildIconInstaller(): void
+    {
+        $iconInstallerPath = ($this->buildPath . 'Installer/icon.png');
+
+        $iconPath = ($this->buildPath . 'Resource/icon.png');
+        copy($iconPath, ($iconInstallerPath));
+        $iconPath = $iconInstallerPath;
+
+        list($iconWidth, $iconHeight) = getimagesize($iconPath);
+        $iconWidth = (int)$iconWidth;
+        $iconHeight = (int)$iconHeight;
+        $origWidth = $iconWidth;
+        $origHeight = $iconHeight;
+
+        if ($iconWidth > self::ICON_INSTALLER_MAX_SIZE) {
+            $iconHeight = ((self::ICON_INSTALLER_MAX_SIZE / $iconWidth) * $iconHeight);
+            $iconWidth = self::ICON_INSTALLER_MAX_SIZE;
+        }
+        if ($iconHeight > self::ICON_INSTALLER_MAX_SIZE) {
+            $iconWidth = ((self::ICON_INSTALLER_MAX_SIZE / $iconHeight) * $iconWidth);
+            $iconHeight = self::ICON_INSTALLER_MAX_SIZE;
+        }
+
+        if ($iconWidth !== $origWidth || $iconHeight !== $origHeight) {
+            $iconImageResized = imagecreate($iconWidth, $iconHeight);
+            $iconImage = imagecreatefrompng($iconPath);
+            imagecopyresampled($iconImageResized, $iconImage, 0, 0, 0, 0,
+                $iconWidth, $iconHeight, $origWidth, $origHeight);
+            imagepng($iconImageResized, $iconPath);
+        }
+
+        $winIco = new WinIco($iconPath);
+        $winIco->save($this->buildPath . 'Installer/icon.ico');
+    }
+
+    protected function verifyIspp(): string
+    {
+        $isppPath = (ROOT_PATH . '.cache/tools/ispp/');
+        if (is_dir($isppPath) === false) {
+            $mask = umask(0);
+            mkdir($isppPath, 0777, true);
+            umask($mask);
+        }
+
+        if (file_exists($isppPath . 'ok') === false) {
+            $installPath = ($isppPath . 'install.zip');
+            file_put_contents($installPath, file_get_contents('https://cdn.jsdelivr.net/gh/flamesphp/cdn@' . Kernel::CDN_VERSION . '/tools/ispp.zip.dat'));
+
+            $zip = new ZipArchive;
+            $zip->open($installPath);
+            $zip->extractTo($isppPath);
+            $zip->close();
+
+            @unlink($installPath);
+            file_put_contents($isppPath . 'ok', '');
+        }
+
+        return $isppPath;
     }
 
     protected function runBuild(string $outputPath): void
@@ -404,15 +525,7 @@ class Native
             return;
         }
 
-        $files = scandir($outputDir);
-        $exeFile = null;
-        foreach ($files as $file) {
-            if (Strings::endsWith($file, '.exe') === true) {
-                $exeFile = $file;
-                break;
-            }
-        }
-
+        $exeFile = $this->getWindowExecutable($outputDir);
         if ($exeFile === null) {
             $this->log("No executable file found. Can't run build.\n");
             return;
@@ -423,6 +536,20 @@ class Native
             0 => ["pipe", "r"],
             1 => ["pipe", "w"],
         ], $pipes);
+    }
+
+    protected function getWindowExecutable(string $outputDir): ?string
+    {
+        $files = scandir($outputDir);
+        $exeFile = null;
+        foreach ($files as $file) {
+            if (Strings::endsWith($file, '.exe') === true) {
+                $exeFile = $file;
+                break;
+            }
+        }
+
+        return $exeFile;
     }
 
     protected function getBuildFilePrefix(): string
