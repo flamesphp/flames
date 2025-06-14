@@ -238,6 +238,7 @@ final class Environment
         $cachePath = ($basePath . sha1($this->path));
 
         if (file_exists($this->path) === false) {
+
             $this->valid = false;
             $this->data = Arr();
             return;

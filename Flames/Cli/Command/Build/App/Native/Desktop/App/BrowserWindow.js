@@ -13,7 +13,7 @@ exports.getBrowserWindow = () => {
         minWidth: 1024,
         minHeight: 768,
         center: true,
-        icon: path.join(__dirname, 'assets/icons/png/64x64.png'),
+        icon: require('path').join('Resource/icon.png'),
         backgroundColor: '#fff',
         webPreferences: {
             nativeWindowOpen: true,

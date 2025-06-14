@@ -359,7 +359,8 @@ final class Kernel
     {
         $path = (realpath(__DIR__ . '/../') . '/');
         define('FLAMES_PATH', $path . 'Flames/');
-        if (str_ends_with($path, 'vendor/flamesphp/flames/') === true) {
+
+        if (str_ends_with(str_replace('\\', '/', $path), 'vendor/flamesphp/flames/') === true) {
             define('FLAMES_COMPOSER', true);
             return (realpath($path . '../../../') . '/');
         } else {
