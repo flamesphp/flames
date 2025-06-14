@@ -58,9 +58,6 @@ class Native
         $this->assetsPath = (FLAMES_PATH . 'Cli/Command/Build/App/Native/Desktop/');
 
         $this->checkBuildPath();
-        if ($this->packBuild() === false) { return false; }
-        exit;
-
         $this->cleanBuild();
 
         if ($this->verifyDependencies() === false) { return false; }
@@ -311,13 +308,13 @@ class Native
                 if ($outputFile !== null) {
                     $outputFilePath = ($squirrelPath . $outputFile);
                     $fileName = ('build_' . $this->getBuildFilePrefix() . '.nupkg');
-                    //copy($outputFilePath, (APP_PATH . 'Client/Build/' . $fileName));
+                    copy($outputFilePath, (APP_PATH . 'Client/Build/' . $fileName));
                 } else {
                     $this->log("No nupkg build file found in output directory.\n");
                 }
             }
 
-            //$this->packZip($outputPath);
+            $this->packZip($outputPath);
 
             if ($this->installer === true) {
                 if ($this->buildInstaller($outputPath) === false) {
