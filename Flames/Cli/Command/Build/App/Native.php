@@ -693,8 +693,7 @@ class Native
         }
 
         exit;
-
-
+        
         return $installerUuid;
     }
 }
