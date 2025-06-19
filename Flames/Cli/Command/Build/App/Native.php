@@ -219,6 +219,9 @@ class Native
         file_put_contents($assetsAppPath . 'BrowserView.js', file_get_contents($this->assetsPath . 'Kernel/BrowserView.js'));
         file_put_contents($assetsAppPath . 'BrowserWindow.js', file_get_contents($this->assetsPath . 'Kernel/BrowserWindow.js'));
         file_put_contents($assetsAppPath . 'Register.js', file_get_contents($this->assetsPath . 'Kernel/Register.js'));
+        file_put_contents($assetsAppPath . 'Flames.js', file_get_contents($this->assetsPath . 'Kernel/Flames.js'));
+        file_put_contents($assetsAppPath . 'Initialize.js', file_get_contents($this->assetsPath . 'Kernel/Initialize.js'));
+        file_put_contents($assetsAppPath . 'Setup.js', file_get_contents($this->assetsPath . 'Kernel/Setup.js'));
 
         $appDomain = Environment::get('APP_DOMAIN');
         if (empty($appDomain)) {
@@ -234,8 +237,23 @@ class Native
             $appProtocol = 'https';
         }
 
+        $appNativeKey = self::getAppNativeKey();
+        $domains = ((string)Environment::get('APP_DOMAIN') . ',');
+        $appNativeDomains = Environment::get('APP_NATIVE_DOMAINS');
+        if (!empty($appNativeDomains)) { $domains .= ($appNativeDomains . ',');  }
+
+        if (Strings::endsWith($domains, ',') === true) { $domains = substr($domains, 0, -1); }
+
         $appEnv = file_get_contents($this->assetsPath . 'env.template.js');
-        $appEnv = str_replace('{{ url }}', $appProtocol . '://' . $appDomain, $appEnv);
+        $appEnv = str_replace([
+            '{{ url }}',
+            '{{ appNativeKey }}',
+            '{{ domains }}'
+        ], [
+            $appProtocol . '://' . $appDomain,
+            $appNativeKey,
+            $domains
+        ], $appEnv);
         file_put_contents($this->buildPath . 'env.js', $appEnv);
 
         return true;

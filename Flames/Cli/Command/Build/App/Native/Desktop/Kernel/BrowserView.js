@@ -4,6 +4,8 @@
 
 const electron = require('electron');
 const { BrowserView } = electron;
+const env = require("./../env");
+const initialize = require('./Initialize');
 
 exports.getBrowserView = (mainWindow) => {
     const view = new BrowserView();
@@ -13,6 +15,7 @@ exports.getBrowserView = (mainWindow) => {
     view.setBounds({ x: 0, y: 0, width: contentBounds.width, height: contentBounds.height });
     view.setAutoResize({ width: true, height: true });
 
-    const env = require("./../env");
+    initialize.initialize(view);
     view.webContents.loadURL(env.url);
+    view.webContents.openDevTools();
 };

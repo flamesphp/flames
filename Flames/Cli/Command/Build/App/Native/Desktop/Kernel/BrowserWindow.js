@@ -2,11 +2,10 @@
 // Github: https://github.com/flamesphp/flames
 // Docs:   https://flamesphp.com
 
-const path = require('path');
 const { BrowserWindow } = require('electron');
 
-exports.getBrowserWindow = () => {
-    var window = new BrowserWindow({
+exports.getBrowserWindow = (popup) => {
+    const window = new BrowserWindow({
         show: false,
         width: 1280,
         height: 720,
@@ -17,13 +16,16 @@ exports.getBrowserWindow = () => {
         backgroundColor: '#fff',
         webPreferences: {
             nativeWindowOpen: true,
-            devTools: false,
+            devTools: true,
             contextIsolation: true,
             webviewTag: true
         },
     });
 
-    window.maximize();
+    if (popup !== true) {
+        window.maximize();
+    }
+
     window.show();
 
     return window;

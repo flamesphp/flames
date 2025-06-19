@@ -3,15 +3,16 @@
 // Docs:   https://flamesphp.com
 
 const { Menu } = require('electron');
+const window = require('./BrowserWindow');
+const view = require('./BrowserView');
+const setup = require('./Setup');
 
 exports.initialize = (app) => {
+    setup.setup();
+
     app.whenReady().then(() => {
         Menu.setApplicationMenu(null);
-
-        const window = require('./BrowserWindow');
-        mainWindow = window.getBrowserWindow(app);
-
-        const view = require('./BrowserView');
+        const mainWindow = window.getBrowserWindow(app);
         view.getBrowserView(mainWindow);
     });
 
