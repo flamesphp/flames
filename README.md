@@ -17,6 +17,7 @@ of **PHP components**.
 * Flames framework created for high performance and large number of accesses.
 * Only 1.12ms from kernel boot to call controller (17-18x faster than Laravel, closer from Slim).
 * You don't need to learn JS to develop your frontend, just run PHP 8.3 natively in Flames (WebAssembly).
+* Native client bridge to allow PHP to JS and JS to PHP.
 * ORM with automatic migrations turn database easy.
 * ORM with Models and Repositories.
 * Server HTTP Client based on GuzzleHttp.
@@ -29,6 +30,12 @@ of **PHP components**.
 * Platform Engine (Windows Only), to do things that PHP can't (ex: get server mouse position, supporting automate server GUI apps (like Selenium, but for O.S.) using OCR's and [mouse/keyboard interceptor : under development]).
 * Automatic build client PHP files and load page (like Angular).
 * Automatic detect CSS/JS changed files and load page.
+* Build App as Native (for Windows and Linux) based on ElectronJS
+* Build Native App Setup (for Windows) based on Issrc.
+* Native App bridge to allow PHP to JS (ElectronJS) and JS (ElectronJS) to PHP.
+* Native App remote (ex: start native OS calculator by PHP).
+* Native App controllers (open DevTools, get hardware info, etc).
+* Client DevTools working at mobile without Chrome Remote DevTools (all browsers in Android and iOS).
 
 ## Benchmark
 
