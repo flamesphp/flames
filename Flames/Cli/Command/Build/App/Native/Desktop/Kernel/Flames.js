@@ -104,7 +104,7 @@ exports.onMessageBridge = (view, data) => {
 }
 
 exports.actionDevtoolsOpen = (view) => {
-    view.webContents.openDevTools();
+    view.webContents.openDevTools({ mode: 'bottom' });
     return {};
 }
 

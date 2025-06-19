@@ -17,5 +17,4 @@ exports.getBrowserView = (mainWindow) => {
 
     initialize.initialize(view);
     view.webContents.loadURL(env.url);
-    view.webContents.openDevTools();
 };
