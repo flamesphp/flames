@@ -4,5 +4,5 @@
 
 const { app, Menu } = require('electron');
 
-const register = require('./App/Register');
+const register = require('./Kernel/Register');
 register.initialize(app);

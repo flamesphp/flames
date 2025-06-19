@@ -52,6 +52,7 @@ window.Flames.onBoot = function() {
     window.Flames.Internal.asyncRedirect = '{{ asyncRedirect }}';
     window.Flames.Internal.composer = '{{ composer }}';
     window.Flames.Internal.swfExtension = '{{ swfExtension }}';
+    window.Flames.Internal.appNativeKey = '{{ appNativeKey }}';
     window.Flames.Internal.onErrorListener = function(error, line, file, code, traceString, trace) {
         console.error(error);
         console.error(line);

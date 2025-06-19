@@ -11,6 +11,8 @@ use Flames\Event\Element\Change;
 use Flames\Event\Element\Input;
 use Flames\Header;
 use Flames\Js;
+use Flames\Kernel;
+use Flames\Kernel\Client\Dispatch\Native;
 use Flames\Kernel\Client\Error;
 use Flames\Kernel\Client\Service\Keyboard;
 use Flames\Kernel\Route;
@@ -54,6 +56,7 @@ final class Dispatch
     {
         self::simulateGlobals();
         self::setDate();
+        self::dispatchNativeBuildHooks();
         self::dispatchHooks();
         self::dispatchEvents($firstLoad);
         self::dispatchNativeServices();
@@ -165,6 +168,8 @@ final class Dispatch
         \Flames\Kernel::__injector();
 
         try {
+            self::dispatchNativeBuild();
+
             if (class_exists('\\App\\Client\\Event\\Ready') === true) {
                 $ready = new \App\Client\Event\Ready();
                 $ready->onReady();
@@ -255,8 +260,34 @@ final class Dispatch
         self::$currentUri = $uri;
     }
 
-    protected static function dispatchNativeServices()
+    protected static function dispatchNativeBuild()
     {
-        Keyboard::register();
+        $window = Js::getWindow();
+        $window->Flames->__nativeInfoDelegate__ = function() {
+            self::dispatchNativeBuildEvents();
+        };
+
+        $nativeInfo = (string)$window->Flames->__nativeInfo__;
+        if (empty($nativeInfo)) {
+            return;
+        }
+
+        self::dispatchNativeBuildEvents();
     }
+
+    protected static function dispatchNativeBuildEvents()
+    {
+        Kernel::__setNativeBuild(true);
+
+        if (class_exists('\\App\\Client\\Event\\Native') === true) {
+            $ready = new \App\Client\Event\Native();
+            $ready->onNative();
+        }
+    }
+
+    protected static function dispatchNativeServices()
+    { Keyboard::register(); }
+
+    protected static function dispatchNativeBuildHooks()
+    { Native::register(); }
 }

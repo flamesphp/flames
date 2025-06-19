@@ -16,9 +16,9 @@ use Flames\Router\Client;
  */
 final class Kernel
 {
-    public const VERSION = 'v0.0.30-alpha';
+    public const VERSION = 'v0.0.31-alpha';
     public const MODULE  = 'SERVER';
-    public const CDN_VERSION = 'v0.0.30-alpha';
+    public const CDN_VERSION = 'v0.0.31-alpha';
 
     protected static Router|null $defaultRouter = null;
     protected static ErrorHandler\Run|null $errorHandler = null;
@@ -359,7 +359,8 @@ final class Kernel
     {
         $path = (realpath(__DIR__ . '/../') . '/');
         define('FLAMES_PATH', $path . 'Flames/');
-        if (str_ends_with($path, 'vendor/flamesphp/flames/') === true) {
+
+        if (str_ends_with(str_replace('\\', '/', $path), 'vendor/flamesphp/flames/') === true) {
             define('FLAMES_COMPOSER', true);
             return (realpath($path . '../../../') . '/');
         } else {

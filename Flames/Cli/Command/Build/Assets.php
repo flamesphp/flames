@@ -42,6 +42,7 @@ final class Assets
         Flames\Event\Route::class,
         Flames\Event\Ready::class,
         Flames\Event\Page::class,
+        Flames\Event\Native::class,
         Flames\Router\Parser::class,
         Flames\Header\Client::class,
         Flames\Coroutine\Timeout::class,
@@ -79,6 +80,9 @@ final class Assets
         Flames\Cookie\Client::class,
         Flames\DateTime::class,
         Flames\Date\TimeZone\Client::class,
+        Flames\Kernel\Client\Dispatch\Native::class,
+        Flames\Client\Native::class,
+        Flames\Client\Browser\DevTools::class,
     ];
 
     protected static array $clientMocks = [
@@ -200,7 +204,8 @@ final class Assets
             '\'{{ asyncRedirect }}\'',
             '\'{{ swfExtension }}\'',
             '\'{{ composer }}\'',
-            '\'{{ unsupported }}\';'
+            '\'{{ unsupported }}\';',
+            '\'{{ appNativeKey }}\';',
         ], [
             rawurlencode(Environment::get('ENVIRONMENT')),
             rawurlencode(Environment::get('DUMP_LOCAL_PATH')),
@@ -208,12 +213,14 @@ final class Assets
             ((Environment::get('CLIENT_ASYNC_REDIRECT') === true) ? 'true' : 'false'),
             (($this->swfExtension === true) ? 'true' : 'false'),
             ((FLAMES_COMPOSER === true) ? 'true' : 'false'),
-            ('(function(){' . $unsupported . '})();')
+            ('(function(){' . $unsupported . '})();'),
+            Cli\Command\Build\App\Native::getAppNativeKey()
         ], file_get_contents(FLAMES_PATH . 'Kernel/Client/Engine/Flames.js'));
 
         fwrite($stream, $engine);
         fwrite($stream, 'window.Flames.onReady=function(){');
     }
+
 
     protected function injectExtensions($stream): void
     {
