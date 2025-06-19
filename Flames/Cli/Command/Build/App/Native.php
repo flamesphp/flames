@@ -418,7 +418,7 @@ class Native
         $outputDir = $this->getPackPath($outputPath);
         $exeFile = $this->getWindowExecutable($outputDir);
 
-        $isppPath = $this->verifyIspp();
+        $issrcPath = $this->verifyIssrc();
 
         $installerPath = ($this->buildPath . 'Installer/');
         if (is_dir($installerPath) === false) {
@@ -458,7 +458,7 @@ class Native
         ], $issData);
         file_put_contents($installerPath . 'setup.iss', $issData);
 
-        $buildCommand = ($isppPath . 'iscc.exe "' . $installerPath . 'setup.iss"');
+        $buildCommand = ($issrcPath . 'iscc.exe "' . $installerPath . 'setup.iss"');
 
         $process = new Shell($buildCommand);
         if ($process->getCode() !== Shell\Code::CODE_SUCESS) {
@@ -526,29 +526,29 @@ class Native
         $winIco->save($this->buildPath . 'Installer/icon.ico');
     }
 
-    protected function verifyIspp(): string
+    protected function verifyIssrc(): string
     {
-        $isppPath = (ROOT_PATH . '.cache/tools/ispp/');
-        if (is_dir($isppPath) === false) {
+        $issrcPath = (ROOT_PATH . '.cache/tools/issrc/');
+        if (is_dir($issrcPath) === false) {
             $mask = umask(0);
-            mkdir($isppPath, 0777, true);
+            mkdir($issrcPath, 0777, true);
             umask($mask);
         }
 
-        if (file_exists($isppPath . 'ok') === false) {
-            $installPath = ($isppPath . 'install.zip');
-            file_put_contents($installPath, file_get_contents('https://cdn.jsdelivr.net/gh/flamesphp/cdn@' . Kernel::CDN_VERSION . '/tools/ispp.zip.dat'));
+        if (file_exists($issrcPath . 'ok') === false) {
+            $installPath = ($issrcPath . 'install.zip');
+            file_put_contents($installPath, file_get_contents('https://cdn.jsdelivr.net/gh/flamesphp/cdn@' . Kernel::CDN_VERSION . '/tools/issrc.zip.dat'));
 
             $zip = new ZipArchive;
             $zip->open($installPath);
-            $zip->extractTo($isppPath);
+            $zip->extractTo($issrcPath);
             $zip->close();
 
             @unlink($installPath);
-            file_put_contents($isppPath . 'ok', '');
+            file_put_contents($issrcPath . 'ok', '');
         }
 
-        return $isppPath;
+        return $issrcPath;
     }
 
     protected function runBuild(string $outputPath): void
