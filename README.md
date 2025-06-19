@@ -36,6 +36,7 @@ of **PHP components**.
 * Native App remote (ex: start native OS calculator by PHP).
 * Native App controllers (open DevTools, get hardware info, etc).
 * Client DevTools working at mobile without Chrome Remote DevTools (all browsers in Android and iOS).
+* Custom tags template like Polymer (using PHP WebComponents).
 
 ## Benchmark
 
@@ -133,7 +134,6 @@ Working in progress...
 * Command for build JS/CSS minified bundles.
 * Command for build obfuscated PHP/JS files.
 * Caching generic, with support: KeyDB Flash (KeyDB with RocksDB), KeyDB, Redis, Redis Stack, MemCached and FileStorage.
-* Custom tags template like Polymer.
 * WebSocket support with parallels (websocket + socket) together.
 * Frontend ORM using IndexedDB with Models and Repositories.
 * Selenium like undetected automated browser.
