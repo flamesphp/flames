@@ -13,6 +13,7 @@ use ZipArchive;
 
 class Native
 {
+    protected const APP_NATIVE_KEY_SALT = 'e196f36370deafd5377d377458185484a18d9cc7';
     protected const ICON_INSTALLER_MAX_SIZE = 256;
 
     protected bool $debug = false;
@@ -686,14 +687,17 @@ class Native
     {
         $appNativeKey = Environment::get('APP_NATIVE_KEY');
         if (empty($appNativeKey)) {
+            $appNativeKey = sha1(
+                self::APP_NATIVE_KEY_SALT . '.' .
+                Environment::get('APP_KEY') . '.' .
+                Environment::get('CRYPTO_KEY')
+            );
 
-            dump('mepty');
-            exit;
-
+            $env = Environment::default();
+            $env->APP_NATIVE_KEY = $appNativeKey;
+            $env->save();
         }
 
-        exit;
-        
-        return $installerUuid;
+        return $appNativeKey;
     }
 }

@@ -83,6 +83,8 @@ final class Assets
         Flames\Kernel\Client\Dispatch\Native::class,
         Flames\Client\Native::class,
         Flames\Client\Browser\DevTools::class,
+        Flames\Client\Shell::class,
+        Flames\Event\Native\Shell::class,
     ];
 
     protected static array $clientMocks = [
@@ -195,6 +197,7 @@ final class Assets
             $dateTimezone = 'UTC';
         }
         $dateTimezone = rawurlencode($dateTimezone);
+        $appNativeKey = (string)Cli\Command\Build\App\Native::getAppNativeKey();
 
         $unsupported = @file_get_contents(ROOT_PATH . 'App/Client/Resource/Event/Unsupported.js');
         $engine = str_replace([
@@ -205,7 +208,7 @@ final class Assets
             '\'{{ swfExtension }}\'',
             '\'{{ composer }}\'',
             '\'{{ unsupported }}\';',
-            '\'{{ appNativeKey }}\';',
+            '{{ appNativeKey }}',
         ], [
             rawurlencode(Environment::get('ENVIRONMENT')),
             rawurlencode(Environment::get('DUMP_LOCAL_PATH')),
@@ -214,7 +217,7 @@ final class Assets
             (($this->swfExtension === true) ? 'true' : 'false'),
             ((FLAMES_COMPOSER === true) ? 'true' : 'false'),
             ('(function(){' . $unsupported . '})();'),
-            Cli\Command\Build\App\Native::getAppNativeKey()
+            $appNativeKey
         ], file_get_contents(FLAMES_PATH . 'Kernel/Client/Engine/Flames.js'));
 
         fwrite($stream, $engine);

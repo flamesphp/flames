@@ -25,9 +25,7 @@ class Shell
             return;
         }
 
-
         exec($command, $output, $returnCode);
-
         $this->code = (int)$returnCode;
 
         if (is_array($output) === true) {

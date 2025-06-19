@@ -57,6 +57,7 @@ class Native
         if (isset(self::$messages[$id]) === false) {
             return;
         }
+
         $message = self::$messages[$id];
         if ($message['delegate'] !== null) {
             try {
