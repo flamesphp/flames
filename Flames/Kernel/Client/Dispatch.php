@@ -2,6 +2,7 @@
 
 namespace Flames\Kernel\Client;
 
+use Flames\Client\Browser\DevTools;
 use Flames\Connection;
 use Flames\Coroutine;
 use Flames\Element;
@@ -54,6 +55,7 @@ final class Dispatch
 
     protected static function setup($firstLoad = false) : void
     {
+        self::dispatchDevTools();
         self::simulateGlobals();
         self::setDate();
         self::dispatchNativeBuildHooks();
@@ -290,4 +292,18 @@ final class Dispatch
 
     protected static function dispatchNativeBuildHooks()
     { Native::register(); }
+
+    protected static function dispatchDevTools()
+    {
+        $window = Js::getWindow();
+        if ($window->localStorage === null) {
+            return;
+        }
+
+        $devToolsOpen = (int)$window->localStorage->getItem('flames-internal-devtools-open');
+        if ($devToolsOpen === 1) {
+            DevTools::open();
+        }
+        dump('dev tools: ' . $devToolsOpen);
+    }
 }
