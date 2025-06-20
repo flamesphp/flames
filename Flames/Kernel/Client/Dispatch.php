@@ -304,6 +304,5 @@ final class Dispatch
         if ($devToolsOpen === 1) {
             DevTools::open();
         }
-        dump('dev tools: ' . $devToolsOpen);
     }
 }
