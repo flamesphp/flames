@@ -2,6 +2,7 @@
 
 namespace Flames\Client\Browser;
 
+use Flames\Client\Platform;
 use Flames\Js;
 use Flames\Kernel;
 use Flames\Kernel\Client\Dispatch\Native;
@@ -10,11 +11,12 @@ class DevTools
 {
     protected static bool $isVirtualDevToolSetup = false;
 
-    public static function open(): void
+    public static function open(bool $force = false): void
     {
         Native::add('devtools-open');
 
-        if (self::isNativeBuild() === false) {
+        if (self::isNativeBuild() === false && (Platform::isMobile() === true || $force === true)) {
+
             $window = Js::getWindow();
             $window->Flames->Internal->DevTools->open();
 
