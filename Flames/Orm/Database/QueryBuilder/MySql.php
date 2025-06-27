@@ -442,11 +442,13 @@ class MySql extends DefaultEx
     public function limit(int $limit)
     {
         $this->limit = $limit;
+        return $this;
     }
 
     public function offset(int $offset)
     {
         $this->offset = $offset;
+        return $this;
     }
 
     public function paginate(int $limit, int $page)
@@ -457,6 +459,7 @@ class MySql extends DefaultEx
             $offset = ($page * $limit) - $limit;
             $this->offset($offset);
         }
+        return $this;
     }
 
     public function get(): Arr
