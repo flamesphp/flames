@@ -452,7 +452,7 @@ class Element
         }
 
         $tag = $this->tag;
-        if ($tag === 'textarea') {
+        if ($tag === 'textarea' || $tag === 'select') {
             return $this->element->value;
         }
         elseif ($tag === 'input') {
