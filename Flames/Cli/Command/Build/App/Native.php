@@ -90,7 +90,7 @@ class Native
         $npmVersion = $process->getOutput();
         $output = (int)$npmVersion;
 
-        if ($process->getCode() !== Shell\Code::CODE_SUCESS || $output === 0) {
+        if ($process->getCode() !== Shell\Code::CODE_SUCCESS || $output === 0) {
             $this->log("NPM not found.\n");
             $this->reportNodeMissing();
             return false;
@@ -100,7 +100,7 @@ class Native
         $npxVersion = $process->getOutput();
         $output = (int)$npxVersion;
 
-        if ($process->getCode() !== Shell\Code::CODE_SUCESS || $output === 0) {
+        if ($process->getCode() !== Shell\Code::CODE_SUCCESS || $output === 0) {
             $this->log("NPX not found.\n");
             $this->reportNodeMissing();
             return false;
@@ -112,7 +112,7 @@ class Native
             $rpmVersion = $rpmVersion->last;
             $output = (int)$rpmVersion;
 
-            if ($process->getCode() !== Shell\Code::CODE_SUCESS || $output === 0) {
+            if ($process->getCode() !== Shell\Code::CODE_SUCCESS || $output === 0) {
                 $this->log("RPM not found.\n");
                 $this->log("Install RPM on Ubuntu using command: 'apt install rpm -y'.\n");
                 $this->log("Install RPM on others Unix based OS: 'apt install rpmbuild -y'.\n");
@@ -171,7 +171,7 @@ class Native
         $process = new Shell('npm install --force');
         chdir($currentPath);
 
-        if ($process->getCode() !== Shell\Code::CODE_SUCESS) {
+        if ($process->getCode() !== Shell\Code::CODE_SUCCESS) {
             $this->log("Error installing node modules.\n");
             return false;
         }
@@ -187,7 +187,7 @@ class Native
         chdir($this->buildPath);
         $process = new Shell('npm install --save-dev @electron-forge/cli');
 
-        if ($process->getCode() !== Shell\Code::CODE_SUCESS) {
+        if ($process->getCode() !== Shell\Code::CODE_SUCCESS) {
             chdir($currentPath);
             $this->log("Error installing Electron.\n");
             return false;
@@ -196,7 +196,7 @@ class Native
         $process = new Shell('npx electron-forge import');
         chdir($currentPath);
 
-        if ($process->getCode() !== Shell\Code::CODE_SUCESS) {
+        if ($process->getCode() !== Shell\Code::CODE_SUCCESS) {
             $this->log("Error importing Electron.\n");
             return false;
         }
@@ -292,7 +292,7 @@ class Native
         $process = new Shell('npm run make');
         chdir($currentPath);
 
-        if ($process->getCode() !== Shell\Code::CODE_SUCESS) {
+        if ($process->getCode() !== Shell\Code::CODE_SUCCESS) {
             $this->log("Error building app.\n");
             return false;
         }
@@ -461,7 +461,7 @@ class Native
         $buildCommand = ($issrcPath . 'iscc.exe "' . $installerPath . 'setup.iss"');
 
         $process = new Shell($buildCommand);
-        if ($process->getCode() !== Shell\Code::CODE_SUCESS) {
+        if ($process->getCode() !== Shell\Code::CODE_SUCCESS) {
             $this->log("Error building installer.\n");
             return false;
         }

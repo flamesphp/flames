@@ -5,5 +5,5 @@ namespace Flames\Server\Shell;
 
 class Code
 {
-    public const CODE_SUCESS = 0;
+    public const CODE_SUCCESS = 0;
 }
