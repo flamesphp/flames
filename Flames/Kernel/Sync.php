@@ -29,10 +29,12 @@ class Sync
         $remotePath = ('https://cdn.jsdelivr.net/gh/flamesphp/cdn@' . Kernel::CDN_VERSION . '/sync/' . $key . '.blob');
         $data = file_get_contents($remotePath);
 
+        $success = false;
         try {
-            file_put_contents($basePath, $data);
-            return $data;
-        } catch (\Exception $e) {
+            $success = file_put_contents($basePath, $data);
+        } catch (\Exception $e) {}
+
+        if ($success === false) {
             $mask = umask(0);
             mkdir(ROOT_PATH . '.cache/sync/', 0777, true);
             umask($mask);

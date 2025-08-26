@@ -675,7 +675,8 @@ class Native
         $this->checkBuildPath();
     }
 
-    protected function getDirContents($dir, &$results = array()) {
+    protected function getDirContents($dir, &$results = [])
+    {
         if (!is_dir($dir)) {
             return [];
         }

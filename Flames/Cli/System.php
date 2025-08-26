@@ -9,6 +9,7 @@ use Flames\Cli\Command\Crypto\Key\Generate as CryptoKeyGenerate;
 use Flames\Cli\Command\Build\Assets;
 use Flames\Cli\Command\Build\App\StaticEx;
 use Flames\Cli\Command\Build\App\Native;
+use Flames\Cli\Command\Build\App\Mobile;
 use Flames\Cli\Command\Server;
 use Flames\Cli\Data;
 use Flames\Collection\Arr;
@@ -30,6 +31,7 @@ final class System
         'build:assets'              => Assets::class,
         'build:app:static'          => StaticEx::class,
         'build:app:native'          => Native::class,
+        'build:app:mobile'          => Mobile::class,
         'internal:coroutine'        => Coroutine::class
     ];
 
