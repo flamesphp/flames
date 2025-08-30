@@ -143,6 +143,15 @@ Working in progress...
 * P2P/TOR protocol support.
 * Database Admin supporting all types of database (include from cache) like PhpMyAdmin.
 
+# What we learned?
+* PHP can be a "cross-side" language: We learned that it's possible to run PHP 8.3 natively on the frontend (client-side) using WebAssembly, eliminating the need to write JavaScript to create dynamic and interactive interfaces.
+* High performance is achievable: A modern PHP framework can be extremely fast. With an architecture focused on performance, it's possible to achieve boot times up to 18 times faster than popular frameworks like Laravel, competing directly with micro-frameworks like Slim.
+* The developer experience can be unified: It is feasible to unify backend and frontend development, allowing the use of the same tools and concepts in both environments, such as a template engine (Twig) and an HTTP client (Guzzle/Axios wrapper) that work transparently on both sides.
+* PHP can transcend the web: The framework's capability goes beyond websites and APIs. We learned that it's possible to compile PHP projects as static sites (for S3, GitHub Pages), native desktop applications (Windows/Linux via ElectronJS), and even automate operating system tasks (via the Platform Engine).
+* Database abstraction can be simple and powerful: An ORM with support for Models and Repositories can simplify database interaction, and with automatic migrations, schema management becomes a trivial task.
+* Asynchronous development in PHP is possible without extensions: It's possible to implement and use asynchronous Coroutines directly within the framework, even outside of a CLI environment, without relying on external extensions like Swoole or Revolt.
+* Closed-source projects can evolve into Open Source: We learned that a robust framework, tested for years in high-stakes environments (banks, government), can be refactored and opened up to the community, sharing knowledge and fostering collaboration.
+
 ## License
 
 The Flames framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
