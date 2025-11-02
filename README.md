@@ -3,10 +3,10 @@
 <img src="https://i.ibb.co/5LBsG09/flames.png" width="400" alt="Flames Logo"></a></p>
 
 <p align="center">
-    <a href="https://packagist.org/packages/flames/framework">
-        <img src="https://img.shields.io/packagist/dt/flames/framework" alt="Total Downloads">
-        <img src="https://img.shields.io/packagist/v/flames/framework" alt="Latest Stable Version">
-        <img src="https://img.shields.io/packagist/l/flames/framework" alt="License">
+    <a href="https://packagist.org/packages/flamesphp/framework">
+        <img src="https://img.shields.io/packagist/dt/flamesphp/framework" alt="Total Downloads">
+        <img src="https://img.shields.io/packagist/v/flamesphp/framework" alt="Latest Stable Version">
+        <img src="https://img.shields.io/packagist/l/flamesphp/framework" alt="License">
     </a>
 </p>
 
