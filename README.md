@@ -1,6 +1,6 @@
 <p align="center">
     <a href="https://flamesphp.com" target="_blank">
-<img src="https://i.ibb.co/5LBsG09/flames.png" width="400" alt="Flames Logo"></a></p>
+<img src="https://i.postimg.cc/PJKG2cXC/flames.png" width="400" alt="Flames Logo"></a></p>
 
 <p align="center">
     <a href="https://packagist.org/packages/flamesphp/framework">
