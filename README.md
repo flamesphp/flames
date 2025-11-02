@@ -5,11 +5,7 @@
 <p align="center">
     <a href="https://packagist.org/packages/flames/framework">
         <img src="https://img.shields.io/packagist/dt/flames/framework" alt="Total Downloads">
-    </a>
-    <a href="https://packagist.org/packages/flames/framework">
         <img src="https://img.shields.io/packagist/v/flames/framework" alt="Latest Stable Version">
-    </a>
-    <a href="https://packagist.org/packages/flames/framework">
         <img src="https://img.shields.io/packagist/l/flames/framework" alt="License">
     </a>
 </p>
