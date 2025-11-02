@@ -26,6 +26,6 @@
     ],
     "post-package-install": ["vendor/flames/framework/bin install --post-package-install"],
     "post-install-cmd": ["vendor/flames/framework/bin install --post-install-cmd"],
-    "post-update-cmd":  ["vendor/flames/framework/bin install --post-update-cmd"],
+    "post-update-cmd":  ["vendor/flames/framework/bin install --post-update-cmd"]
   }
 }
