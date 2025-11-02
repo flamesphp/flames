@@ -21,7 +21,7 @@
   "scripts": {
     "post-create-project-cmd":  [
       "composer install",
-      "vendor/flamesphp/framework/bin install --post-create-project-cmd"
+      "php vendor/flamesphp/framework/bin install --post-create-project-cmd"
     ]
   }
 }
