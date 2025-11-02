@@ -19,13 +19,9 @@
     "flamesphp/framework": "^1.0"
   },
   "scripts": {
-    "setup":  ["vendor/flames/framework/bin install --setup"],
     "post-create-project-cmd":  [
       "composer install",
       "vendor/flames/framework/bin install --post-create-project-cmd"
-    ],
-    "post-package-install": ["vendor/flames/framework/bin install --post-package-install"],
-    "post-install-cmd": ["vendor/flames/framework/bin install --post-install-cmd"],
-    "post-update-cmd":  ["vendor/flames/framework/bin install --post-update-cmd"]
+    ]
   }
 }
