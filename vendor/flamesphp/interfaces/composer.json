@@ -1,0 +1,11 @@
+{
+  "name": "flamesphp/interfaces",
+  "description": "Flames: Interfaces",
+  "type": "library",
+  "license": "MIT",
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "php": "^8.3"
+  }
+}
